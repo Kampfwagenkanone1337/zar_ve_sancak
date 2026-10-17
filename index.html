@@ -370,7 +370,7 @@
     <div class="opt"><div class="lbl">Arayüz boyutu</div><div class="seg" id="sUiSeg"></div>
       <div class="note">Otomatik: yazılar ve paneller ekran çözünürlüğüne göre büyür (1080p'de %100, 1440p'de ~%133).</div></div>
     <div class="opt"><div class="lbl">Yapay zekâ turları</div><div class="seg" id="sFastSeg"></div>
-      <div class="note">Hızlıda yapay zekâ rakipler zarı daha çabuk atar, oyun daha kısa sürer.</div></div>
+      <div class="note">Hızlı seçilirse yapay zekâ rakipler zarı daha çabuk atar; oyun daha kısa sürer.</div></div>
     <div class="opt"><div class="lbl"><i data-ic="sifirla" data-sz="20"></i> Verileri sıfırla</div>
       <div class="seg"><button id="rstCamp">Seferi sıfırla</button><button id="rstAch">Başarımları sıfırla</button><button id="rstStats">İstatistikleri sıfırla</button><button id="rstAll">Hepsini sıfırla</button></div>
       <div class="note">Her biri önce onay sorar. Geri alınamaz.</div></div>
@@ -388,10 +388,10 @@
     <div class="opt" id="coopRow"><div class="lbl">Oyun modu</div><div class="seg" id="optCoop"></div>
       <div class="note">Co-op: insanlar takım olur, birbirine saldıramaz; toprakları toplanır.</div></div>
     <div class="opt"><div class="lbl">Yapay zekâ rakip sayısı</div><div class="seg" id="optNpc"></div>
-      <div class="note">Toplam 3–5 ülke olabilir. En az 2 insan oyuncu varsa yapay zekâsız da oynanabilir.</div></div>
+      <div class="note">Toplam 3–5 ülke olabilir. En az 2 insan oyuncu varsa yapay zekâ rakip olmadan da oynanabilir.</div></div>
     <div class="opt"><div class="lbl">Başlangıç toprağı (her ülke)</div><div class="seg" id="optStart"></div></div>
     <div class="opt"><div class="lbl">Harita büyüklüğü</div><div class="seg" id="optMap"></div>
-      <div class="note">Gri seçenekler bu ayarlarla sığmıyor.</div></div>
+      <div class="note">Gri seçeneklerde bu ayarlarla bütün ülkeler haritaya sığmıyor.</div></div>
     <div class="opt"><div class="lbl">Kazanma koşulu</div><div class="seg" id="optWin"></div></div>
     <div class="opt"><div class="lbl">Oyun hızı</div><div class="seg" id="optSpeed"></div>
       <div class="note">Hızlı oyunda aynı zarla daha büyük alanlar alınır ve daha büyük alan seçilebilir.</div></div>
@@ -428,7 +428,7 @@
     <p id="endText"></p>
     <div id="endStory" class="story hidden"></div>
     <div id="endStars" class="stars hidden"></div>
-    <div class="btns wrap"><button id="nextChBtn" class="hidden">Sonraki Bölüm ▶</button><button id="retryBtn" class="hidden">Tekrar Dene</button>
+    <div class="btns wrap"><button id="nextChBtn" class="hidden">Ödülünü seç ▶</button><button id="retryBtn" class="hidden">↻ Tekrar dene</button>
       <button id="againBtn">Yeni Oyun</button><button class="sec hidden" id="campBackBtn"><i data-ic="sefer" data-sz="20"></i> Sefer</button><button class="sec" id="lookBtn">Haritaya Bak</button></div>
   </div>
 </div>
@@ -438,7 +438,7 @@
   <div class="card paper wide">
     <h1 id="campTitle">Sefer</h1>
     <div id="campName" class="hidden">
-      <p>Her büyük imparatorluk küçük bir toprakla başlar. Beş perdelik bir yolculuk: her adımda yolunu sen seçersin, savaştıkça güç ve emanet toplarsın; her perdenin sonunda bir hükümdar seni bekler. Kaybettiğin savaşı tekrar oynarsın, sefer hiç bitmez.</p>
+      <p>Her büyük imparatorluk küçük bir toprakla başlar. Beş perdelik bir yolculuk: her adımda yolunu sen seçersin, savaştıkça güç ve emanet toplarsın; her perdenin sonunda bir hükümdar seni bekler. Kaybettiğin savaşı tekrar oynarsın; sefer yenilgiyle bitmez.</p>
       <p>Krallığına bir ad ver:</p>
       <input id="realmInput" class="txt" maxlength="28" placeholder="Örn. Demir Beylik">
       <div class="btns"><button class="sec" id="campNameBack">◀ Geri</button><button id="realmOk">Krallığı kur ▶</button></div>
@@ -469,7 +469,7 @@
     <h2 id="storyTitle"></h2>
     <div id="storyText" class="story"></div>
     <p id="storyCfg" class="note"></p>
-    <div class="btns"><button class="sec" id="storyBack">◀ Sefer</button><button id="storyGo">Güçlerini seç ▶</button></div>
+    <div class="btns"><button class="sec" id="storyBack">◀ Sefer haritası</button><button id="storyGo">Savaşa başla</button></div>
   </div>
 </div>
 
@@ -477,7 +477,7 @@
 <div class="modal hidden" id="xfer">
   <div class="card paper">
     <h2><i data-ic="aktar" data-sz="28"></i> İlerlemeyi aktar</h2>
-    <p>Bu kodu kopyalayıp diğer bilgisayarda "Kod yapıştır" kutusuna yapıştır. Sefer, yıldızlar ve başarımlar birleştirilir; hiçbir şey kaybolmaz.</p>
+    <p>Bu kodu kopyalayıp diğer bilgisayarda "Kod yapıştır" kutusuna yapıştır. Başarımlar ve açılan güçler birleştirilir; o bilgisayarda süren bir sefer yoksa seferin de taşınır. Hiçbir şey kaybolmaz.</p>
     <textarea id="xferOut" class="txt" rows="3" readonly></textarea>
     <div class="btns"><button id="xferCopy"><i data-ic="kopyala" data-sz="20"></i> Kopyala</button></div>
     <p><b>Kod yapıştır:</b></p>
@@ -906,7 +906,7 @@ const POWERS = [
   {id: 'ikinci',   cat: 'Zar',     icon: '🔄', name: 'İkinci Şans',    desc: 'Başarısız zar 5 turda bir otomatik olarak yeniden atılır.'},
   {id: 'cift',     cat: 'Zar',     icon: '🎲', name: 'Çift Zar',       desc: '5 turda bir kullan: iki zar atılır, yüksek olan geçer.'},
   {id: 'istikrar', cat: 'Zar',     icon: '⚖️', name: 'İstikrar',       desc: 'Zar hep 6–16 arası gelir. Felaket yok, ama 20 kritiği de yok.'},
-  {id: 'yildirim', cat: 'Tempo',   icon: '⚡', name: 'Yıldırım',       desc: '8 turda bir aynı turda iki saldırı yaparsın.'},
+  {id: 'yildirim', cat: 'Tempo',   icon: '⚡', name: 'Yıldırım',       desc: '8 turda bir, o tur iki saldırı yaparsın.'},
   {id: 'buyuk',    cat: 'Tempo',   icon: '🌱', name: 'Büyük Başlangıç', desc: 'Oyuna yaklaşık %35 daha büyük toprakla başlarsın.'},
   {id: 'kumarbaz', cat: 'Riskli',  icon: '💀', name: 'Kumarbaz',       desc: '19 veya 20 atınca alanın yaklaşık iki katını alırsın; 1 atınca felaket de iki kat büyük.'},
   {id: 'tiran',    cat: 'Saldırı', icon: '👑', name: 'Tiran',          desc: 'Tüm saldırılarında hedef zar 3 düşer, ama yapay zekâ rakipler sana daha çok saldırır.'},
@@ -1098,8 +1098,8 @@ function renderPicks() {
   $('pickTitle').textContent = `${humanName(pickIdx)}: ${camp ? 'en fazla 2 güç seç' : '2 güç seç'}`;
   $('pickSw').style.background = HUMAN_COLORS[pickIdx];
   $('pickHelp').innerHTML = camp
-    ? (openN ? `Seferde güçler bölüm bitirdikçe ve başarım kazandıkça açılır (<b>${openN}/${POWERS.length}</b> açık). Farklı kategorilerden 1 ya da 2 güç seç.`
-             : 'Seferde güçler bölüm bitirdikçe ve başarım kazandıkça açılır. Henüz açık gücün yok: <b>Güçsüz oyna</b> ile başla.')
+    ? (openN ? `Seferde güçler patron yendikçe ve başarım kazandıkça açılır (<b>${openN}/${POWERS.length}</b> açık). Farklı kategorilerden 1 ya da 2 güç seç.`
+             : 'Seferde güçler patron yendikçe ve başarım kazandıkça açılır. Henüz açık gücün yok: <b>Güçsüz oyna</b> ile başla.')
     : 'Tüm güçler aşağıda. <b>Farklı kategorilerden 2 tane</b> seç; oyun boyunca senin olacaklar.';
   let html = '';
   for (const cat of [...new Set(POWERS.map(p => p.cat))]) {
@@ -1363,7 +1363,7 @@ function analyze(r, pid, noFlags = false) {
   if (enemyMod) mods.push(['düşman toprağı', enemyMod]);
   if (river) mods.push(['akarsu geçişi', TUNE.nehir, 'mAkarsu']);
   const denizMod = scenOf().deniz != null ? scenOf().deniz : TUNE.deniz;
-  if (denizMod && seaIn && touches && overseas(r, pid, takenIdx)) mods.push(['deniz aşırı', denizMod, 'mDenizAsiri']);
+  if (denizMod && seaIn && touches && overseas(r, pid, takenIdx)) mods.push(['denizaşırı', denizMod, 'mDenizAsiri']);
   if (objN) mods.push(objFree ? ['kale garnizonu', KALE_GARRISON, 'kale'] : ['kale surları', KALE_DC, 'kale']);
   if (hillE) mods.push(['tepedeki düşman', scenOf().tepe || TUNE.tepe, 'mTepe']);
   // güç farkı: büyük ülke küçük ülkeye saldırırken avantajlı
@@ -2007,12 +2007,12 @@ function fellFlag(vid, pid) {
     v.flag = placeFlag(v);
     if (v.flag) {
       v.flagUsed = true; rebuildFlags();
-      return ` ${IC('mSancak', 16)} <b>${tag(v)} sancağı düştü!</b> ${half} kare ${tag(p)} eline geçti, ama ${IC('yedek', 16)} Yedek Sancak dikildi: ${tag(v)} ayakta!`;
+      return ` ${IC('mSancak', 16)} <b>${tag(v)} sancağı düştü!</b> ${half} kare ${tag(p)} tarafına geçti, ama ${IC('yedek', 16)} Yedek Sancak dikildi: ${tag(v)} ayakta!`;
     }
   }
   for (const i of far) own[i] = -1;
   v.alive = false; v.fallenBy = pid; rebuildFlags();
-  return ` ${IC('mSancak', 16)} <b>${tag(v)} sancağı düştü, ülke yıkıldı!</b> ${half} kare ${tag(p)} eline geçti, kalan topraklar sahipsiz kaldı.`;
+  return ` ${IC('mSancak', 16)} <b>${tag(v)} sancağı düştü, ülke yıkıldı!</b> ${half} kare ${tag(p)} tarafına geçti, kalan topraklar sahipsiz kaldı.`;
 }
 
 // ============ SALDIRI ============
@@ -2073,7 +2073,7 @@ function resolveAttack(pid, r, a, useDbl) {
     for (const f of a.flags) { txt += fellFlag(f, pid); fell.push(f); }
   } else if (!ist && roll === 1 && !has(p, 'sansli')) {
     const res = takeBlock(pid, a.mainDef, r, Math.ceil((has(p, 'kumarbaz') ? 10 : 5) / (rel(p, 'kirik') ? 2 : 1)));   // 🎲 Kırık Zar: felaket yarı yarıya
-    txt = `${IC('tutmayan', 16)} ${tag(p)} 1 attı! Felaket: ${res.lost} kare ${a.mainDef >= 0 ? players[a.mainDef].name : 'isyancılar'} eline geçti.`;
+    txt = `${IC('tutmayan', 16)} ${tag(p)} 1 attı! Felaket: ${res.lost} kare ${a.mainDef >= 0 ? players[a.mainDef].name + ' tarafına' : 'isyancılara'} geçti.`;
     if (res.rect) flash = {r: res.rect, color: '#d6372e'};
   } else {
     txt = `${IC('basarisiz', 16)} ${tag(p)} ${roll} attı (hedef ${a.dc}) → saldırı başarısız.` + (!ist && roll === 1 ? ` ${IC('sansli', 16)} Şanslı: felaket yok!` : '');
@@ -2197,7 +2197,7 @@ function checkEnd() {
     : `${turn}. turda ${multi ? 'tüm oyuncular' : 'ülken'} haritadan silindi.`];
   else if (cfg.coop && multi) {
     const team = aliveH.reduce((s, p) => s + p.score, 0), lead = aliveN.find(p => p.score >= target);
-    if ((!sc.goal && team >= target) || !aliveN.length) msg = ['🏆 Takım Kazandı!', !aliveN.length ? `${turn}. turda bütün rakipleri yıktınız!` : `${turn}. turda takım olarak haritanın ${yuzde(pct(team), 'n')} ele geçirdiniz!`];
+    if ((!sc.goal && team >= target) || !aliveN.length) msg = ['🏆 Takım Kazandı!', !aliveN.length ? `${turn}. turda bütün rakipleri yıktınız!` : `${turn}. turda takım olarak karaların ${yuzde(pct(team), 'n')} ele geçirdiniz!`];
     else if (lead) msg = ['😢 Kaybettiniz', `${lead.name} karaların ${yuzde(pct(lead.score), 'n')} ele geçirdi.`];
   } else {
     const alive = players.filter(p => p.alive), lead = players.find(p => p.score >= tgtOf(p));
@@ -2219,7 +2219,7 @@ function timeUp() {
   const goal = scenOf().goal;
   if (goal === 'hayatta') {
     const w = humans.find(p => p.alive);
-    endGame(resultMsg(w, w ? `${cfg.turns} tur boyunca ${multi ? 'ayakta kaldınız' : 'ayakta kaldın'}! Ülken haritanın ${yuzde(pct(w.score))}.` : 'Ayakta kalamadın.'));
+    endGame(resultMsg(w, w ? `${cfg.turns} tur boyunca ${multi ? 'ayakta kaldınız' : 'ayakta kaldın'}! Ülken karaların ${yuzde(pct(w.score))}.` : 'Ayakta kalamadın.'));
     return;
   }
   if (goal === 'kale' || goal === 'bas' || goal === 'boss') {
@@ -2258,7 +2258,7 @@ function startTurn(extra) {
   dbl = false;
   if (p.human && !extra && needHandoff()) {
     handoffOn = true; refresh();
-    $('handTitle').innerHTML = `${IC('siraDevri', 32)} Sıra <span style="color:${lite(p.color)}">${p.name}</span>'de`;
+    $('handTitle').innerHTML = `${IC('siraDevri', 32)} Sıra geldi: <span style="color:${lite(p.color)}">${p.name}</span>`;
     $('handoff').classList.remove('hidden');
     return;
   }
@@ -2898,7 +2898,7 @@ function updateSel() {
   const waiting = !players[cur].human;
   const wait = waiting ? `<span style="color:var(--muted)">${IC('bekle', 16)} Rakipler oynuyor. Seçimini şimdiden hazırlayabilirsin.</span><br>` : '';
   const ms = Math.max(snap, Math.floor(sideFor(owner) / snap) * snap);
-  if (!sel) { el.innerHTML = wait + `Haritada <b>sürükleyerek</b> saldırmak istediğin alanı seç. Seçim ${snap}×${snap}'lik bloklara oturur (en fazla ${ms}×${ms}).`; updateButtons(); return; }
+  if (!sel) { el.innerHTML = wait + `Haritada <b>sürükleyerek</b> saldırmak istediğin alanı seç. Seçim ${snap}×${snap} karelik bloklara oturur (en fazla ${ms}×${ms}).`; updateButtons(); return; }
   const a = analyze(sel, owner), w = sel.x1 - sel.x0 + 1, h = sel.y1 - sel.y0 + 1;
   if (!a.valid) {
     const why = a.taken === 0 && a.shielded ? IC('mSancak', 16) + ' Sancağı almak için sancağın tamamını seçmelisin.'
@@ -3076,7 +3076,7 @@ renderFast();
 
 // ============ SEFER: dallanan yol, 5 perde (tasarim/SEFER-TASARIM.md) ============
 // Her perde: 4 adım (her adımda 2-3 durak) + patron. Durak: savaş, zorlu savaş, köy, olay, patron.
-// Kaybedilen savaş tekrar oynanır (aynı senaryo, yeni harita); sefer hiç bitmez. Güçler ve emanetler sefer boyunca taşınır.
+// Kaybedilen savaş tekrar oynanır (aynı senaryo, yeni harita); sefer yenilgiyle bitmez. Güçler ve emanetler sefer boyunca taşınır.
 // {K} = krallığın adı.
 const ACTS = [
   {name: 'Sınır Beylikleri', diff: ['kolay', 'kolay'], npc: [2, 2], map: [60, 75], npcPowers: [false, false], boss: 'sazlik',
@@ -3098,7 +3098,7 @@ const ACTS = [
   {name: 'İmparatorluk', diff: ['zor', 'zor'], npc: [3, 4], map: [100, 100], npcPowers: [true, true], boss: 'imparator',
    scens: ['hayatta', 'bas', 'kale', 'kardes', 'dag', 'fetih', 'nehir'],
    enemies: ['Kızıl Sancak', 'Gölge Konsey', 'Yedi Tepe Birliği', 'Ebedi Taht', 'Kıyamet Ordusu', 'Altın Taç Birliği'],
-   intro: 'Eski imparatorluğun kalıntıları son kez birleşiyor. Bir zafer daha, ve {K} dünyanın hükümdarı olacak.'},
+   intro: 'Eski imparatorluğun kalıntıları son kez birleşiyor. Bir zafer daha ve {K} dünyanın hükümdarı olacak.'},
 ];
 // patronlar: her perdenin sonundaki isimli hükümdar. ring: başlangıç halkası (başlangıç boyunun oranı), unlock: yenince kalıcı açılan güçler
 const BOSSES = {
@@ -3113,10 +3113,10 @@ const BOSSES = {
     intro: 'Ovaların hanı atlılarıyla bir oraya bir buraya akın ediyor. Ne zaman nereden çıkacağı belli olmaz.'},
   demir: {name: 'Demir Lejyon Komutanı', desc: 'Her tur 2 saldırı yapar (sürekli Yıldırım), ama başka gücü yok.',
     npc: 3, map: 100, diff: 'normal', ring: .1, powers: [], unlock: ['karsi', 'keskin'],
-    intro: 'Demir Lejyon hiç durmaz. Komutanı her gün iki kez saldırır; ona nefes aldırmamalısın.'},
+    intro: 'Demir Lejyon hiç durmaz. Komutanı her tur iki kez saldırır; ona nefes aldırmamalısın.'},
   imparator: {name: 'Son İmparator', desc: '3 vasal beyliği onunla müttefik. İki sancağı var (Yedek Sancak) ve başkentinin çevresi surlu (Kale).',
     npc: 4, map: 100, diff: 'zor', ring: .15, powers: ['yedek', 'kale'], allies: true, unlock: ['genis'],
-    intro: 'Son İmparator tahtında, üç vasal beyi kalkanı. Onu yıkarsan dünya artık {K} adıyla anılacak.'},
+    intro: 'Son İmparator tahtında; üç vasal bey ona kalkan oluyor. Onu yıkarsan dünya artık {K} adıyla anılacak.'},
 };
 // patron savaşları da birer senaryo: Hedef = patronun sancağını düşür
 for (const [k, b] of Object.entries(BOSSES))
@@ -3130,7 +3130,7 @@ const RELICS = [
   {id: 'surlar', ic: 'emSurlar', name: 'Kalın Surlar', desc: 'Sancağına yapılan saldırıların hedef zarı 2 artar.'},
   {id: 'kirik', ic: 'emKirikZar', name: 'Kırık Zar', desc: '1 atınca felaket yarı yarıya küçük olur.'},
   {id: 'casus', ic: 'emCasus', name: 'Casus', desc: 'Her savaşın başında bir rakibin güçleri iptal edilir.', rare: true},
-  {id: 'kumSaati', ic: 'emKumSaati', name: 'Kum Saati', desc: 'Yıldız sınırları 3 tur daha geç.', rare: true},
+  {id: 'kumSaati', ic: 'emKumSaati', name: 'Kum Saati', desc: 'Yıldız almak için her savaşta 3 tur fazladan süren olur.', rare: true},
 ];
 for (const r of RELICS) r.icon = IC(r.ic, 18);   // emanet simgeleri: Claude Design ikonları (icons.js)
 const RELMAP = Object.fromEntries(RELICS.map(r => [r.id, r]));
@@ -3194,7 +3194,7 @@ const ACH = [
   {id: 'kumarSansi', icon: '🍀', name: 'Kumarbazın Şansı', desc: '%10 ya da daha düşük şansla bir saldırıyı kazan.'},
   {id: 'tutmayan', icon: '😩', name: 'Tutmayan Zar', desc: 'Arka arkaya 5 saldırıyı kaybet.'},
   {id: 'buyukLokma', icon: '🍖', name: 'Büyük Lokma', desc: 'Tek saldırıda 400 ya da daha fazla kare al.'},
-  {id: 'yarisi', icon: '🗺️', name: 'Haritanın Yarısı', desc: 'Haritanın %50\'sini ele geçir.'},
+  {id: 'yarisi', icon: '🗺️', name: 'Haritanın Yarısı', desc: 'Karaların %50\'sini ele geçir.'},
   {id: 'avci', icon: '🎯', name: 'Avcı', desc: 'Bir rakibin sancağını düşürüp ülkesini yık.'},
   {id: 'kartopu', icon: '☃️', name: 'Kartopu', desc: 'Bir oyunda 5 saldırıyı üst üste başar.'},
   {id: 'usta', icon: '🧙', name: 'Usta', desc: 'Her güçle en az bir oyun kazan.'},
@@ -3467,7 +3467,7 @@ function openCamp() {
   renderRunMap();
   $('runHint').innerHTML = 'Parlayan duraklardan birini seç. Fareyle bir durağın üstüne gelince ne olduğunu burada görürsün.';
 }
-const nextText = n => [n.ring ? `${n.ring > 1 ? n.ring + ' kat ' : ''}büyük başlarsın` : '', n.foeRing ? 'rakipler büyük başlar' : '', n.gazi ? 'ilk 3 tur hedef zarın −1' : ''].filter(Boolean).join(', ');
+const nextText = n => [n.ring ? `daha büyük başlarsın${n.ring > 1 ? ` (×${n.ring})` : ''}` : '', n.foeRing ? 'rakipler büyük başlar' : '', n.gazi ? 'ilk 3 tur hedef zarın −1' : ''].filter(Boolean).join(', ');
 function nodeLabel(nd, a) { return nd.t === 'boss' ? BOSSES[ACTS[a].boss].name : nd.scen ? SCMAP[nd.scen].name : NODE_INFO[nd.t].name; }
 function renderRunMap() {
   const r = PROG.run, steps = r.map, k = r.path.length, av = availNodes(r);
@@ -3785,7 +3785,7 @@ function showMenu(silent) {
   $('mCont').disabled = !r;
   $('mContInfo').textContent = !r ? 'Henüz bir sefer yok'
     : r.done ? `${PROG.realm} · sefer tamamlandı · ${r.stars} ★`
-    : campSave ? `${PROG.realm} · ${r.act + 1}. perde, savaş tur ${s.turn}'den devam`
+    : campSave ? `${PROG.realm} · ${r.act + 1}. perde, savaşın ${s.turn}. turundan devam`
     : `${PROG.realm} · ${r.act + 1}. perde · ${r.stars} ★`;
   $('mFreeInfo').textContent = freeSave ? `Kayıtlı oyun var (tur ${s.turn})` : '';
   renderCampSummary();
