@@ -3074,6 +3074,16 @@ const REGIONS = [
   {id: 'tas', name: 'Taş Obası', land: 0, x: .12, y: .77, scen: 'klasik',
    intro: 'Kayalık bir düzlük. Obalar sınırlarını korumak için birleşmiş.'},
   {id: 'sazlik', name: 'Sazlık', land: 0, x: .2, y: .55, boss: true},
+  {id: 'kayalik', name: 'Kayalık Burun', land: 0, x: .05, y: .44, scen: 'takimada',
+   intro: 'Denize uzanan kayalık bir burun. Koylar arasında kayıkla dolaşmak gerekecek.'},
+  {id: 'sinirKule', name: 'Sınır Kulesi', land: 0, x: .16, y: .46, scen: 'kale',
+   intro: 'Eski bir gözcü kulesi iki vadiye birden bakıyor. Onu tutan, sınırı tutar.'},
+  {id: 'coban', name: 'Çoban Yurdu', land: 0, x: .07, y: .68, scen: 'kitlik',
+   intro: 'Kurak bir yaz; yaylanın her köyü, sürüleri doyuracak bir otlak demek.'},
+  {id: 'yabanGecit', name: 'Yaban Geçidi', land: 0, x: .23, y: .33, scen: 'orman',
+   intro: 'Ormanın içinden geçen tek yol. Ağaçların arasında ilerlemek yavaş.'},
+  {id: 'tasKopru', name: 'Taş Köprü', land: 0, x: .18, y: .88, scen: 'nehir',
+   intro: 'Eski bir taş köprü nehrin iki yakasını bağlıyor. Köprüyü tutan geçişi tutar.'},
   // Nehir Boyları (güney)
   {id: 'degirmen', name: 'Değirmen Köyleri', land: 1, x: .25, y: .82, scen: 'kitlik',
    intro: 'Kuraklık vurmuş; nehir boyundaki her köy altın değerinde.'},
@@ -3084,6 +3094,16 @@ const REGIONS = [
    intro: 'Kıyıdaki balıkçı köyleri sınırlarını sonuna kadar savunacak.'},
   {id: 'kiyi', name: 'Kıyı Adaları', land: 1, x: .53, y: .86, scen: 'takimada',
    intro: 'Kıyının açığında irili ufaklı adalar. Bir adadan ötekine kayıkla geçmek gerekecek.'},
+  {id: 'sogutlu', name: 'Söğütlü', land: 1, x: .3, y: .92, scen: 'akin',
+   intro: 'Söğütlerin gölgesindeki köyler. Çabuk davranmazsan komşular önce davranır.'},
+  {id: 'kamisli', name: 'Kamışlı Ova', land: 1, x: .42, y: .7, scen: 'nehir',
+   intro: 'Kamışlıklarla bölünmüş bir ova. Sulak toprakta her adım pahalı.'},
+  {id: 'sazliGol', name: 'Sazlı Göl', land: 1, x: .49, y: .77, scen: 'takimada',
+   intro: 'Gölün ortasındaki adacıklar, kıyıdaki köyleri birbirinden ayırıyor.'},
+  {id: 'nehirAgzi', name: 'Nehir Ağzı', land: 1, x: .61, y: .78, scen: 'bas',
+   intro: 'Nehrin denize döküldüğü yerde bir liman beyi hüküm sürüyor. Onun sancağı düşmeden liman teslim olmaz.'},
+  {id: 'comlekci', name: 'Çömlekçi Köyü', land: 1, x: .23, y: .67, scen: 'klasik',
+   intro: 'Kil ocaklarının çevresine kurulmuş köyler. Her biri sınırını sonuna kadar savunacak.'},
   // Ovalar (orta)
   {id: 'tozluYol', name: 'Tozlu Yol', land: 2, x: .3, y: .42, scen: 'akin',
    intro: 'Ovayı ikiye bölen kervan yolu. Burada hızlı davranan kazanır.'},
@@ -3094,6 +3114,16 @@ const REGIONS = [
   {id: 'bozkir', name: 'Bozkır', land: 2, x: .58, y: .66, scen: 'kardes',
    intro: 'İki bozkır hanı kardeş: birbirlerine saldırmazlar, sana karşı birlikte dururlar.'},
   {id: 'hanOrdugah', name: 'Han Ordugâhı', land: 2, x: .53, y: .5, boss: true},
+  {id: 'yelDegirmen', name: 'Yel Değirmenleri', land: 2, x: .36, y: .33, scen: 'kitlik',
+   intro: 'Rüzgârın döndürdüğü değirmenler ovanın ekmeğini öğütüyor. Her köy çok değerli.'},
+  {id: 'atliOba', name: 'Atlı Oba', land: 2, x: .34, y: .53, scen: 'akin',
+   intro: 'Atlı obalar hızlı vurup hızlı kaçar. Kısa bir savaş seni bekliyor.'},
+  {id: 'bugdayHani', name: 'Buğday Hanı', land: 2, x: .5, y: .6, scen: 'kardes',
+   intro: 'İki buğday tüccarı kardeş; ambarlarını birlikte korurlar.'},
+  {id: 'kurakTepe', name: 'Kurak Tepe', land: 2, x: .52, y: .38, scen: 'dag',
+   intro: 'Ovanın ortasında yükselen çıplak tepeler. Yukarıdaki düşmanı indirmek zor.'},
+  {id: 'ruzgarli', name: 'Rüzgârlı Düzlük', land: 2, x: .62, y: .55, scen: 'fetih',
+   intro: 'Rüzgârın hiç dinmediği düzlükte üç bey hüküm sürüyor. Hiçbiri teslim olmayacak: hepsini yık.'},
   // Kuzey (dağlık kol)
   {id: 'buzdis', name: 'Buzdiş Geçidi', land: 3, x: .29, y: .17, scen: 'dag',
    intro: 'Karlı dağların arasında dar geçitler. Tepeleri tutan üstün gelir.'},
@@ -3104,6 +3134,16 @@ const REGIONS = [
   {id: 'demirDag', name: 'Demir Dağ', land: 3, x: .6, y: .1, scen: 'kitlik',
    intro: 'Kışın ortası, erzak kıt: dağ köylerinin her biri hayat demek.'},
   {id: 'demirSinir', name: 'Demir Sınır', land: 3, x: .65, y: .27, boss: true},
+  {id: 'ayazli', name: 'Ayazlı Köy', land: 3, x: .2, y: .1, scen: 'hayatta',
+   intro: 'Kuzeyin ayazında köyler ilk yabancıya hep birlikte saldırır. Ayakta kalman yeter.'},
+  {id: 'buzGolu', name: 'Buz Gölü', land: 3, x: .34, y: .07, scen: 'takimada',
+   intro: 'Donmuş gölün ortasındaki adalar, ancak buz tutan yerlerden geçilerek alınır.'},
+  {id: 'kartal', name: 'Kartal Yuvası', land: 3, x: .47, y: .07, scen: 'dag',
+   intro: 'Kayalıkların tepesine kurulmuş bir kale. Kartallar bile güçlükle ulaşır.'},
+  {id: 'demirOcak', name: 'Demir Ocakları', land: 3, x: .7, y: .08, scen: 'kale',
+   intro: 'Lejyonun silahlarının döküldüğü ocaklar. Ocakları tutan, demiri tutar.'},
+  {id: 'sogukVadi', name: 'Soğuk Vadi', land: 3, x: .48, y: .28, scen: 'orman',
+   intro: 'Çam ormanlarıyla kaplı soğuk bir vadi. İlerlemek yavaş ve pahalı.'},
   // İmparatorluk (doğu)
   {id: 'yediTepe', name: 'Yedi Tepe', land: 4, x: .72, y: .45, scen: 'kardes',
    intro: 'Yedi Tepe\'nin iki beyi kardeş; birbirlerine asla saldırmazlar.'},
@@ -3116,6 +3156,16 @@ const REGIONS = [
   {id: 'ebedi', name: 'Ebedi Kale', land: 4, x: .82, y: .64, scen: 'kale',
    intro: 'İmparatorluğun en eski kalesi. Onu tutan, başkentin kapısını tutar.'},
   {id: 'taht', name: 'Taht Şehri', land: 4, x: .91, y: .48, boss: true},
+  {id: 'mermer', name: 'Mermer Saray', land: 4, x: .84, y: .4, scen: 'bas',
+   intro: 'İmparatorun veziri bu sarayda oturuyor. Vezirin sancağını sen düşürmelisin.'},
+  {id: 'altinKapi', name: 'Altın Kapı', land: 4, x: .78, y: .53, scen: 'kale',
+   intro: 'Başkentin altın kaplı kapısı. Kapıyı tutan, şehrin yolunu tutar.'},
+  {id: 'kuleSehri', name: 'Kule Şehri', land: 4, x: .74, y: .32, scen: 'hayatta',
+   intro: 'Kulelerden her yöne ok yağıyor. Bu kuşatmada ayakta kalan kazanır.'},
+  {id: 'gumusLiman', name: 'Gümüş Liman', land: 4, x: .95, y: .13, scen: 'takimada',
+   intro: 'İmparatorluk donanmasının kuzey limanı; üsler adalara dağılmış.'},
+  {id: 'sarayBahce', name: 'Saray Bahçeleri', land: 4, x: .9, y: .7, scen: 'kardes',
+   intro: 'Bahçeleri iki prens paylaşıyor; birbirlerine kardeş gibi bağlılar.'},
 ];
 const REGMAP = Object.fromEntries(REGIONS.map(r => [r.id, r]));
 const BATTLES = REGIONS.filter(r => !r.home);
@@ -3155,7 +3205,7 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;',
 // ============ BAŞARIMLAR ============
 const ACH = [
   {id: 'seferIlk', icon: '🚩', name: 'İlk Adım', desc: 'Seferde ilk bölgeni fethet.'},
-  {id: 'seferYari', icon: '🏰', name: 'Yarı Yol', desc: 'Seferde 12 bölge fethet.'},
+  {id: 'seferYari', icon: '🏰', name: 'Yarı Yol', desc: 'Seferde bölgelerin yarısını fethet.'},
   {id: 'seferSon', icon: '👑', name: 'Dünyanın Hükümdarı', desc: 'Seferi bitir: Taht Şehri\'ni al, Son İmparator\'u yen.'},
   {id: 'kusursuz', icon: '🌟', name: 'Kusursuz Hükümdar', desc: 'Seferde bütün bölgelerden üç yıldız al.'},
   {id: 'inatci', icon: '🐂', name: 'İnatçı', desc: 'Seferde aynı bölgede 3 kez yenildikten sonra orayı fethet.'},
@@ -3353,7 +3403,7 @@ function onGameEnd(win) {
         const L = LANDS[R.land];
         for (const id of BOSSES[L.boss].unlock) if (!PROG.powOpen[id]) { PROG.powOpen[id] = 1; setTimeout(() => toastPower(id), 900); }
       }
-      if (ownedN(run) >= 12) unlock('seferYari');
+      if (ownedN(run) >= Math.ceil(BATTLES.length / 2)) unlock('seferYari');   // bölgelerin yarısı
       if (R.id === 'taht' && !run.done) { run.done = true; PROG.runsDone = (PROG.runsDone || 0) + 1; unlock('seferSon'); }
       if (BATTLES.every(q => run.owned[q.id] === 3)) unlock('kusursuz');
     } else run.fails[ch] = (run.fails[ch] || 0) + 1;
@@ -3399,8 +3449,9 @@ const canAttack = (r, id) => !(id in r.owned) && buildWorld().adj[id].some(n => 
 // Kara, bölge merkezlerinin çevresinde birleşen kütlelerden oluşur; kıyı gürültüyle girintili çıkıntılı, kenarlar ve
 // körfezler deniz. Arazi kare bir haritada üretilir, ekranda yatay bir şerit (WORLD_Y0'dan WORLD_H satır, 3:2) kullanılır.
 // Bölgelerin x, y'si bu şeritte 0–1; uzaklıklar ekrandaki oranla (yatay WORLD_AR kat) ölçülür.
-const WORLD_N = 240, WORLD_Y0 = 40, WORLD_H = 160, WORLD_SEED = 20261019, WORLD_AR = WORLD_N / WORLD_H, WORLD_PPC = 12;
-let WORLD_CORE = .1;   // yerleşimin çevresindeki kesin kara yarıçapı (şerit yüksekliği cinsinden; kıyısı gürültüyle bozulur)
+// 51 bölge (50 savaş): harita 340×226; bir kare ekranda en fazla 10 px çizilir (dev resim belleği şişirmesin)
+const WORLD_N = 340, WORLD_Y0 = 57, WORLD_H = 226, WORLD_SEED = 20261019, WORLD_AR = WORLD_N / WORLD_H, WORLD_PPC = 10;
+let WORLD_CORE = .075, WORLD_BLOB = .12;   // yerleşimin çevresindeki kesin kara yarıçapı (şerit yüksekliği cinsinden; kıyısı gürültüyle bozulur)
 // körfezler ve iç denizler: x, y, yarıçap (şerit yüksekliği cinsinden); kıyıları gürültüyle bozulur
 const GULFS = [{x: .06, y: .14, r: .12}, {x: .63, y: .9, r: .1}, {x: .4, y: .27, r: .045}, {x: .97, y: .88, r: .14}, {x: .2, y: .97, r: .07}];
 let WD = null;
@@ -3416,7 +3467,7 @@ function buildWorld() {
     for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
       const [u, v] = uv(x, y);
       let s = -1;
-      for (const R of REGIONS) s = Math.max(s, 1 - dist(u, v, R) / .15);
+      for (const R of REGIONS) s = Math.max(s, 1 - dist(u, v, R) / WORLD_BLOB);
       const wob = 1 + (gn(u * 7, v * 5, 3) - .5) * 1.1;   // körfez kıyıları daire gibi olmasın
       for (const G of GULFS) s -= Math.max(0, 1 - dist(u, v, G) / (G.r * wob)) * 1.6;
       s += (cn(u * 4, v * 2.7, 4) - .5) * .9 + (fn(u * 18, v * 12, 3) - .5) * .35;
