@@ -3400,6 +3400,7 @@ const canAttack = (r, id) => !(id in r.owned) && buildWorld().adj[id].some(n => 
 // körfezler deniz. Arazi kare bir haritada üretilir, ekranda yatay bir şerit (WORLD_Y0'dan WORLD_H satır, 3:2) kullanılır.
 // Bölgelerin x, y'si bu şeritte 0–1; uzaklıklar ekrandaki oranla (yatay WORLD_AR kat) ölçülür.
 const WORLD_N = 240, WORLD_Y0 = 40, WORLD_H = 160, WORLD_SEED = 20261019, WORLD_AR = WORLD_N / WORLD_H, WORLD_PPC = 12;
+let WORLD_CORE = .1;   // yerleşimin çevresindeki kesin kara yarıçapı (şerit yüksekliği cinsinden; kıyısı gürültüyle bozulur)
 // körfezler ve iç denizler: x, y, yarıçap (şerit yüksekliği cinsinden); kıyıları gürültüyle bozulur
 const GULFS = [{x: .06, y: .14, r: .12}, {x: .63, y: .9, r: .1}, {x: .4, y: .27, r: .045}, {x: .97, y: .88, r: .14}, {x: .2, y: .97, r: .07}];
 let WD = null;
@@ -3419,9 +3420,14 @@ function buildWorld() {
       const wob = 1 + (gn(u * 7, v * 5, 3) - .5) * 1.1;   // körfez kıyıları daire gibi olmasın
       for (const G of GULFS) s -= Math.max(0, 1 - dist(u, v, G) / (G.r * wob)) * 1.6;
       s += (cn(u * 4, v * 2.7, 4) - .5) * .9 + (fn(u * 18, v * 12, 3) - .5) * .35;
+      // her yerleşimin çevresi sağlam kara: iç deniz ve körfezler yerleşimleri yutmasın, aralarında kalsın
+      // (arazi üreticisinin kendi denizi de burada karaya döner)
+      let dmin = Infinity; for (const R of REGIONS) dmin = Math.min(dmin, dist(u, v, R));
+      const core = dmin < WORLD_CORE * (1 + (gn(u * 6 + 3, v * 4 - 5, 3) - .5) * 1.1 + (fn(u * 26 + 1, v * 17, 2) - .5) * .6);
       const edge = Math.min(u * WORLD_AR, v, (1 - u) * WORLD_AR, 1 - v);   // şeridin kenarına uzaklık
       s -= Math.max(0, .06 - edge) * 10;
-      if (s < .1) terr[y * N + x] = T.DENIZ;
+      if (core) { if (terr[y * N + x] === T.DENIZ) terr[y * N + x] = T.CAYIR; }
+      else if (s < .1) terr[y * N + x] = T.DENIZ;
     }
     cleanSmall();
     // takımadalar: Kıyı Adaları ve İmparatorluk Limanı çevresi
