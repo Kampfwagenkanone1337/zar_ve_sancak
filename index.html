@@ -165,9 +165,9 @@
   #contBox { background:#dbe8d2; border:2px solid var(--ok); padding:12px; margin:12px 0; }
   #contBox button { background:var(--ok); width:100%; } #contBox button:hover { background:#365e2d; }
   body:has(#menu:not(.hidden), #howto:not(.hidden):not(.ingame), #settings:not(.hidden):not(.ingame), #setup:not(.hidden), #camp:not(.hidden),
-    #story:not(.hidden), #xfer:not(.hidden), #achv:not(.hidden), #picks:not(.hidden), #runEv:not(.hidden)) #game { visibility:hidden; }
+    #xfer:not(.hidden), #achv:not(.hidden), #picks:not(.hidden), #world:not(.hidden)) #game { visibility:hidden; }
   /* menü ekranlarında arkada harita (body arka planı) görünür */
-  #howto, #settings, #setup, #camp, #story, #xfer, #achv, #picks, #runEv { background:transparent; }
+  #howto, #settings, #setup, #camp, #xfer, #achv, #picks { background:transparent; }
   /* oyun içi (Esc) menüsü ve oradan açılan Ayarlar / Nasıl Oynanır: oyun arkada karartılmış olarak görünür */
   #pause, #howto.ingame, #settings.ingame { background:rgba(43,33,24,.55); }
   .btns.wrap { flex-wrap:wrap; }
@@ -215,32 +215,27 @@
   .pickBar { position:sticky; bottom:-30px; background:var(--panel); padding:12px 0 0; margin-top:12px; }
   .hidden { display:none !important; }
   /* SEFER: yol haritası (yukarıdan aşağı: 4 adım + patron), çanta, olay penceresi */
-  #runBag { display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px; font-size:15px; margin:4px 0 6px; }
-  #runBag .bagL { font-weight:700; margin-left:6px; }
-  #runBag .chip { display:inline-flex; align-items:center; gap:4px; background:var(--paper2); border:1px solid var(--line); padding:2px 8px; cursor:default; }
-  #runBag .bagNext { width:100%; font-size:14px; color:var(--accent); }
-  #runMap svg { display:block; width:100%; max-height:58vh; margin:0 auto; }
-  #runMap line { stroke:#b8a888; stroke-width:3; stroke-dasharray:7 7; }
-  #runMap line.cand { stroke:var(--ink); stroke-dasharray:4 6; }
-  #runMap line.done { stroke:var(--accent); stroke-width:4; stroke-dasharray:none; }
-  .rn > circle { fill:var(--paper2); stroke:var(--ink); stroke-width:2.5; }
-  .rn .ic { font-size:22px; text-anchor:middle; }
-  .rn.t-boss .ic { font-size:28px; }
-  .rn .lb { font:700 14px var(--hand); text-anchor:middle; fill:var(--ink); paint-order:stroke; stroke:var(--panel); stroke-width:4px; }
-  .rn.done > circle { fill:#e7c9a0; stroke:var(--accent); stroke-width:3.5; }
-  .rn.can { cursor:pointer; }
-  .rn.can > circle { stroke:var(--accent); stroke-width:4; animation:rnPulse 1.4s ease-in-out infinite; }
-  .rn.can:hover > circle { fill:#fff3dc; }
-  .rn.off { opacity:.42; }
-  @keyframes rnPulse { 50% { stroke-width:7; } }
-  #runHint { min-height:46px; font-size:15px; line-height:1.4; background:var(--hl); border-left:3px solid var(--accent); padding:8px 12px; margin-top:6px; text-align:left; }
-  #runEv .pgrid { margin:12px 0 4px; text-align:left; }
-  #runEv .pw .rare { font:700 11px var(--hand); letter-spacing:.08em; text-transform:uppercase; color:#fffaf0; background:var(--accent); padding:1px 6px; margin-left:6px; }
-  #runEv .pw .cat { font:700 11px var(--hand); letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-left:6px; }
-  .evCh { display:flex; flex-direction:column; gap:10px; max-width:460px; margin:14px auto 4px; }
-  .evDice { width:84px; height:84px; margin:14px auto; display:flex; align-items:center; justify-content:center; font-size:38px; font-weight:700;
-    background:var(--beige); clip-path:polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
-  .evDice.ok { background:var(--ok); color:#fffaf0; } .evDice.bad { background:var(--bad); color:#fffaf0; }
+  /* sefer: tam ekran dünya haritası (oyun ekranı gibi: solda harita, sağda paneller) */
+  #world { position:fixed; inset:0; z-index:5; display:flex; gap:20px; padding:16px 22px 22px 16px; }
+  #wMapWrap { flex:1; position:relative; min-width:0; border:3px solid var(--ink); box-shadow:6px 6px 0 var(--ink); background:#1d3d58; overflow:hidden; }
+  #worldMap { cursor:grab; }
+  #wHint { position:absolute; left:10px; bottom:12px; font-size:15px; color:var(--ink); background:rgba(242,233,212,.94); zoom:var(--ui, 1);
+    border:2px solid var(--ink); box-shadow:3px 3px 0 var(--ink); padding:5px 12px; pointer-events:none; }
+  #wZoom { position:absolute; right:12px; bottom:12px; display:flex; flex-direction:column; gap:6px; zoom:var(--ui, 1); }
+  #wZoom button { width:42px; height:42px; padding:0; font-size:20px; flex:none; color:var(--ink); background:var(--beige); }
+  #wZoom button:hover { background:#efe1bf; }
+  #wPanel { width:360px; flex-shrink:0; display:flex; flex-direction:column; gap:12px; overflow-y:auto; padding:2px 10px 12px 2px; zoom:var(--ui, 1); }
+  #wPanel h2 { margin:0 0 4px; font-size:28px; display:flex; align-items:center; gap:8px; }
+  #campInfo { font-size:15px; line-height:1.5; }
+  .wBtns { display:flex; flex-direction:column; gap:8px; }
+  .wBtns button { width:100%; }
+  #regPanel h3 { margin:0 0 6px; font-size:26px; display:flex; align-items:center; gap:8px; }
+  #regPanel .rpLand { font:700 13px var(--hand); letter-spacing:.1em; text-transform:uppercase; color:var(--accent); }
+  #regPanel .story { margin:6px 0 10px; font-size:15px; }
+  #regPanel .note { font-size:14px; line-height:1.45; margin:6px 0; }
+  #regPanel .siege { font-size:14px; line-height:1.45; background:var(--hl); border-left:3px solid var(--accent); padding:7px 10px; margin:8px 0; }
+  #regPanel .btns { margin-top:12px; }
+  #regPanel .btns button { width:100%; }
   .goalBig { font-size:20px; font-weight:700; color:var(--ink); margin:2px 0 8px; }
   /* arayüz ölçeği (--ui, JS ayarlar): 1080p'de 1, 1440p'de ~1.33. Harita tuvali ölçeklenmez, sadece paneller ve pencereler */
   #panel, .modal, #toasts, #zoomBar, #hint { zoom:var(--ui, 1); }
@@ -349,7 +344,7 @@
       <li>Fare tekerleği ile yakınlaş/uzaklaş; sağ tuş, orta tuş ya da Boşluk tuşu basılıyken sürükleyerek haritayı kaydır.</li>
       <li>Oyun her turda <b>otomatik kaydedilir</b>; kapatıp sonra devam edebilirsin.</li>
     </ul></div>
-    <p><b><i data-ic="sefer" data-sz="18"></i> Sefer:</b> Krallığına bir ad ver, bir güç seç ve beş perdelik yola çık. Her adımda bağlı duraklardan birini seçersin: <i data-ic="durakSavas" data-sz="16"></i> savaş, <i data-ic="durakZor" data-sz="16"></i> zorlu savaş, <i data-ic="koy" data-sz="16"></i> köy, <i data-ic="durakOlay" data-sz="16"></i> olay; her perdenin sonunda <i data-ic="durakPatron" data-sz="16"></i> bir patron. Savaşlar senaryoludur (her birinin kendi haritası ve kazanma şartı var). Ne kadar hızlı kazanırsan o kadar çok <i data-ic="yildiz" data-sz="16"></i> alırsın ve ödülün o kadar iyi olur: yeni <b>güçler</b> ve küçük kalıcı bonuslar veren <b>emanetler</b> sefer boyunca seninle gelir. Kaybedersen aynı savaşı yeni bir haritada tekrar oynarsın. Patron yenince güçler kalıcı olarak açılır.</p>
+    <p><b><i data-ic="sefer" data-sz="18"></i> Sefer:</b> Krallığına bir ad ver ve dünyayı fethet. Dünya beş ülkeye, 26 bölgeye bölünmüş; kendi bölgelerine <b>komşu</b> bir bölgeye saldırırsın (haritayı sürükleyip tekerlekle yakınlaştırabilirsin). Her bölge, kendi haritası ve kazanma şartı olan bir senaryolu savaştır. Kazanınca bölge senin olur ve ne kadar hızlı kazandıysan o kadar çok <i data-ic="yildiz" data-sz="16"></i> alırsın. Her ülkenin başkentinde bir <i data-ic="durakPatron" data-sz="16"></i> hükümdar var: başkent çok güçlüdür, ama o ülkenin çevre bölgelerini aldıkça <b>kuşatma</b> sıkılaşır ve hükümdar zayıflar. Başkenti alınca yeni güçler kalıcı olarak açılır. Kaybedersen bölge düşmanda kalır; istediğin zaman tekrar saldırırsın. Taht Şehri'ni alınca sefer biter.</p>
     <p><b><i data-ic="d20" data-sz="18"></i> Serbest Oyun:</b> Harita, rakip sayısı, zorluk gibi her şeyi sen ayarlarsın; tüm güçler açıktır. Aynı bilgisayarda arkadaşlarınla sırayla ya da co-op oynayabilirsin.</p>
     <div class="btns"><button class="sec" id="howBack">◀ Ana Menü</button></div>
   </div>
@@ -434,42 +429,34 @@
 </div>
 
 <!-- Sefer: krallık adı ve bölüm listesi -->
+<!-- Sefer: tam ekran dünya haritası -->
+<div id="world" class="hidden">
+  <div id="wMapWrap">
+    <canvas id="worldMap"></canvas>
+    <div id="wHint"><i data-ic="fare" data-sz="16"></i> Tıkla: bölge seç · Sürükle: kaydır · Tekerlek: yakınlaştır</div>
+    <div id="wZoom">
+      <button id="wzIn" title="Yakınlaştır">＋</button>
+      <button id="wzOut" title="Uzaklaştır">－</button>
+      <button id="wzFit" title="Bütün dünyayı göster">⤢</button>
+      <button id="wzMe" title="Seçili bölgeye git"><i data-ic="baskent" data-sz="22"></i></button>
+    </div>
+  </div>
+  <div id="wPanel">
+    <div class="box paper"><h2 id="wTitle"></h2><div id="campInfo"></div></div>
+    <div class="box paper" id="regPanel"></div>
+    <div class="box paper wBtns"><button class="sec" id="campBack">◀ Ana Menü</button><button class="sec" id="xferOpen"><i data-ic="aktar" data-sz="20"></i> İlerlemeyi aktar</button></div>
+  </div>
+</div>
+
 <div class="modal hidden" id="camp">
   <div class="card paper wide">
     <h1 id="campTitle">Sefer</h1>
-    <div id="campName" class="hidden">
-      <p>Her büyük imparatorluk küçük bir toprakla başlar. Beş perdelik bir yolculuk: her adımda yolunu sen seçersin, savaştıkça güç ve emanet toplarsın; her perdenin sonunda bir hükümdar seni bekler. Kaybettiğin savaşı tekrar oynarsın; sefer yenilgiyle bitmez.</p>
+    <div id="campName">
+      <p>Her büyük imparatorluk küçük bir vadide başlar. Önünde beş ülkeye bölünmüş bir dünya var: komşu bölgelere saldırarak bölge bölge fethedersin. Her ülkenin başkentinde güçlü bir hükümdar seni bekler; çevresini aldıkça başkent zayıflar. Kaybettiğin bölgeye istediğin zaman tekrar saldırabilirsin.</p>
       <p>Krallığına bir ad ver:</p>
       <input id="realmInput" class="txt" maxlength="28" placeholder="Örn. Demir Beylik">
       <div class="btns"><button class="sec" id="campNameBack">◀ Geri</button><button id="realmOk">Krallığı kur ▶</button></div>
     </div>
-    <div id="campList" class="hidden">
-      <p id="campInfo"></p>
-      <div id="runBag"></div>
-      <div id="runMap"></div>
-      <div id="runHint"></div>
-      <div class="btns wrap"><button class="sec" id="campBack">◀ Ana Menü</button><button class="sec" id="xferOpen"><i data-ic="aktar" data-sz="20"></i> İlerlemeyi aktar</button></div>
-    </div>
-  </div>
-</div>
-
-<!-- Sefer: ödül, köy, olay, başlangıç gücü, sefer sonu -->
-<div class="modal hidden" id="runEv">
-  <div class="card paper wide" style="text-align:center">
-    <h2 id="evTitle"></h2>
-    <div id="evText" class="story"></div>
-    <div id="evBody"></div>
-    <div id="evBtns" class="btns"></div>
-  </div>
-</div>
-
-<!-- Bölüm girişi -->
-<div class="modal hidden" id="story">
-  <div class="card paper" style="text-align:center">
-    <h2 id="storyTitle"></h2>
-    <div id="storyText" class="story"></div>
-    <p id="storyCfg" class="note"></p>
-    <div class="btns"><button class="sec" id="storyBack">◀ Sefer haritası</button><button id="storyGo">Savaşa başla</button></div>
   </div>
 </div>
 
@@ -940,9 +927,9 @@ const TUNE = {
   // (simülasyon, 200'er oyun, 4 ülke: kaleye yönelen saldırı %18 → %48, kalenin ilk alındığı tur 9 → 7, kale hiç alınmayan oyun %9 → %3)
   kaleAI: true, kaleVal: 80, kaleNear: 4,                   // ortalamanın yarısından küçük ülkenin hedef değeri çarpanı (1 = kapalı)
   sancak: 10, sancakSize: 5,  // sancağa saldırıda hedef zara eklenen (simülasyon: tek başına sancak ~%35) · sancak bloğunun kenarı
+  npcSeaMax: 1 / 3, npcWasteMax: 0.5,   // NPC aday alanı: en çok bu oranda deniz · deniz + kendi toprağı en çok bu oranda (yoksa denize saldırıyormuş gibi görünür)
 };
 const has = (p, id) => p && p.powers.includes(id);
-const rel = (p, id) => !!(p && p.relics && p.relics.includes(id));   // seferde oyuncunun emaneti
 
 // ============ KURULUM ============
 const cfg = {humans: 1, coop: true, npc: 3, start: 25, map: 100, win: 0.5, speed: 2, turns: 30, fog: false, npcPowers: true, diff: 'normal', scen: 'klasik'};
@@ -1081,7 +1068,7 @@ function renderSetup() {
 function showSetup() {
   hideAll(); cfg.chapter = null;
   // seferden kalan ayarlar serbest oyuna taşınmasın
-  for (const k of ['relics', 'runNext', 'enemies', 'campLabel']) delete cfg[k];
+  for (const k of ['enemies', 'campLabel', 'bossRing']) delete cfg[k];
   if (!SCMAP[cfg.scen] || SCMAP[cfg.scen].goal === 'boss') { cfg.scen = 'klasik'; applyScen(); }
   fixCfg(); renderSetup(); $('setup').classList.remove('hidden');
 }
@@ -1090,7 +1077,7 @@ function showSetup() {
 let picks = [], pickIdx = 0, chosen = [];
 function openPicks() {
   picks = []; pickIdx = 0; chosen = [];
-  ['setup', 'story', 'camp'].forEach(id => $(id).classList.add('hidden'));   // sefer girişinden gelince o pencere de kapansın
+  ['setup', 'camp', 'world'].forEach(id => $(id).classList.add('hidden'));   // seferden gelince sefer haritası da kapansın
   renderPicks(); $('picks').classList.remove('hidden');
 }
 function renderPicks() {
@@ -1098,8 +1085,8 @@ function renderPicks() {
   $('pickTitle').textContent = `${humanName(pickIdx)}: ${camp ? 'en fazla 2 güç seç' : '2 güç seç'}`;
   $('pickSw').style.background = HUMAN_COLORS[pickIdx];
   $('pickHelp').innerHTML = camp
-    ? (openN ? `Seferde güçler patron yendikçe ve başarım kazandıkça açılır (<b>${openN}/${POWERS.length}</b> açık). Farklı kategorilerden 1 ya da 2 güç seç.`
-             : 'Seferde güçler patron yendikçe ve başarım kazandıkça açılır. Henüz açık gücün yok: <b>Güçsüz oyna</b> ile başla.')
+    ? (openN ? `Seferde güçler ülkelerin başkentlerini aldıkça ve başarım kazandıkça açılır (<b>${openN}/${POWERS.length}</b> açık). Farklı kategorilerden 1 ya da 2 güç seç.`
+             : 'Seferde güçler ülkelerin başkentlerini aldıkça ve başarım kazandıkça açılır. Henüz açık gücün yok: <b>Güçsüz oyna</b> ile başla.')
     : 'Tüm güçler aşağıda. <b>Farklı kategorilerden 2 tane</b> seç; oyun boyunca senin olacaklar.';
   let html = '';
   for (const cat of [...new Set(POWERS.map(p => p.cat))]) {
@@ -1202,23 +1189,9 @@ function newGame(humanPicks) {
   if (sc0.goal === 'boss' && npcIds.length) {
     const B = BOSSES[sc0.boss], b = players[npcIds[0]];
     SC.boss = b.id; b.bossKind = sc0.boss; b.name = B.name;
-    b.ring = Math.max(2, Math.round(s * B.ring));
+    b.ring = Math.max(2, Math.round(s * (cfg.bossRing || B.ring)));   // seferde kuşatmaya göre
     if (B.powers) b.powers = [...B.powers];
     if (B.allies) SC.allies = [...npcIds].sort((x, y) => x - y);   // vasallar patronla müttefik
-  }
-  // sefer: emanetler ve bir önceki duraktan gelen etkiler (olaylar)
-  if (cfg.chapter != null) {
-    const nx = cfg.runNext || {};
-    for (const p of players) if (p.human) {
-      p.relics = [...(cfg.relics || [])];
-      p.ring = (p.ring || 0) + (rel(p, 'eskiHarita') ? 1 : 0) + (nx.ring || 0);
-      if (nx.gazi) p.tmpGazi = true;
-    }
-    if (nx.foeRing) for (const id of npcIds) players[id].ring = (players[id].ring || 0) + nx.foeRing;
-    if (cfg.relics && cfg.relics.includes('casus')) {
-      const v = npcIds.map(id => players[id]).filter(q => q.powers.length && q.id !== SC.boss)[0];
-      if (v) { SC.spied = v.id; v.powers = []; }
-    }
   }
   // başlangıç bloğunun etrafına halka: 🌱 Büyük Başlangıç ve senaryonun büyük başlattığı rakipler
   const ringOf = p => (has(p, 'buyuk') ? Math.max(2, Math.round(s * TUNE.buyuk)) : 0) + (p.ring || 0);
@@ -1267,8 +1240,6 @@ function newGame(humanPicks) {
   if (sc0.id !== 'klasik') log(`${IC('senaryo', 16)} Senaryo: <b>${sc0.name}</b>. ${sc0.desc}`);
   if (SC.allies) log(`${IC('muttefik', 16)} ${SC.allies.map(id => tag(players[id])).join(', ')} müttefik: birbirlerine saldırmazlar.`);
   if (SC.boss != null) log(`${IC('durakPatron', 16)} Patron: ${tag(players[SC.boss])}. ${BOSSES[players[SC.boss].bossKind].desc}`);
-  if (SC.spied != null) log(`${IC('emCasus', 16)} Casus: ${tag(players[SC.spied])} güçlerini bu savaşta kullanamıyor.`);
-  for (const p of players) if (p.relics && p.relics.length) log(`${tag(p)} emanetleri: ${p.relics.map(id => RELMAP[id].icon + ' ' + RELMAP[id].name).join(', ')}`);
   for (const p of players) if (p.powers.length) log(`${tag(p)} güçleri: ${p.powers.map(id => PW[id].icon + ' ' + PW[id].name).join(', ')}`);
   log(`${IC('kura', 16)} Kura: ilk sıra ${tag(players[firstP])}.`);
   if (players[firstP].human && cfg.humans === 1) toast(`${IC('kura', 18)} Kura sende: <b>ilk sen başlıyorsun!</b>`);
@@ -1335,16 +1306,16 @@ function analyze(r, pid, noFlags = false) {
   const p = players[pid];
   let taken = 0, enemy = 0, hidden = 0, touches = false, shielded = 0, cost = 0, costN = 0, river = false, hillE = false;
   const tc = new Array(TERRAIN.length).fill(0), takenIdx = [];
-  let seaIn = false, objN = 0, objFree = false, bossRiver = false;
+  let seaIn = false, objN = 0, objFree = false, bossRiver = false, seaN = 0, ownN = 0;
   const by = {}, fogCheck = vis && p.human, flags = noFlags ? [] : flagsIn(r, pid), ob = SC.obj;
   for (let y = r.y0; y <= r.y1; y++) for (let x = r.x0; x <= r.x1; x++) {
     const i = y * M + x, o = own[i];
-    if (o === pid) { touches = true; continue; }
+    if (o === pid) { touches = true; ownN++; continue; }
     if (ally(pid, o)) continue;
     // sancak ancak bütünüyle seçilince alınabilir; yarım seçilen sancağın kareleri sayılmaz
     if (flagAt && flagAt[i] >= 0 && !flags.includes(flagAt[i])) { shielded++; continue; }
     const t = terr ? terr[i] : T.CAYIR;
-    if (t === T.DENIZ) { seaIn = true; continue; }     // deniz alınamaz
+    if (t === T.DENIZ) { seaIn = true; seaN++; continue; }     // deniz alınamaz
     taken++; tc[t]++; takenIdx.push(i);
     if (ob && x >= ob.x0 && x <= ob.x1 && y >= ob.y0 && y <= ob.y1) { objN++; if (o < 0) objFree = true; }
     const c = TERRAIN[t].cost; cost += c; if (o < 0) costN += c;
@@ -1380,15 +1351,13 @@ function analyze(r, pid, noFlags = false) {
   if (has(p, 'fatih') && TUNE.fatih) mods.push(['Fatih', -TUNE.fatih, 'fatih']);
   if (has(p, 'tiran') && TUNE.tiran) mods.push(['Tiran', -TUNE.tiran, 'tiran']);
   for (const f of flags) mods.push([`${players[f].name} sancağı`, TUNE.sancak, 'mSancak']);
-  // sefer: emanetler ve patron kuralları
-  for (const f of flags) if (rel(players[f], 'surlar')) mods.push(['Kalın Surlar', 2, 'emSurlar']);
+  // sefer: patron kuralları
   if (bossRiver) mods.push(['Değirmenci Kral\'ın nehri', 2, 'patronNehri']);
-  if (turn <= 3 && (rel(p, 'gaziler') || p.tmpGazi)) mods.push(['Gaziler', -1, 'emGaziler']);
   if (!p.human && diffOf().dc) mods.push(['zorluk', diffOf().dc]);
   const dc = Math.max(2, 1 + mods.reduce((s, m) => s + m[1], 0));
   // hedef 20'yi aşan saldırıyla sancak alınamaz (kritik 20 sancak düşürmez): sancak kareleri korunur, gerisi normal saldırı
   if (flags.length && dc > 20) return {...analyze(r, pid, true), flagTooBig: flags};
-  return {taken, enemy, neutral: taken - enemy, by, touches, hidden, mods, mainDef, dc, flags, shielded, tc, objN,
+  return {taken, enemy, neutral: taken - enemy, by, touches, hidden, mods, mainDef, dc, flags, shielded, tc, objN, seaN, ownN,
     valid: taken > 0 && touches && hidden === 0};
 }
 
@@ -1704,8 +1673,8 @@ function samp(F, u, v) {
 }
 // ---- arazinin önceden çizilmiş resmi (fantastik harita, yukarıdan bakış) ----
 // Simge yok: dağlar yükseklikten hesaplanan kabartma ışığıyla, ormanlar ağaç tepesi dokusuyla, köyler çatılarla görünür.
-function buildTerrainImage() {
-  PPC = Math.max(5, Math.min(16, Math.floor(2400 / M)));
+function buildTerrainImage(ppc) {
+  PPC = ppc || Math.max(5, Math.min(16, Math.floor(2400 / M)));
   const P = PPC, W = M * P, N = M * M, c = document.createElement('canvas'); c.width = c.height = W;
   const g = c.getContext('2d');
   // kıyıya uzaklık: denizde sığlık, karada kumsal
@@ -2072,7 +2041,7 @@ function resolveAttack(pid, r, a, useDbl) {
       (victims ? ` (${victims} topraklarından)` : '') + '.' + extra;
     for (const f of a.flags) { txt += fellFlag(f, pid); fell.push(f); }
   } else if (!ist && roll === 1 && !has(p, 'sansli')) {
-    const res = takeBlock(pid, a.mainDef, r, Math.ceil((has(p, 'kumarbaz') ? 10 : 5) / (rel(p, 'kirik') ? 2 : 1)));   // 🎲 Kırık Zar: felaket yarı yarıya
+    const res = takeBlock(pid, a.mainDef, r, has(p, 'kumarbaz') ? 10 : 5);   // 🎲 Kırık Zar: felaket yarı yarıya
     txt = `${IC('tutmayan', 16)} ${tag(p)} 1 attı! Felaket: ${res.lost} kare ${a.mainDef >= 0 ? players[a.mainDef].name + ' tarafına' : 'isyancılara'} geçti.`;
     if (res.rect) flash = {r: res.rect, color: '#d6372e'};
   } else {
@@ -2158,7 +2127,7 @@ function countCells() {
     for (let y = v.y0; y <= v.y1 && all; y++) for (let x = v.x0; x <= v.x1; x++) if (own[y * M + x] !== o) { all = false; break; }
     if (all) players[o].vill++;
   }
-  for (const p of players) p.score = p.cells + p.vill * vv * (rel(p, 'muhur') ? 2 : 1) + (sc.ova ? p.ova * (sc.ova - 1) : 0);
+  for (const p of players) p.score = p.cells + p.vill * vv + (sc.ova ? p.ova * (sc.ova - 1) : 0);
   for (const p of players) if (p.alive && p.cells === 0) {
     p.alive = false; log(`${IC('silindi', 16)} ${tag(p)} haritadan silindi!`);
   }
@@ -2335,6 +2304,9 @@ function npcMove() {
     const r = {x0, y0, x1: Math.min(M - 1, x0 + w - 1), y1: Math.min(M - 1, y0 + h - 1)};
     const a = analyze(r, pid);
     if (!a.valid) continue;
+    // anlamsız görünen alanlar düşünülmez: üçte birinden fazlası deniz ya da yarıdan fazlası boşa giden (deniz + kendi toprağı)
+    const area = (r.x1 - r.x0 + 1) * (r.y1 - r.y0 + 1);
+    if (a.seaN > area * TUNE.npcSeaMax || a.seaN + a.ownN > area * TUNE.npcWasteMax) continue;
     let gain = a.neutral;
     for (const k in a.by) {
       const t = players[k];
@@ -2847,7 +2819,7 @@ function drawTear() {
 }
 
 // ============ PANEL ============
-const powerIcons = p => (p.bossKind ? IC('durakPatron') : '') + p.powers.map(id => PW[id].icon).join('') + (p.relics && p.relics.length ? `<span style="font-size:13px">${IC('emanetler', 14)}${p.relics.length}</span>` : '');
+const powerIcons = p => (p.bossKind ? IC('durakPatron') : '') + p.powers.map(id => PW[id].icon).join('');
 function renderPanel() {
   if (!players.length) return;
   const p = players[cur], multi = cfg.humans > 1;
@@ -3074,33 +3046,80 @@ function renderFast() {
 $('fast').onchange = () => { try { localStorage.setItem('toprak-hizli', $('fast').checked ? '1' : '0'); } catch (e) {} renderFast(); };
 renderFast();
 
-// ============ SEFER: dallanan yol, 5 perde (tasarim/SEFER-TASARIM.md) ============
-// Her perde: 4 adım (her adımda 2-3 durak) + patron. Durak: savaş, zorlu savaş, köy, olay, patron.
-// Kaybedilen savaş tekrar oynanır (aynı senaryo, yeni harita); sefer yenilgiyle bitmez. Güçler ve emanetler sefer boyunca taşınır.
-// {K} = krallığın adı.
-const ACTS = [
-  {name: 'Sınır Beylikleri', diff: ['kolay', 'kolay'], npc: [2, 2], map: [60, 75], npcPowers: [false, false], boss: 'sazlik',
-   scens: ['klasik', 'orman', 'akin', 'kitlik', 'takimada', 'dag'],
-   enemies: ['Dağ Kabilesi', 'Orman Kabilesi', 'Taş Obası', 'Kurt Kabilesi', 'Sazlık Köyleri', 'Yamaç Beyliği'],
-   intro: '{K} küçük bir vadide kuruldu. Sınırdaki kabileler ve beylikler, yeni komşularını sınamak için yığılıyor.'},
-  {name: 'Nehir Boyları', diff: ['kolay', 'normal'], npc: [2, 3], map: [75, 75], npcPowers: [false, true], boss: 'degirmen',
-   scens: ['nehir', 'kitlik', 'kardes', 'akin', 'takimada', 'klasik'],
-   enemies: ['Sazlık Beyliği', 'Değirmen Köyleri', 'Kıyı Hanlığı', 'Balıkçı Birliği', 'Su Kalesi', 'Çeltik Beyliği'],
-   intro: 'Vadinin ötesinde verimli nehirler akıyor. Kıyıların beyleri {K} sancağını sularında görmek istemiyor.'},
-  {name: 'Ovalar', diff: ['normal', 'normal'], npc: [3, 3], map: [75, 100], npcPowers: [false, true], boss: 'ova',
-   scens: ['klasik', 'kale', 'bas', 'akin', 'kardes', 'kitlik', 'fetih'],
-   enemies: ['Ova Hanlığı', 'Tozlu Yol Beyliği', 'Altın Başak Krallığı', 'At Sürüsü Obası', 'Kervan Birliği', 'Bozkır Hanlığı'],
-   intro: 'Dağların ardında uçsuz bucaksız ovalar başlıyor. Burada ilk kez gerçek ordularla karşılaşacaksın.'},
-  {name: 'Kuzey ve Demir Sınır', diff: ['normal', 'zor'], npc: [3, 3], map: [100, 100], npcPowers: [true, true], boss: 'demir',
-   scens: ['dag', 'orman', 'hayatta', 'kale', 'bas', 'fetih'],
-   enemies: ['Buzdiş Kalesi', 'Ak Yele Hanlığı', 'Kar Kurdu Klanı', 'Çelik Muhafızlar', 'Paslı Kılıç Ordusu', 'Demir Dağ Beyliği'],
-   intro: 'Kuzeyin buzlu toprakları ve Demir Sınır\'ın ötesi, savaşmak için doğmuş orduların yurdu.'},
-  {name: 'İmparatorluk', diff: ['zor', 'zor'], npc: [3, 4], map: [100, 100], npcPowers: [true, true], boss: 'imparator',
-   scens: ['hayatta', 'bas', 'kale', 'kardes', 'dag', 'fetih', 'nehir'],
-   enemies: ['Kızıl Sancak', 'Gölge Konsey', 'Yedi Tepe Birliği', 'Ebedi Taht', 'Kıyamet Ordusu', 'Altın Taç Birliği'],
-   intro: 'Eski imparatorluğun kalıntıları son kez birleşiyor. Bir zafer daha ve {K} dünyanın hükümdarı olacak.'},
+// ============ SEFER: fetih haritası (tasarim/SEFER-TASARIM.md) ============
+// Dünya: 5 ülke, 26 bölge (biri başlangıç bölgen). Kendi bölgelerine komşu bir bölgeye saldırırsın; her bölge bir
+// senaryolu savaş. Ülkenin başkenti (patron) çok güçlüdür; o ülkenin çevre bölgelerini aldıkça kuşatma sıkılaşır ve başkent zayıflar.
+// Kaybedilen savaş istenince tekrar oynanır, ceza yok. Taht Şehri alınınca sefer biter. {K} = krallığın adı.
+const LANDS = [
+  {name: 'Sınır Beylikleri', boss: 'sazlik', diff: 'kolay', npc: 2, map: 60, npcPowers: false,
+   enemies: ['Dağ Kabilesi', 'Orman Kabilesi', 'Taş Obası', 'Kurt Kabilesi', 'Sazlık Köyleri', 'Yamaç Beyliği']},
+  {name: 'Nehir Boyları', boss: 'degirmen', diff: 'kolay', npc: 2, map: 75, npcPowers: true,
+   enemies: ['Sazlık Beyliği', 'Değirmen Köyleri', 'Kıyı Hanlığı', 'Balıkçı Birliği', 'Su Kalesi', 'Çeltik Beyliği']},
+  {name: 'Ovalar', boss: 'ova', diff: 'normal', npc: 3, map: 75, npcPowers: false,
+   enemies: ['Ova Hanlığı', 'Tozlu Yol Beyliği', 'Altın Başak Krallığı', 'At Sürüsü Obası', 'Kervan Birliği', 'Bozkır Hanlığı']},
+  {name: 'Kuzey', boss: 'demir', diff: 'normal', npc: 3, map: 100, npcPowers: true,
+   enemies: ['Buzdiş Kalesi', 'Ak Yele Hanlığı', 'Kar Kurdu Klanı', 'Çelik Muhafızlar', 'Paslı Kılıç Ordusu', 'Demir Dağ Beyliği']},
+  {name: 'İmparatorluk', boss: 'imparator', diff: 'zor', npc: 3, map: 100, npcPowers: true,
+   enemies: ['Kızıl Sancak', 'Gölge Konsey', 'Yedi Tepe Birliği', 'Ebedi Taht', 'Kıyamet Ordusu', 'Altın Taç Birliği']},
 ];
-// patronlar: her perdenin sonundaki isimli hükümdar. ring: başlangıç halkası (başlangıç boyunun oranı), unlock: yenince kalıcı açılan güçler
+// x, y: dünya haritasındaki yeri (0–1; x yatay, y dikey). boss: o ülkenin başkenti (patron savaşı). scen: bölgenin senaryosu
+const REGIONS = [
+  // Sınır Beylikleri (batı yarımadası)
+  {id: 'vadi', name: 'Vadideki Köy', land: 0, x: .06, y: .57, home: true,
+   intro: '{K} bu vadide doğdu. Fetih buradan başlıyor.'},
+  {id: 'kurt', name: 'Kurt Yaylası', land: 0, x: .11, y: .38, scen: 'orman',
+   intro: 'Sık ormanlarla kaplı bir yayla. Kabileler ağaçların arasından pusu kuruyor.'},
+  {id: 'yamac', name: 'Yamaç Köyleri', land: 0, x: .18, y: .24, scen: 'dag',
+   intro: 'Dik yamaçlara kurulmuş köyler. Tepeleri tutan aşağıdakilere hükmeder.'},
+  {id: 'tas', name: 'Taş Obası', land: 0, x: .12, y: .77, scen: 'klasik',
+   intro: 'Kayalık bir düzlük. Obalar sınırlarını korumak için birleşmiş.'},
+  {id: 'sazlik', name: 'Sazlık', land: 0, x: .2, y: .55, boss: true},
+  // Nehir Boyları (güney)
+  {id: 'degirmen', name: 'Değirmen Köyleri', land: 1, x: .25, y: .82, scen: 'kitlik',
+   intro: 'Kuraklık vurmuş; nehir boyundaki her köy altın değerinde.'},
+  {id: 'celtik', name: 'Çeltik Tarlaları', land: 1, x: .31, y: .64, scen: 'nehir',
+   intro: 'Geniş bir nehir tarlaları ikiye bölüyor. Karşı kıyıya geçmek kolay olmayacak.'},
+  {id: 'nehirKale', name: 'Nehir Kalesi', land: 1, x: .37, y: .79, boss: true},
+  {id: 'balikci', name: 'Balıkçı Koyu', land: 1, x: .44, y: .9, scen: 'klasik',
+   intro: 'Kıyıdaki balıkçı köyleri sınırlarını sonuna kadar savunacak.'},
+  {id: 'kiyi', name: 'Kıyı Adaları', land: 1, x: .53, y: .86, scen: 'takimada',
+   intro: 'Kıyının açığında irili ufaklı adalar. Bir adadan ötekine kayıkla geçmek gerekecek.'},
+  // Ovalar (orta)
+  {id: 'tozluYol', name: 'Tozlu Yol', land: 2, x: .3, y: .42, scen: 'akin',
+   intro: 'Ovayı ikiye bölen kervan yolu. Burada hızlı davranan kazanır.'},
+  {id: 'kervan', name: 'Kervansaraylar', land: 2, x: .41, y: .54, scen: 'klasik',
+   intro: 'Ovanın kervansaraylarını tutan, ticaretin efendisi olur.'},
+  {id: 'altinBasak', name: 'Altın Başak', land: 2, x: .45, y: .38, scen: 'kale',
+   intro: 'Buğday tarlalarının ortasında eski bir kale yükseliyor. Onu tutan ovaya hükmeder.'},
+  {id: 'bozkir', name: 'Bozkır', land: 2, x: .58, y: .66, scen: 'kardes',
+   intro: 'İki bozkır hanı kardeş: birbirlerine saldırmazlar, sana karşı birlikte dururlar.'},
+  {id: 'hanOrdugah', name: 'Han Ordugâhı', land: 2, x: .53, y: .5, boss: true},
+  // Kuzey (dağlık kol)
+  {id: 'buzdis', name: 'Buzdiş Geçidi', land: 3, x: .29, y: .17, scen: 'dag',
+   intro: 'Karlı dağların arasında dar geçitler. Tepeleri tutan üstün gelir.'},
+  {id: 'karKurdu', name: 'Kar Kurdu Ormanı', land: 3, x: .4, y: .12, scen: 'hayatta',
+   intro: 'Kar Kurdu Klanı her yandan üstüne geliyor. Burada kazanmak, ayakta kalmak demek.'},
+  {id: 'akYele', name: 'Ak Yele Obası', land: 3, x: .52, y: .2, scen: 'bas',
+   intro: 'Ak Yele Hanı\'nın sancağı düşmeden obalar teslim olmaz.'},
+  {id: 'demirDag', name: 'Demir Dağ', land: 3, x: .6, y: .1, scen: 'kitlik',
+   intro: 'Kışın ortası, erzak kıt: dağ köylerinin her biri hayat demek.'},
+  {id: 'demirSinir', name: 'Demir Sınır', land: 3, x: .65, y: .27, boss: true},
+  // İmparatorluk (doğu)
+  {id: 'yediTepe', name: 'Yedi Tepe', land: 4, x: .72, y: .45, scen: 'kardes',
+   intro: 'Yedi Tepe\'nin iki beyi kardeş; birbirlerine asla saldırmazlar.'},
+  {id: 'kizilKale', name: 'Kızıl Kale', land: 4, x: .78, y: .17, scen: 'fetih',
+   intro: 'İmparatorluğun en sadık beyleri burada. Hiçbiri teslim olmayacak: hepsini yıkmalısın.'},
+  {id: 'liman', name: 'İmparatorluk Limanı', land: 4, x: .89, y: .27, scen: 'takimada',
+   intro: 'Limanın önündeki adalara dağılmış donanma üsleri.'},
+  {id: 'golge', name: 'Gölge Vadisi', land: 4, x: .7, y: .77, scen: 'bas',
+   intro: 'Gölge Konsey\'in lideri bu vadide saklanıyor. Onun sancağı düşmeden vadi teslim olmaz.'},
+  {id: 'ebedi', name: 'Ebedi Kale', land: 4, x: .82, y: .64, scen: 'kale',
+   intro: 'İmparatorluğun en eski kalesi. Onu tutan, başkentin kapısını tutar.'},
+  {id: 'taht', name: 'Taht Şehri', land: 4, x: .91, y: .48, boss: true},
+];
+const REGMAP = Object.fromEntries(REGIONS.map(r => [r.id, r]));
+const BATTLES = REGIONS.filter(r => !r.home);
+// patronlar: her ülkenin başkentindeki isimli hükümdar. ring: başlangıç halkası (başlangıç boyunun oranı), unlock: yenince kalıcı açılan güçler
 const BOSSES = {
   sazlik: {name: 'Sazlık Beyi', desc: 'İki kat büyük başlar. Sancağı düşünce bütün ordusu dağılır: toprakları sahipsiz kalır.',
     npc: 2, map: 75, diff: 'kolay', ring: .2, powers: [], unlock: ['fatih', 'kale'],
@@ -3122,44 +3141,6 @@ const BOSSES = {
 for (const [k, b] of Object.entries(BOSSES))
   SCMAP['boss_' + k] = {id: 'boss_' + k, name: b.name, goal: 'boss', boss: k, desc: `Patron savaşı: ${b.name}. ${b.desc}`, win: 0.6, turns: 35, terrain: b.terrain};
 
-// emanetler: küçük kalıcı bonuslar, sefer boyunca birikir. rare: ödüllerde nadir
-const RELICS = [
-  {id: 'eskiHarita', ic: 'emEskiHarita', name: 'Eski Harita', desc: 'Her savaşa biraz daha büyük toprakla başlarsın.'},
-  {id: 'muhur', ic: 'emMuhur', name: 'Köy Ağası Mührü', desc: 'Tamamı elindeki köyler 2 kat puan verir.'},
-  {id: 'gaziler', ic: 'emGaziler', name: 'Gaziler', desc: 'Her savaşın ilk 3 turunda hedef zarın 1 düşer.'},
-  {id: 'surlar', ic: 'emSurlar', name: 'Kalın Surlar', desc: 'Sancağına yapılan saldırıların hedef zarı 2 artar.'},
-  {id: 'kirik', ic: 'emKirikZar', name: 'Kırık Zar', desc: '1 atınca felaket yarı yarıya küçük olur.'},
-  {id: 'casus', ic: 'emCasus', name: 'Casus', desc: 'Her savaşın başında bir rakibin güçleri iptal edilir.', rare: true},
-  {id: 'kumSaati', ic: 'emKumSaati', name: 'Kum Saati', desc: 'Yıldız almak için her savaşta 3 tur fazladan süren olur.', rare: true},
-];
-for (const r of RELICS) r.icon = IC(r.ic, 18);   // emanet simgeleri: Claude Design ikonları (icons.js)
-const RELMAP = Object.fromEntries(RELICS.map(r => [r.id, r]));
-
-// olaylar: kısa hikâye + seçimler. roll: d20 hedefi (ok / fail etkisi; bad: 1–5 arası). Etkiler: relic, power, next{ring, foeRing, gazi}, loseRelic
-const EVENTS = [
-  {title: 'Yoldaki Falcı', text: 'Yol kenarında yaşlı bir falcı oturuyor. "Zarını at," diyor, "kaderini göreyim."',
-   choices: [{label: 'Zar at', roll: 12, ok: {relic: 1}, bad: {next: {foeRing: 1}}, okText: 'Falcı gülümsüyor ve sana eski bir emanet veriyor.', badText: 'Falcı yüzünü buruşturuyor: "Kara günler…" Bir sonraki savaşta rakipler büyük başlayacak.', midText: 'Falcı omuz silkiyor. Kader bu kez sessiz.'},
-     {label: 'Yoluna devam et', none: true, text: 'Falcıyı geride bırakıp yürüyorsun.'}]},
-  {title: 'Terk Edilmiş Kale', text: 'Sarmaşık sarmış surların ardında eski bir silah deposu var. Duvarlar her an çökebilir.',
-   choices: [{label: 'İçeri gir ve ara', roll: 10, ok: {power: 1}, bad: {next: {foeRing: 1}}, okText: 'Depoda eski bir savaş sanatının kayıtlarını buldun!', badText: 'Duvar çöktü, askerlerin yaralandı. Bir sonraki savaşta rakipler büyük başlayacak.', midText: 'Depo boş çıktı.'},
-     {label: 'Uzaktan geç', none: true, text: 'Riske girmiyorsun.'}]},
-  {title: 'Gezgin Ozan', text: 'Bir ozan, atalarının zaferlerini anlatan destanlar söylüyor. Askerlerin can kulağıyla dinliyor.',
-   choices: [{label: 'Ozanı orduya kat', effect: {next: {gazi: 1}}, text: 'Destanlar askerlerini coşturdu: bir sonraki savaşın ilk 3 turunda hedef zarın 1 düşük.'},
-     {label: 'Yoluna devam et', none: true, text: 'Ozanın sesi arkanda kalıyor.'}]},
-  {title: 'Yıkık Köprü', text: 'Nehrin üstündeki köprü yıkılmış. Karşıya geçmenin iki yolu var.',
-   choices: [{label: 'Yüzerek geç', roll: 8, ok: {next: {ring: 1}}, bad: {next: {foeRing: 1}}, okText: 'Hızlı geçtin: bir sonraki savaşa büyük başlayacaksın.', badText: 'Akıntı askerlerini sürükledi. Bir sonraki savaşta rakipler büyük başlayacak.', midText: 'Zorlukla da olsa karşıya geçtin.'},
-     {label: 'Uzun yoldan dolan', none: true, text: 'Yol uzun ama güvenli.'}]},
-  {title: 'Kaçak Asker', text: 'Bir düşman askeri ordugâhına sığınıyor ve sınırın gizli yollarını bildiğini söylüyor.',
-   choices: [{label: 'Ona güven', roll: 6, ok: {next: {ring: 1}}, bad: {next: {foeRing: 1}}, okText: 'Gizli yollar işe yaradı: bir sonraki savaşa büyük başlayacaksın.', badText: 'Hain çıktı! Bir sonraki savaşta rakipler büyük başlayacak.', midText: 'Söyledikleri eski bilgilermiş; işe yaramadı.'},
-     {label: 'Geri gönder', none: true, text: 'Asker karanlığa karışıyor.'}]},
-  {title: 'Eski Tapınak', text: 'Dağın yamacında unutulmuş bir tapınak. Sunağın önünde adaklar duruyor.',
-   choices: [{label: 'Bir emanetini adak olarak bırak', needRelic: true, effect: {loseRelic: 1, power: 1}, text: 'Tapınağın bekçisi adağını kabul etti ve sana bir güç öğretti.'},
-     {label: 'Dua et', roll: 15, ok: {relic: 1}, okText: 'Sunağın altından eski bir emanet çıktı.', midText: 'Sessizlik. Tapınak cevap vermedi.', badText: 'Sessizlik. Tapınak cevap vermedi.'},
-     {label: 'Yoluna devam et', none: true, text: 'Tapınağı geride bırakıyorsun.'}]},
-  {title: 'Derebeyinin Haracı', text: 'Bir derebeyi yolunu kesiyor: "Buradan geçmek isteyen haraç öder."',
-   choices: [{label: 'Bir emanetini ver', needRelic: true, effect: {loseRelic: 1, next: {ring: 1}}, text: 'Derebeyi yolu açtı, hatta askerlerinden bazıları sana katıldı: bir sonraki savaşa büyük başlayacaksın.'},
-     {label: 'Savaş', roll: 11, ok: {relic: 1}, bad: {next: {foeRing: 1}}, okText: 'Derebeyini kaçırdın; hazinesi senin.', badText: 'Pusuya düştün. Bir sonraki savaşta rakipler büyük başlayacak.', midText: 'Çatışma berabere bitti; yoluna devam ediyorsun.'}]},
-];
 const LOSE_TEXT = '{K} geri çekildi. Ordular toparlanıp yeniden denemeli.';
 // yıldızlar: hızlı kazandıkça çok (savaşın tur sınırına göre). Hayatta Kal'da sona kalan topraklara göre.
 function battleStars() {
@@ -3167,20 +3148,17 @@ function battleStars() {
   if (sc.goal === 'hayatta') { const me = players.find(q => q.human); const sh = me ? me.score / LAND : 0; return sh >= .25 ? 3 : sh >= .12 ? 2 : 1; }
   const [s3, s2] = starLimits(); return turn <= s3 ? 3 : turn <= s2 ? 2 : 1;
 }
-function starLimits() {
-  const T = cfg.turns || 35, b = (cfg.relics || []).includes('kumSaati') ? 3 : 0;
-  return [Math.round(T * .55) + b, Math.round(T * .8) + b];
-}
+function starLimits() { const T = cfg.turns || 35; return [Math.round(T * .55), Math.round(T * .8)]; }
 const starStr = (n, size = 20) => IC('yildiz', size).repeat(n) + `<span style="opacity:.28">${IC('yildiz', size).repeat(3 - n)}</span>`;
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[c]);
 
 // ============ BAŞARIMLAR ============
 const ACH = [
-  {id: 'seferIlk', icon: '🚩', name: 'İlk Adım', desc: 'Seferde ilk savaşını kazan.'},
-  {id: 'seferYari', icon: '🏰', name: 'Yarı Yol', desc: 'Seferde 3. perdeye ulaş.'},
-  {id: 'seferSon', icon: '👑', name: 'Dünyanın Hükümdarı', desc: 'Seferi bitir: Son İmparator\'u yen.'},
-  {id: 'kusursuz', icon: '🌟', name: 'Kusursuz Hükümdar', desc: 'Bir seferi bütün savaşlardan üç yıldız alarak bitir.'},
-  {id: 'inatci', icon: '🐂', name: 'İnatçı', desc: 'Seferde aynı savaşı 3 kez kaybettikten sonra kazan.'},
+  {id: 'seferIlk', icon: '🚩', name: 'İlk Adım', desc: 'Seferde ilk bölgeni fethet.'},
+  {id: 'seferYari', icon: '🏰', name: 'Yarı Yol', desc: 'Seferde 12 bölge fethet.'},
+  {id: 'seferSon', icon: '👑', name: 'Dünyanın Hükümdarı', desc: 'Seferi bitir: Taht Şehri\'ni al, Son İmparator\'u yen.'},
+  {id: 'kusursuz', icon: '🌟', name: 'Kusursuz Hükümdar', desc: 'Seferde bütün bölgelerden üç yıldız al.'},
+  {id: 'inatci', icon: '🐂', name: 'İnatçı', desc: 'Seferde aynı bölgede 3 kez yenildikten sonra orayı fethet.'},
   {id: 'ilkZafer', icon: '🏆', name: 'İlk Zafer', desc: 'Herhangi bir oyunu kazan.'},
   {id: 'yildirimHarekat', icon: '⚡', name: 'Yıldırım Harekâtı', desc: 'Bir oyunu 10. turdan önce kazan.'},
   {id: 'sonKale', icon: '🛡️', name: 'Son Kale', desc: 'Toprağın %5\'in altına düştükten sonra kazan.'},
@@ -3210,8 +3188,8 @@ const ACHMAP = Object.fromEntries(ACH.map(a => [a.id, a]));
 
 // ilerleme: sefer, yıldızlar, başarımlar, sayaçlar (bu bilgisayarda; aktarma koduyla taşınır)
 const PROG_KEY = 'toprak-ilerleme';
-// run: süren sefer (yol haritası, güçler, emanetler); powOpen: patron yenerek kalıcı açılan güçler
-const PROG = {realm: '', ach: {}, games: 0, powWins: {}, powOpen: {}, run: null, runsDone: 0, bestAct: 0};
+// run: süren sefer (fethedilen bölgeler ve yıldızları); powOpen: başkent (patron) alarak kalıcı açılan güçler
+const PROG = {realm: '', ach: {}, games: 0, powWins: {}, powOpen: {}, run: null, runsDone: 0};
 try { Object.assign(PROG, JSON.parse(localStorage.getItem(PROG_KEY)) || {}); } catch (e) {}
 // eski 10 bölümlük seferden geçiş: bitirilmiş bölümlerin açtığı güçler açık kalır
 if (PROG.stars) {
@@ -3220,12 +3198,15 @@ if (PROG.stars) {
   delete PROG.stars; delete PROG.unlocked; delete PROG.fails;
   if (!PROG.run) PROG.realm = '';
 }
+// dallanan yollu eski seferden geçiş: krallığın adı kalır, fetih haritasında baştan başlanır
+if (PROG.run && PROG.run.v !== 2) PROG.run = PROG.realm ? {v: 2, owned: {vadi: 0}, fails: {}, done: false} : null;
+delete PROG.bestAct;
 const saveProg = () => { try { localStorage.setItem(PROG_KEY, JSON.stringify(PROG)); } catch (e) {} };
 saveProg();
 const achCount = () => Object.keys(PROG.ach).filter(id => ACHMAP[id]).length;
 
-// Seferde güçler kalıcı olarak patron yenerek (boss = perde) ya da başarım kazanarak (ach) açılır.
-// Açık güçler seferin başlangıç seçiminde ve ödüllerde çıkar. Serbest oyunda hepsi açık.
+// Seferde güçler kalıcı olarak bir ülkenin başkentini alarak (boss = ülke sırası) ya da başarım kazanarak (ach) açılır.
+// Seferde her savaştan önce açık güçlerden en fazla 2'si seçilir. Serbest oyunda hepsi açık.
 const POWER_UNLOCK = {
   fatih: {boss: 0}, kale: {boss: 0}, ikinci: {boss: 1}, akinci: {boss: 1}, yildirim: {boss: 2},
   cift: {boss: 2}, karsi: {boss: 3}, keskin: {boss: 3}, genis: {boss: 4},
@@ -3234,7 +3215,7 @@ const POWER_UNLOCK = {
 };
 const powerEarned = id => { const u = POWER_UNLOCK[id]; return !u || !!PROG.powOpen[id] || (u.ach != null && !!PROG.ach[u.ach]); };
 const powerOpen = id => cfg.chapter == null || powerEarned(id);
-const unlockHint = id => { const u = POWER_UNLOCK[id]; return u.boss != null ? `${u.boss + 1}. perdenin patronunu yen (${BOSSES[ACTS[u.boss].boss].name})` : `Başarım: ${ACHMAP[u.ach].icon} ${ACHMAP[u.ach].name}`; };
+const unlockHint = id => { const u = POWER_UNLOCK[id]; return u.boss != null ? `Seferde ${REGIONS.find(R => R.boss && R.land === u.boss).name} bölgesini al (${BOSSES[LANDS[u.boss].boss].name})` : `Başarım: ${ACHMAP[u.ach].icon} ${ACHMAP[u.ach].name}`; };
 const earnedCount = () => POWERS.filter(p => powerEarned(p.id)).length;
 
 function toast(html) {
@@ -3330,12 +3311,12 @@ function renderStats() {
 // ---- verileri sıfırla ----
 function resetCamp() {
   const s0 = loadSave(); if (s0 && s0.cfg && s0.cfg.chapter != null) clearSave();   // yarım kalan sefer oyunu da gider
-  Object.assign(PROG, {realm: '', run: null, powOpen: {}, runsDone: 0, bestAct: 0}); saveProg();
+  Object.assign(PROG, {realm: '', run: null, powOpen: {}, runsDone: 0}); saveProg();
 }
 function resetAch() { Object.assign(PROG, {ach: {}, powWins: {}, games: 0}); saveProg(); }
 function resetStats() { STATS = newStats(); saveStats(); }
 const afterReset = msg => { renderCampSummary(); toast(msg); };
-$('rstCamp').onclick = async () => { if (await ask('Seferi sıfırla', 'Süren seferin ve patron yenerek kalıcı açtığın güçler silinir. Başarımlar ve istatistikler kalır.', 'Seferi sıfırla', 'Vazgeç')) { resetCamp(); afterReset('Sefer sıfırlandı.'); } };
+$('rstCamp').onclick = async () => { if (await ask('Seferi sıfırla', 'Fetih haritasındaki ilerlemen ve başkent alarak kalıcı açtığın güçler silinir. Başarımlar ve istatistikler kalır.', 'Seferi sıfırla', 'Vazgeç')) { resetCamp(); afterReset('Sefer sıfırlandı.'); } };
 $('rstAch').onclick = async () => { if (await ask('Başarımları sıfırla', 'Bütün başarımlar silinir. Seferde başarımla açılan güçler (ör. Büyük Başlangıç, Kumarbaz) yeniden kilitlenir.', 'Başarımları sıfırla', 'Vazgeç')) { resetAch(); afterReset('Başarımlar sıfırlandı.'); } };
 $('rstStats').onclick = async () => { if (await ask('İstatistikleri sıfırla', 'Oyun, saldırı ve zar istatistiklerinin hepsi sıfırlanır.', 'İstatistikleri sıfırla', 'Vazgeç')) { resetStats(); afterReset('İstatistikler sıfırlandı.'); } };
 $('rstAll').onclick = async () => { if (await ask('Hepsini sıfırla', 'Sefer, başarımlar ve istatistikler tamamen silinir; oyun ilk kurulduğu gibi olur. Ayarların (ses, ekran) kalır.', 'Hepsini sıfırla', 'Vazgeç')) { resetCamp(); resetAch(); resetStats(); afterReset('Bütün veriler sıfırlandı.'); } };
@@ -3361,33 +3342,32 @@ function onGameEnd(win) {
     if (POWERS.every(pw => PROG.powWins[pw.id])) unlock('usta');
   }
   let stars = 0;
-  const run = PROG.run, inCamp = ch != null;
-  if (inCamp && run && !run.done) {
-    const [a, s, i] = String(ch).split('-').map(Number), nd = run.map[s] && run.map[s][i];
-    if (nd && run.act === a && run.path.length === s) {   // bu savaş yolun şu anki adımı mı (eski kayıt değil)
-      if (win) {
-        stars = battleStars();
-        if ((run.fails[ch] || 0) >= 3) unlock('inatci');
-        run.stars += stars; run.battles++; if (stars < 3) run.all3 = false;
-        run.path.push(i);
-        unlock('seferIlk');
-        if (nd.t === 'boss') {   // patron: kalıcı güç kilitleri
-          for (const id of BOSSES[ACTS[a].boss].unlock) if (!PROG.powOpen[id]) { PROG.powOpen[id] = 1; setTimeout(() => toastPower(id), 900); }
-        }
-        run.pending = {kind: nd.t === 'boss' ? 'boss' : nd.t === 'zor' ? 'zor' : 'reward', stars};
-      } else run.fails[ch] = (run.fails[ch] || 0) + 1;
-    }
+  const run = PROG.run, R = ch != null ? REGMAP[ch] : null, inCamp = !!R;
+  if (R && run) {
+    if (win) {
+      stars = battleStars();
+      if ((run.fails[ch] || 0) >= 3) unlock('inatci');
+      run.owned[ch] = Math.max(run.owned[ch] || 0, stars);
+      unlock('seferIlk');
+      if (R.boss) {   // başkent düştü: güç kilitleri
+        const L = LANDS[R.land];
+        for (const id of BOSSES[L.boss].unlock) if (!PROG.powOpen[id]) { PROG.powOpen[id] = 1; setTimeout(() => toastPower(id), 900); }
+      }
+      if (ownedN(run) >= 12) unlock('seferYari');
+      if (R.id === 'taht' && !run.done) { run.done = true; PROG.runsDone = (PROG.runsDone || 0) + 1; unlock('seferSon'); }
+      if (BATTLES.every(q => run.owned[q.id] === 3)) unlock('kusursuz');
+    } else run.fails[ch] = (run.fails[ch] || 0) + 1;
   }
   saveProg();
   // oyun sonu penceresi: seferde hikâye, yıldızlar ve sefer düğmeleri
-  const K = esc(PROG.realm || 'Krallığım');
   $('endStory').classList.toggle('hidden', !inCamp);
   $('endStars').classList.toggle('hidden', !(inCamp && win));
-  if (inCamp) $('endStory').innerHTML = (win ? 'Zafer! {K} sancağı yeni topraklarda dalgalanıyor. Ödülün seni bekliyor.' : LOSE_TEXT).replace(/\{K\}/g, `<b>${K}</b>`)
-    + (!win ? '<br><small>Aynı savaşı yeni bir haritada tekrar oynayabilir ya da sefer haritasına dönüp bu adımdaki başka bir durağı seçebilirsin.</small>' : '');
+  if (inCamp) $('endStory').innerHTML = kText(win ? `Zafer! ${R.name} artık {K} toprağı.`
+      + (R.id === 'taht' ? '<br><b>Dünya artık tek bir adla anılıyor: {K}. Sefer tamamlandı!</b>' : '')
+    : LOSE_TEXT + '<br><small>Bölge düşmanda kaldı. İstediğin zaman yeni bir haritada tekrar deneyebilirsin.</small>');
   if (inCamp && win) $('endStars').innerHTML = starStr(stars, 34);
   $('nextChBtn').classList.toggle('hidden', !(inCamp && win));
-  $('nextChBtn').innerHTML = IC('odul', 20) + ' Ödülünü seç ▶';
+  $('nextChBtn').innerHTML = IC('sefer', 20) + ' Fetih haritası ▶';
   $('retryBtn').classList.toggle('hidden', !(inCamp && !win));
   $('retryBtn').textContent = '↻ Tekrar dene';
   $('campBackBtn').classList.toggle('hidden', !inCamp || win);
@@ -3395,129 +3375,268 @@ function onGameEnd(win) {
 }
 
 // ---- sefer ekranları ----
-const hideAll = () => ['menu', 'howto', 'settings', 'setup', 'picks', 'handoff', 'endModal', 'camp', 'story', 'xfer', 'achv', 'pause', 'runEv'].forEach(id => $(id).classList.add('hidden'));
+const hideAll = () => ['menu', 'howto', 'settings', 'setup', 'picks', 'handoff', 'endModal', 'camp', 'world', 'xfer', 'achv', 'pause'].forEach(id => $(id).classList.add('hidden'));
 function renderCampSummary() {
   $('campSummary').textContent = `${achCount()}/${ACH.length} kazanıldı`;
 }
 const DIFF_LABEL = {kolay: IC('zorKolay') + ' Kolay', normal: IC('zorNormal') + ' Normal', zor: IC('zorZor') + ' Zor'};
-const NODE_INFO = {savas: {ic: 'durakSavas', name: 'Savaş'}, zor: {ic: 'durakZor', name: 'Zorlu savaş'}, koy: {ic: 'koy', name: 'Köy'}, olay: {ic: 'durakOlay', name: 'Olay'}, boss: {ic: 'durakPatron', name: 'Patron'}};
-const pickOne = arr => arr[Math.floor(Math.random() * arr.length)];
 const shuffled = arr => { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-const slotsOf = r => r.act >= 3 ? 3 : 2;   // güç yuvası: 3. perdeden sonra 3
 const kText = s => s.replace(/\{K\}/g, `<b>${esc(PROG.realm || 'Krallığım')}</b>`);
-// eski 10 bölümlük seferin yarım kalmış savaş kaydı artık açılamaz
-{ const s0 = loadSave(); if (s0 && s0.cfg && typeof s0.cfg.chapter === 'number') clearSave(); }
+// senaryoların haritadaki simgesi
+const SCEN_IC = {klasik: 'durakSavas', fetih: 'fetih', takimada: 'arDeniz', dag: 'arDag', nehir: 'arAkarsu', orman: 'arOrman', kale: 'kale',
+  hayatta: 'sonKale', akin: 'yildirimHarekat', bas: 'avci', kardes: 'muttefik', kitlik: 'koy'};
+const regIc = R => R.home ? 'baskent' : R.boss ? 'durakPatron' : SCEN_IC[R.scen] || 'senaryo';
+// eski seferlerin yarım kalmış savaş kayıtları (bölge kimliği olmayan) artık açılamaz
+{ const s0 = loadSave(); if (s0 && s0.cfg && s0.cfg.chapter != null && !REGMAP[s0.cfg.chapter]) clearSave(); }
 
-// perde haritası: 4 adım (2-3 durak) + patron; her durak bir sonraki adımda konumca yakın 1-2 durağa bağlı
-function makeNode(a, k, force, row = []) {
-  const r = Math.random(), first = a === 0 && k === 0;
-  const t = force || (first ? 'savas' : r < .5 ? 'savas' : r < .64 ? (a === 0 && k < 2 ? 'savas' : 'zor') : r < .82 ? 'koy' : 'olay');
-  const nd = {t};
-  if (t === 'savas' || t === 'zor') {   // aynı adımda iki kez aynı senaryo çıkmasın
-    const A = ACTS[a], free = A.scens.filter(s => !row.some(x => x.scen === s));
-    nd.scen = pickOne(free.length ? free : A.scens); nd.map = A.map[k >= 2 ? 1 : 0];
-  }
-  if (t === 'olay') { const free = EVENTS.map((_, i) => i).filter(i => !row.some(x => x.ev === i)); nd.ev = pickOne(free); }
-  return nd;
-}
-function genAct(a) {
-  const steps = [];
-  for (let k = 0; k < 4; k++) {
-    const n = k === 0 ? 3 : Math.random() < .5 ? 2 : 3, row = [];
-    for (let i = 0; i < n; i++) row.push(makeNode(a, k, null, row));
-    if (!row.some(x => x.t === 'savas' || x.t === 'zor')) row[0] = makeNode(a, k, 'savas', row.slice(1));   // her adımda en az bir savaş
-    steps.push(row);
-  }
-  steps.push([{t: 'boss'}]);
-  for (let k = 0; k < 4; k++) {
-    const A = steps[k], B = steps[k + 1], at = (row, i) => row.length === 1 ? .5 : i / (row.length - 1);
-    A.forEach((nd, i) => { const j = at(A, i) * (B.length - 1); nd.next = [...new Set([Math.floor(j), Math.ceil(j)])]; });
-    B.forEach((_, j) => { if (!A.some(nd => nd.next.includes(j))) A[Math.round(at(B, j) * (A.length - 1))].next.push(j); });
-  }
-  return steps;
-}
-function newRun(realm, power) {
-  PROG.realm = realm;
-  PROG.run = {act: 0, path: [], map: genAct(0), powers: power ? [power] : [], relics: [], stars: 0, battles: 0, all3: true, fails: {}, next: {}, pending: null, done: false};
-  saveProg();
-}
-const availNodes = r => { const k = r.path.length; return k === 0 ? r.map[0].map((_, i) => i) : k < r.map.length ? r.map[k - 1][r.path[k - 1]].next : []; };
+// sefer durumu: owned[bölge] = en iyi yıldız (başlangıç bölgesi 0), fails[bölge] = kayıp sayısı
+function newRun(realm) { PROG.realm = realm; PROG.run = {v: 2, owned: {vadi: 0}, fails: {}, done: false}; saveProg(); }
+const ownedN = r => Object.keys(r.owned).length - 1;   // fethedilen (başlangıç bölgesi hariç)
+const runStars = r => Object.values(r.owned).reduce((a, b) => a + b, 0);
+const canAttack = (r, id) => !(id in r.owned) && buildWorld().adj[id].some(n => n in r.owned);
 
-function openCamp() {
-  hideAll(); hideTip();
-  const r = PROG.run;
-  if (!r) {   // yeni sefer: krallığa ad ver
-    $('camp').classList.remove('hidden');
-    $('campName').classList.remove('hidden'); $('campList').classList.add('hidden');
-    $('campTitle').innerHTML = IC('sefer', 34) + ' Yeni Sefer';
-    $('realmInput').value = ''; setTimeout(() => $('realmInput').focus(), 50);
-    return;
-  }
-  if (r.pending) { showPending(); return; }
-  if (r.done) { showFinale(); return; }
-  $('camp').classList.remove('hidden');
-  $('campName').classList.add('hidden'); $('campList').classList.remove('hidden');
-  const A = ACTS[r.act];
-  $('campTitle').innerHTML = `${IC('sefer', 34)} ${esc(PROG.realm)}`;
-  $('campInfo').innerHTML = `<b>${r.act + 1}. perde: ${A.name}</b> (${r.act + 1}/5) · ${r.stars} ${IC('yildiz', 16)} · ${r.battles} zafer`;
-  $('runBag').innerHTML = `<span class="bagL">Güçler (${r.powers.length}/${slotsOf(r)}):</span> ` +
-    (r.powers.length ? r.powers.map(id => `<span class="chip" data-tip="w:${id}">${IC(id, 20)} ${PW[id].name}</span>`).join('') : '<i>yok</i>') +
-    `<span class="bagL">Emanetler:</span> ` + (r.relics.length ? r.relics.map(id => `<span class="chip" data-tip="r:${id}">${RELMAP[id].icon} ${RELMAP[id].name}</span>`).join('') : '<i>yok</i>') +
-    (Object.keys(r.next).length ? `<div class="bagNext">${IC('toparlanma', 16)} Bir sonraki savaş: ${nextText(r.next)}</div>` : '');
-  renderRunMap();
-  $('runHint').innerHTML = 'Parlayan duraklardan birini seç. Fareyle bir durağın üstüne gelince ne olduğunu burada görürsün.';
-}
-const nextText = n => [n.ring ? `daha büyük başlarsın${n.ring > 1 ? ` (×${n.ring})` : ''}` : '', n.foeRing ? 'rakipler büyük başlar' : '', n.gazi ? 'ilk 3 tur hedef zarın −1' : ''].filter(Boolean).join(', ');
-function nodeLabel(nd, a) { return nd.t === 'boss' ? BOSSES[ACTS[a].boss].name : nd.scen ? SCMAP[nd.scen].name : NODE_INFO[nd.t].name; }
-function renderRunMap() {
-  const r = PROG.run, steps = r.map, k = r.path.length, av = availNodes(r);
-  const W = 600, RH = 96, H = steps.length * RH + 14, X = (row, i) => W * (i + 1) / (row.length + 1), Y = s => 44 + s * RH;
-  let lines = '', nodes = '';
-  steps.forEach((row, s) => row.forEach((nd, i) => {
-    if (s < steps.length - 1) for (const j of nd.next) {
-      const cls = r.path[s] === i && r.path[s + 1] === j ? 'done' : s === k - 1 && r.path[s] === i ? 'cand' : '';
-      lines += `<line class="${cls}" x1="${X(row, i)}" y1="${Y(s)}" x2="${X(steps[s + 1], j)}" y2="${Y(s + 1)}"/>`;
+// ---- dünya haritası: sabit tohumla üretilir (her açılışta aynı) ----
+// Kara, bölge merkezlerinin çevresinde birleşen kütlelerden oluşur; kıyı gürültüyle girintili çıkıntılı, kenarlar ve
+// körfezler deniz. Arazi kare bir haritada üretilir, ekranda yatay bir şerit (WORLD_Y0'dan WORLD_H satır, 3:2) kullanılır.
+// Bölgelerin x, y'si bu şeritte 0–1; uzaklıklar ekrandaki oranla (yatay WORLD_AR kat) ölçülür.
+const WORLD_N = 240, WORLD_Y0 = 40, WORLD_H = 160, WORLD_SEED = 20261019, WORLD_AR = WORLD_N / WORLD_H, WORLD_PPC = 12;
+// körfezler ve iç denizler: x, y, yarıçap (şerit yüksekliği cinsinden); kıyıları gürültüyle bozulur
+const GULFS = [{x: .06, y: .14, r: .12}, {x: .63, y: .9, r: .1}, {x: .4, y: .27, r: .045}, {x: .97, y: .88, r: .14}, {x: .2, y: .97, r: .07}];
+let WD = null;
+function buildWorld() {
+  if (WD) return WD;
+  const keep = {M, terr, height, villages, rivers, LAND, tseed, terrImg, PPC};
+  try {
+    const N = M = WORLD_N, S = TUNE.sancakSize;
+    genTerrain(WORLD_SEED, {sea: .02});
+    const cn = noise2(WORLD_SEED + 77), fn = noise2(WORLD_SEED + 177), gn = noise2(WORLD_SEED + 277);
+    const uv = (x, y) => [(x + .5) / N, (y + .5 - WORLD_Y0) / WORLD_H];
+    const dist = (u, v, p) => Math.hypot((u - p.x) * WORLD_AR, v - p.y);
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const [u, v] = uv(x, y);
+      let s = -1;
+      for (const R of REGIONS) s = Math.max(s, 1 - dist(u, v, R) / .15);
+      const wob = 1 + (gn(u * 7, v * 5, 3) - .5) * 1.1;   // körfez kıyıları daire gibi olmasın
+      for (const G of GULFS) s -= Math.max(0, 1 - dist(u, v, G) / (G.r * wob)) * 1.6;
+      s += (cn(u * 4, v * 2.7, 4) - .5) * .9 + (fn(u * 18, v * 12, 3) - .5) * .35;
+      const edge = Math.min(u * WORLD_AR, v, (1 - u) * WORLD_AR, 1 - v);   // şeridin kenarına uzaklık
+      s -= Math.max(0, .06 - edge) * 10;
+      if (s < .1) terr[y * N + x] = T.DENIZ;
     }
-    const done = r.path[s] === i, can = s === k && av.includes(i), big = nd.t === 'boss';
-    const fails = r.fails[`${r.act}-${s}-${i}`];
-    nodes += `<g class="rn ${done ? 'done' : can ? 'can' : 'off'} t-${nd.t}" data-s="${s}" data-i="${i}" transform="translate(${X(row, i)},${Y(s)})">
-      <circle r="${big ? 31 : 25}"/>${ZS_ICONS.svg(NODE_INFO[nd.t].ic, ZS_ICONS.palettes.tas, big ? 38 : 30).replace('<svg ', `<svg x="${big ? -19 : -15}" y="${big ? -19 : -15}" `)}
-      <text class="lb" y="${big ? 50 : 43}">${esc(nodeLabel(nd, r.act))}${fails ? ` (${fails}✗)` : ''}</text></g>`;
-  }));
-  $('runMap').innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMin meet">${lines}${nodes}</svg>`;
+    cleanSmall();
+    // takımadalar: Kıyı Adaları ve İmparatorluk Limanı çevresi
+    for (const A of [REGMAP.kiyi, REGMAP.liman]) for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const [u, v] = uv(x, y), d = dist(u, v, A);
+      if (d < .12 && cn(u * 40 + 9, v * 27 - 4, 2) < .54 - d * 3.2) terr[y * N + x] = T.DENIZ;
+    }
+    // akarsular denize vardığı yerde biter; kesilen parçalar karaya döner
+    rivers = rivers.map(rv => { const k = rv.findIndex(i => terr[i] === T.DENIZ); return k < 0 ? rv : rv.slice(0, k + 1); }).filter(rv => rv.length > 6);
+    const onRiver = new Uint8Array(N * N); for (const rv of rivers) for (const i of rv) onRiver[i] = 1;
+    for (let i = 0; i < N * N; i++) if (terr[i] === T.NEHIR && !onRiver[i]) terr[i] = T.CAYIR;
+    // her bölgenin merkezinde bir yerleşim: başkentler ve başlangıç bölgesi surlu
+    villages = [];
+    for (const R of REGIONS) {
+      const x0 = Math.round(R.x * N - S / 2), y0 = Math.round(WORLD_Y0 + R.y * WORLD_H - S / 2);
+      markVillage({x0, y0, x1: x0 + S - 1, y1: y0 + S - 1}, R.boss || R.home ? 0 : -1);
+    }
+    LAND = 0; for (let i = 0; i < N * N; i++) if (terr[i] !== T.DENIZ) LAND++;
+    buildTerrainImage(WORLD_PPC); drawRivers(terrImg.getContext('2d'), PPC, 0, 0);
+    // bölgeler: her kara karesi en yakın bölge merkezine (biraz gürültüyle: sınırlar cetvel gibi düz olmasın)
+    const reg = new Int8Array(N * N).fill(-1), wn = noise2(WORLD_SEED + 99);
+    for (let y = WORLD_Y0; y < WORLD_Y0 + WORLD_H; y++) for (let x = 0; x < N; x++) {
+      const i = y * N + x; if (terr[i] === T.DENIZ) continue;
+      const [u, v] = uv(x, y); let best = -1, bd = Infinity;
+      REGIONS.forEach((R, k) => { const d = dist(u, v, R) + (wn(u * 9 + k * 7.3, v * 6 - k * 3.1, 3) - .5) * .05; if (d < bd) { bd = d; best = k; } });
+      reg[i] = best;
+    }
+    // komşuluk: en az 3 karelik ortak sınır (köşeden değmek sayılmaz)
+    const shared = new Map(), border = new Path2D();
+    const touch = (a, b) => { const k = Math.min(a, b) * 100 + Math.max(a, b); shared.set(k, (shared.get(k) || 0) + 1); };
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const a = reg[y * N + x]; if (a < 0) continue;
+      if (x < N - 1) { const b = reg[y * N + x + 1]; if (b >= 0 && b !== a) { touch(a, b); border.moveTo(x + 1, y); border.lineTo(x + 1, y + 1); } }
+      if (y < N - 1) { const b = reg[(y + 1) * N + x]; if (b >= 0 && b !== a) { touch(a, b); border.moveTo(x, y + 1); border.lineTo(x + 1, y + 1); } }
+    }
+    const adj = Object.fromEntries(REGIONS.map(R => [R.id, []]));
+    for (const [k, n] of shared) if (n >= 3) { const a = REGIONS[Math.floor(k / 100)].id, b = REGIONS[k % 100].id; adj[a].push(b); adj[b].push(a); }
+    // bölge alanları (boyama için, satır satır birleşik dikdörtgenler) ve dış çizgileri
+    const paths = REGIONS.map(() => new Path2D());
+    for (let y = 0; y < N; y++) for (let x = 0; x < N;) {
+      const a = reg[y * N + x]; let x2 = x + 1;
+      while (x2 < N && reg[y * N + x2] === a) x2++;
+      if (a >= 0) paths[a].rect(x, y, x2 - x, 1);
+      x = x2;
+    }
+    WD = {N, img: terrImg, ppc: PPC, reg, adj, paths, border, outlines: REGIONS.map((_, k) => cellOutline(N, reg, i => reg[i] === k))};
+  } finally { ({M, terr, height, villages, rivers, LAND, tseed, terrImg, PPC} = keep); }
+  return WD;
 }
-function nodeHint(s, i) {
-  const r = PROG.run, nd = r.map[s][i], A = ACTS[r.act], late = s >= 2 ? 1 : 0;
-  if (nd.t === 'boss') { const B = BOSSES[A.boss]; return `<b>${IC('durakPatron', 16)} Patron: ${B.name}</b> · ${B.desc}<br>Yenince: büyük ödül ve kalıcı olarak açılan güçler (${B.unlock.map(id => PW[id].name).join(', ')}).`; }
-  if (nd.t === 'koy') return IC('koy', 16) + ' <b>Köy</b> · Savaş yok. Bir <b>emanet</b> alırsın ya da bir <b>gücünü başka bir güçle değiştirirsin</b>.';
-  if (nd.t === 'olay') return IC('durakOlay', 16) + ' <b>Olay</b> · Yolda bir şeyle karşılaşırsın. Seçimlerin (ve bazen zarın) sonucu belirler.';
-  const sc = SCMAP[nd.scen], hard = nd.t === 'zor', npc = Math.min(4, A.npc[late] + (hard ? 1 : 0));
-  return `${IC(hard ? 'durakZor' : 'durakSavas', 16)} <b>${hard ? 'Zorlu savaş' : 'Savaş'}: ${sc.name}</b> · ${sc.desc}<br>${npc} rakip · ${nd.map}×${nd.map} · ${DIFF_LABEL[hard ? (A.diff[late] === 'kolay' ? 'normal' : 'zor') : A.diff[late]]}` +
-    (hard ? ' · rakipler güçlü, süre kısa · <b>Ödül: kesin yeni güç ya da nadir emanet</b>' : '');
+// bir kare kümesinin dış çizgisi (inSet(i): kare kümede mi); yalnızca kullanılan şerit
+function cellOutline(N, reg, inSet) {
+  const p = new Path2D();
+  for (let y = WORLD_Y0; y < WORLD_Y0 + WORLD_H; y++) for (let x = 0; x < N; x++) {
+    const i = y * N + x; if (!inSet(i)) continue;
+    if (x === 0 || !inSet(i - 1)) { p.moveTo(x, y); p.lineTo(x, y + 1); }
+    if (x === N - 1 || !inSet(i + 1)) { p.moveTo(x + 1, y); p.lineTo(x + 1, y + 1); }
+    if (!inSet(i - N)) { p.moveTo(x, y); p.lineTo(x + 1, y); }
+    if (!inSet(i + N)) { p.moveTo(x, y + 1); p.lineTo(x + 1, y + 1); }
+  }
+  return p;
 }
-$('runMap').addEventListener('pointerover', e => { const g = e.target.closest('.rn'); if (g) $('runHint').innerHTML = nodeHint(+g.dataset.s, +g.dataset.i); });
-$('runMap').addEventListener('click', e => {
-  const g = e.target.closest('.rn.can'); if (!g) return;
-  const r = PROG.run, s = +g.dataset.s, i = +g.dataset.i, nd = r.map[s][i];
-  SFX.play('click');
-  if (nd.t === 'koy' || nd.t === 'olay') { r.pending = {kind: nd.t, s, i}; saveProg(); showPending(); }
-  else openBattle(s, i);
+const icCache = {};
+function icImg(name, size) {
+  const k = name + ':' + size;
+  if (!icCache[k]) { const im = new Image(); im.onload = () => drawWorld(); im.src = ZS_ICONS.dataUri(name, ZS_ICONS.palettes.tas, size * 2); icCache[k] = im; }
+  return icCache[k];
+}
+// görünüm: s = ekranda bir karenin boyu (px), ox/oy = şeridin sol üst köşesinin ekrandaki yeri
+const wv = {s: 0, ox: 0, oy: 0, W: 0, H: 0};
+let wHover = null, wSel = null, ownedKey = '', ownedOutline = null;
+const wFit = () => Math.min(wv.W / WORLD_N, wv.H / WORLD_H);
+function wClamp() {
+  wv.s = Math.max(wFit() * .95, Math.min(wFit() * 5, wv.s));
+  const mw = WORLD_N * wv.s, mh = WORLD_H * wv.s, m = 60;
+  wv.ox = mw <= wv.W ? (wv.W - mw) / 2 : Math.min(m, Math.max(wv.W - mw - m, wv.ox));
+  wv.oy = mh <= wv.H ? (wv.H - mh) / 2 : Math.min(m, Math.max(wv.H - mh - m, wv.oy));
+}
+function wResize() {
+  const cv = $('worldMap'), b = cv.parentElement.getBoundingClientRect(), first = !wv.W;
+  if (!b.width) return false;
+  const k = wv.W ? wv.s / wFit() : 1;
+  wv.W = b.width; wv.H = b.height;
+  wv.s = wFit() * k; if (first) wv.s = wFit();
+  wClamp(); return true;
+}
+// bir bölgeye yakınlaş (ya da bölge görünüyorsa sadece kaydır)
+function wFocus(id, zoom) {
+  const R = REGMAP[id]; if (!R) return;
+  if (zoom) wv.s = Math.max(wv.s, wFit() * zoom);
+  wv.ox = wv.W / 2 - R.x * WORLD_N * wv.s; wv.oy = wv.H / 2 - R.y * WORLD_H * wv.s; wClamp(); drawWorld();
+}
+let wDrawQueued = false;
+const wDraw = () => { if (!wDrawQueued) { wDrawQueued = true; requestAnimationFrame(() => { wDrawQueued = false; drawWorld(); }); } };
+function drawWorld() {
+  const cv = $('worldMap'), r = PROG.run;
+  if (!cv || !WD || !r || $('world').classList.contains('hidden')) return;
+  if (!wv.W && !wResize()) return;
+  const dpr = devicePixelRatio || 1, W = wv.W, H = wv.H;
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  const g = cv.getContext('2d'), N = WD.N, s = wv.s, idx = Object.fromEntries(REGIONS.map((R, k) => [R.id, k]));
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.fillStyle = '#1d3d58'; g.fillRect(0, 0, W, H);   // açık deniz
+  g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+  g.drawImage(WD.img, 0, WORLD_Y0 * WD.ppc, N * WD.ppc, WORLD_H * WD.ppc, wv.ox, wv.oy, N * s, WORLD_H * s);
+  g.save(); g.translate(wv.ox, wv.oy); g.scale(s, s); g.translate(0, -WORLD_Y0);
+  // fethedilenler krallığın renginde; saldırılamayanlar karartılır
+  REGIONS.forEach((R, k) => {
+    const own = R.id in r.owned, can = !own && canAttack(r, R.id);
+    if (own) { g.globalAlpha = .42; g.fillStyle = HUMAN_COLORS[0]; g.fill(WD.paths[k]); }
+    else if (!can) { g.globalAlpha = .34; g.fillStyle = '#2b2118'; g.fill(WD.paths[k]); }
+    if (R.id === wHover && (own || can)) { g.globalAlpha = .2; g.fillStyle = '#fffaf0'; g.fill(WD.paths[k]); }
+  });
+  g.globalAlpha = 1; g.lineCap = 'round'; g.lineJoin = 'round';
+  g.strokeStyle = 'rgba(43,33,24,.6)'; g.lineWidth = 1.3 / s; g.setLineDash([3 / s, 3 / s]); g.stroke(WD.border); g.setLineDash([]);
+  // saldırılabilir bölgeler kırmızı kesikli; krallığın sınırı kendi renginde; seçili bölge kalın mürekkeple
+  g.strokeStyle = '#b9412f'; g.lineWidth = 2.6 / s; g.setLineDash([6 / s, 4 / s]);
+  REGIONS.forEach((R, k) => { if (canAttack(r, R.id)) g.stroke(WD.outlines[k]); });
+  g.setLineDash([]);
+  const key = Object.keys(r.owned).sort().join();
+  if (key !== ownedKey) { ownedKey = key; ownedOutline = cellOutline(N, WD.reg, i => WD.reg[i] >= 0 && REGIONS[WD.reg[i]].id in r.owned); }
+  g.strokeStyle = HUMAN_COLORS[0]; g.lineWidth = 3.2 / s; g.stroke(ownedOutline);
+  if (wSel && REGMAP[wSel]) { g.strokeStyle = '#2b2118'; g.lineWidth = 3.4 / s; g.stroke(WD.outlines[idx[wSel]]); }
+  g.restore();
+  // ülke adları: uzaktan bakınca büyük, aralıklı harflerle
+  const ui = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ui')) || 1;
+  g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
+  const zoomK = s / wFit();
+  if (zoomK < 2.2) LANDS.forEach((L, li) => {
+    const rs = REGIONS.filter(R => R.land === li), cx = rs.reduce((a, R) => a + R.x, 0) / rs.length, cy = rs.reduce((a, R) => a + R.y, 0) / rs.length;
+    g.font = `700 ${Math.round(17 * ui)}px Alegreya, Georgia, serif`; g.globalAlpha = Math.max(0, .75 - (zoomK - 1) * .55);
+    const t = L.name.toLocaleUpperCase('tr-TR').split('').join(String.fromCharCode(8202));
+    const x = wv.ox + cx * N * s, y = wv.oy + cy * WORLD_H * s - 20 * ui;
+    g.lineWidth = 5; g.strokeStyle = 'rgba(43,33,24,.75)'; g.strokeText(t, x, y); g.fillStyle = '#f2e9d4'; g.fillText(t, x, y);
+    g.globalAlpha = 1;
+  });
+  // bölge adları, simgeler, yıldızlar (yazı boyu ekranda sabit)
+  const fs = Math.round(13 * ui), isz = Math.round(fs * 1.4);
+  g.textBaseline = 'top';
+  for (const R of REGIONS) {
+    const own = R.id in r.owned, can = !own && canAttack(r, R.id);
+    const x = wv.ox + R.x * N * s, y = wv.oy + R.y * WORLD_H * s + Math.max(6, 2.8 * s);
+    if (x < -80 || x > W + 80 || y < -40 || y > H + 40) continue;
+    g.font = `700 ${fs}px Alegreya, Georgia, serif`;
+    g.lineWidth = 4; g.strokeStyle = 'rgba(242,233,212,.92)'; g.strokeText(R.name, x, y);
+    g.fillStyle = own || can ? '#2b2118' : '#5a4a38'; g.fillText(R.name, x, y);
+    const y2 = y + fs + 2;
+    if (own && !R.home) {
+      const n = r.owned[R.id], st = icImg('yildiz', isz), w = isz * .8;
+      for (let k = 0; k < 3; k++) { g.globalAlpha = k < n ? 1 : .3; if (st.complete) g.drawImage(st, x - w * 1.5 + k * w, y2, w, w); }
+      g.globalAlpha = 1;
+    } else if (!own) {
+      const im = icImg(can ? regIc(R) : 'kilit', isz);
+      if (im.complete) g.drawImage(im, x - isz / 2, y2, isz, isz);
+    }
+  }
+}
+function regAt(e) {
+  const b = $('worldMap').getBoundingClientRect(), N = WD.N;
+  const x = Math.floor((e.clientX - b.left - wv.ox) / wv.s), y = WORLD_Y0 + Math.floor((e.clientY - b.top - wv.oy) / wv.s);
+  if (x < 0 || x >= N || y < WORLD_Y0 || y >= WORLD_Y0 + WORLD_H) return null;
+  const k = WD.reg[y * N + x]; return k >= 0 ? REGIONS[k].id : null;
+}
+// fare: tıkla = bölge seç, sürükle = kaydır, tekerlek = yakınlaştır
+let wDrag = null;
+$('worldMap').addEventListener('pointerdown', e => { wDrag = {x: e.clientX, y: e.clientY, ox: wv.ox, oy: wv.oy, moved: false}; $('worldMap').setPointerCapture(e.pointerId); });
+$('worldMap').addEventListener('pointermove', e => {
+  if (!WD) return;
+  if (wDrag) {
+    const dx = e.clientX - wDrag.x, dy = e.clientY - wDrag.y;
+    if (!wDrag.moved && Math.hypot(dx, dy) > 5) { wDrag.moved = true; $('worldMap').style.cursor = 'grabbing'; }
+    if (wDrag.moved) { wv.ox = wDrag.ox + dx; wv.oy = wDrag.oy + dy; wClamp(); wDraw(); return; }
+  }
+  const id = regAt(e), r = PROG.run, ok = id && r && (id in r.owned || canAttack(r, id));
+  $('worldMap').style.cursor = id ? 'pointer' : 'grab';
+  if ((ok ? id : null) !== wHover) { wHover = ok ? id : null; wDraw(); }
 });
+$('worldMap').addEventListener('pointerup', e => {
+  const d = wDrag; wDrag = null; $('worldMap').style.cursor = 'grab';
+  if (!d || d.moved || !WD) return;
+  const id = regAt(e); if (id) { SFX.play('click'); wSel = id; renderRegPanel(); wDraw(); }
+});
+$('worldMap').addEventListener('pointerleave', () => { if (!wDrag) { wHover = null; wDraw(); } });
+$('worldMap').addEventListener('wheel', e => {
+  e.preventDefault();
+  const b = $('worldMap').getBoundingClientRect(), px = e.clientX - b.left, py = e.clientY - b.top, s0 = wv.s;
+  wv.s *= Math.exp(-e.deltaY * .0015); wClamp();
+  const k = wv.s / s0; wv.ox = px - (px - wv.ox) * k; wv.oy = py - (py - wv.oy) * k; wClamp(); wDraw();
+}, {passive: false});
+const wZoomBy = f => { const s0 = wv.s; wv.s *= f; wClamp(); const k = wv.s / s0; wv.ox = wv.W / 2 - (wv.W / 2 - wv.ox) * k; wv.oy = wv.H / 2 - (wv.H / 2 - wv.oy) * k; wClamp(); wDraw(); };
+$('wzIn').onclick = () => wZoomBy(1.4);
+$('wzOut').onclick = () => wZoomBy(1 / 1.4);
+$('wzFit').onclick = () => { wv.s = wFit(); wClamp(); wDraw(); };
+$('wzMe').onclick = () => wFocus(wSel || 'vadi', 2.2);
+window.addEventListener('resize', () => { if (!$('world').classList.contains('hidden') && wResize()) wDraw(); });
 
-// ---- savaş girişi ----
-function setupBattle(s, i) {
-  const r = PROG.run, a = r.act, nd = r.map[s][i], A = ACTS[a], late = s >= 2 ? 1 : 0;
-  const hard = nd.t === 'zor', B = nd.t === 'boss' ? BOSSES[A.boss] : null, up = d => d === 'kolay' ? 'normal' : 'zor';
-  const scen = B ? 'boss_' + A.boss : nd.scen;
-  Object.assign(cfg, {humans: 1, coop: false, fog: false, speed: 2, scen, chapter: `${a}-${s}-${i}`,
-    map: B ? B.map : nd.map, diff: B ? B.diff : hard ? up(A.diff[late]) : A.diff[late],
-    npc: B ? B.npc : Math.min(4, A.npc[late] + (hard ? 1 : 0)), npcPowers: B ? A.npcPowers[1] : hard || A.npcPowers[late],
-    relics: [...r.relics], runNext: {...r.next}, enemies: shuffled(A.enemies),
-    campLabel: `${a + 1}. perde · ${B ? B.name : (hard ? 'Zorlu savaş: ' : '') + SCMAP[scen].name}`});
+// ---- bölgenin savaşı ----
+// kuşatma: başkentin ülkesindeki diğer bölgelerden kaçı senin (n / of). Hiçbiri değilse başkent çok büyük başlar ve
+// zorluk bir kademe artar; çevreyi aldıkça patron küçülür, yarısını alınca zorluk normale döner.
+function siegeOf(R) {
+  const rest = REGIONS.filter(q => q.land === R.land && !q.boss && !q.home), r = PROG.run;
+  return {n: r ? rest.filter(q => q.id in r.owned).length : 0, of: rest.length};
+}
+const SIEGE_RING = .35;   // hiç kuşatılmamış başkente eklenen başlangıç halkası (başlangıç boyunun oranı)
+function setupRegion(id) {
+  const R = REGMAP[id], L = LANDS[R.land], B = R.boss ? BOSSES[L.boss] : null;
+  const scen = B ? 'boss_' + L.boss : R.scen, sg = siegeOf(R), free = 1 - sg.n / sg.of;
+  const up = d => d === 'kolay' ? 'normal' : 'zor';
+  Object.assign(cfg, {humans: 1, coop: false, fog: false, speed: 2, scen, chapter: id,
+    map: B ? B.map : L.map, diff: B ? (sg.n * 2 < sg.of ? up(B.diff) : B.diff) : L.diff, npc: B ? B.npc : L.npc, npcPowers: L.npcPowers,
+    bossRing: B ? B.ring + free * SIEGE_RING : 0,
+    enemies: shuffled(L.enemies), campLabel: `${L.name} · ${R.name}`});
   cfg.start = cfg.map >= 100 ? 25 : 20;
   applyScen();
-  if (!cfg.turns || cfg.turns > 35) cfg.turns = 35;   // seferde savaşlar kısa
-  if (hard) cfg.turns = Math.max(15, Math.round(cfg.turns * .85));
+  if (!cfg.turns) cfg.turns = 50;              // Hepsini Yık: süre uzun
+  else if (cfg.turns > 35) cfg.turns = 35;    // seferde savaşlar kısa
   fixCfg();
 }
 function preGoal() {
@@ -3529,186 +3648,76 @@ function preGoal() {
   if (cfg.win === 'fetih') return 'Bütün rakipleri yık';
   return `Karaların ${yuzde(cfg.win * 100, 'n')} al` + (s.id === 'akin' ? ` ya da ${cfg.turns} tur sonunda en büyük ol` : '');
 }
-function openBattle(s, i) {
-  const r = PROG.run, nd = r.map[s][i], A = ACTS[r.act];
-  setupBattle(s, i);
-  const sc = scenOf(), B = sc.goal === 'boss' ? BOSSES[sc.boss] : null;
-  hideAll(); $('story').classList.remove('hidden');
-  $('storyTitle').innerHTML = `${IC(NODE_INFO[nd.t].ic, 30)} ${B ? B.name : (nd.t === 'zor' ? 'Zorlu savaş: ' : '') + sc.name}`;
-  $('storyText').innerHTML = kText(B ? B.intro : (s === 0 && r.path.length === 0 ? A.intro + ' ' : '') + sc.desc);
-  const [s3, s2] = starLimits(), fails = r.fails[cfg.chapter] || 0;
-  $('storyCfg').innerHTML = `<div class="goalBig">Hedef: ${preGoal()}</div>`
-    + `${cfg.npc} rakip · ${cfg.map}×${cfg.map} harita · ${DIFF_LABEL[cfg.diff]} · ${cfg.turns} tur${cfg.npcPowers ? ' · rakipler güçlü' : ''}<br>`
-    + (sc.goal === 'hayatta' ? `${starStr(3, 15)} karaların %25'i · ${starStr(2, 15)} %12'si · ${starStr(1, 15)} ayakta kalmak`
-      : `${starStr(3, 15)} ${s3}. tura kadar · ${starStr(2, 15)} ${s2}. tura kadar · ${starStr(1, 15)} sonrası`)
-    + `<br>Güçlerin: ${r.powers.length ? r.powers.map(id => `${IC(id, 16)} ${PW[id].name}`).join(', ') : 'yok'}`
-    + (r.relics.length ? ` · Emanetler: ${r.relics.map(id => RELMAP[id].icon + ' ' + RELMAP[id].name).join(', ')}` : '')
-    + (Object.keys(r.next).length ? `<br>${IC('toparlanma', 16)} Bu savaşta: ${nextText(r.next)}` : '')
-    + (fails ? `<br>Bu savaşı ${fails} kez kaybettin. Her denemede harita yeni.` : '');
-  $('storyGo').innerHTML = IC('durakSavas', 20) + ' Savaşa başla';
-  $('storyBack').textContent = '◀ Sefer haritası';
+// savaşa gir: açık güç varsa önce güç seçimi (en fazla 2), yoksa doğrudan savaş
+function startRegion(id) {
+  setupRegion(id);
+  if (POWERS.some(p => powerEarned(p.id))) openPicks();
+  else { hideAll(); newGame([[]]); }
 }
-$('storyGo').onclick = () => {
-  const r = PROG.run; if (!r) return;
-  r.next = {}; saveProg();   // olaylardan gelen etkiler bu savaşta kullanıldı (cfg.runNext'te)
-  hideAll(); newGame([[...r.powers]]);
-};
-$('storyBack').onclick = openCamp;
-$('nextChBtn').onclick = openCamp;
-$('retryBtn').onclick = () => { const [, s, i] = String(cfg.chapter).split('-').map(Number); if (PROG.run) openBattle(s, i); };
-$('campBackBtn').onclick = openCamp;
+function renderRegPanel() {
+  const r = PROG.run, R = REGMAP[wSel];
+  if (!R) { $('regPanel').innerHTML = '<p class="note">Haritada bir bölgeye tıkla.</p>'; return; }
+  const L = LANDS[R.land], own = R.id in r.owned, can = !own && canAttack(r, R.id);
+  let h = `<div class="rpLand">${L.name}</div><h3>${IC(regIc(R), 24)} ${R.name}</h3>`;
+  if (R.home) {
+    $('regPanel').innerHTML = h + `<p class="story">${kText(R.intro)}</p><p class="note">Başlangıç bölgen. Kırmızı çerçeveli komşu bölgelere saldırabilirsin.</p>`;
+    return;
+  }
+  setupRegion(R.id);   // hedef, rakip ve harita bilgileri bu bölgenin savaşından
+  const sc = scenOf(), B = R.boss ? BOSSES[L.boss] : null, [s3, s2] = starLimits();
+  h += `<p class="story">${kText(B ? B.intro : R.intro)}</p>`;
+  h += `<div class="goalBig">Hedef: ${preGoal()}</div>`;
+  h += `<p class="note">${B ? `${IC('durakPatron', 16)} Patron: <b>${B.name}</b>. ${B.desc}` : `${IC(regIc(R), 16)} Senaryo: <b>${sc.name}</b>. ${sc.desc}`}</p>`;
+  h += `<p class="note">${cfg.npc} rakip · ${cfg.map}×${cfg.map} harita · ${DIFF_LABEL[cfg.diff]} · ${cfg.turns} tur${cfg.npcPowers ? ' · rakipler güçlü' : ''}<br>`
+    + (sc.goal === 'hayatta' ? `${starStr(3, 14)} karaların %25'i · ${starStr(2, 14)} %12'si · ${starStr(1, 14)} ayakta kalmak`
+      : `${starStr(3, 14)} ${s3}. tura kadar · ${starStr(2, 14)} ${s2}. tura kadar · ${starStr(1, 14)} sonrası`) + '</p>';
+  if (B) {
+    const sg = siegeOf(R), free = 1 - sg.n / sg.of;
+    h += `<div class="siege"><b>${IC('kale', 18)} Kuşatma: ${sg.n}/${sg.of}</b> · ${L.name} ülkesinin çevre bölgelerinden ${sg.n} tanesi senin.<br>`
+      + (sg.n >= sg.of ? 'Başkent tamamen kuşatıldı: patron en zayıf hâlinde.'
+        : `Patron ${free > .5 ? 'çok büyük' : 'biraz büyük'} başlıyor${sg.n * 2 < sg.of ? ' ve zorluk bir kademe yüksek' : ''}. Çevre bölgeleri aldıkça zayıflar.`) + '</div>';
+    h += `<p class="note">${IC('kilitAcik', 16)} Yenince kalıcı olarak açılan güçler: <b>${B.unlock.map(id => PW[id].name).join(', ')}</b>.</p>`;
+  }
+  if (own) h += `<p class="note">Fethedildi · en iyi sonuç ${starStr(r.owned[R.id], 16)}</p>`;
+  if (r.fails[R.id]) h += `<p class="note">Bu bölgede ${r.fails[R.id]} kez yenildin. Her denemede harita yeni.</p>`;
+  h += `<div class="btns">` + (can ? `<button id="regGo">${IC('durakSavas', 20)} Saldır</button>`
+    : own ? `<button class="sec" id="regGo">↻ Tekrar oyna</button>`
+    : `<button disabled>${IC('kilit', 18)} Önce komşu bir bölgeyi al</button>`) + '</div>';
+  $('regPanel').innerHTML = h;
+  if ($('regGo')) $('regGo').onclick = () => { SFX.play('click'); startRegion(R.id); };
+}
 
-// ---- ödül, köy, olay: tek pencere (#runEv) ----
-function evShow(title, text, body = '', btns = '') {
+function openCamp() {
   hideAll(); hideTip();
-  $('evTitle').innerHTML = title; $('evText').innerHTML = text; $('evBody').innerHTML = body; $('evBtns').innerHTML = btns;
-  $('runEv').classList.remove('hidden');
-}
-const card = (k, ic, name, desc, extra = '') => `<button class="pw" data-k="${k}"><span class="t">${ic} ${name}${extra}</span><span class="d">${desc}</span></button>`;
-const optCard = (o, idx) => o.kind === 'relic' ? card(idx, IC(RELMAP[o.id].ic, 24), RELMAP[o.id].name, RELMAP[o.id].desc, RELMAP[o.id].rare ? ' <span class="rare">nadir</span>' : ' <span class="cat">emanet</span>')
-  : o.kind === 'power' ? card(idx, IC(o.id, 24), PW[o.id].name, PW[o.id].desc, ' <span class="rare">güç</span>')
-  : card(idx, IC('toparlanma', 24), 'Toparlanma', 'Ordunu dinlendir: bir sonraki savaşa büyük başlarsın.');
-// ödül seçenekleri: rareN kadarı nadir (yeni güç ya da nadir emanet); kalanı sıradan emanet ya da toparlanma
-function rewardOpts(n, rareN) {
   const r = PROG.run;
-  const common = shuffled(RELICS.filter(x => !x.rare && !r.relics.includes(x.id))).map(x => ({kind: 'relic', id: x.id}));
-  // güçler: önce kalıcı açık olanlar; hiç açık güç kalmadıysa kilitliler de çıkar (yeni oyuncu da güç bulabilsin)
-  const pw = POWERS.filter(p => !r.powers.includes(p.id)), earned = pw.filter(p => powerEarned(p.id)), locked = pw.filter(p => !powerEarned(p.id));
-  const first = earned.length ? earned : locked, later = earned.length ? locked : [];
-  const rare = shuffled([...RELICS.filter(x => x.rare && !r.relics.includes(x.id)).map(x => ({kind: 'relic', id: x.id})),
-    ...first.map(p => ({kind: 'power', id: p.id}))]);
-  rare.push(...shuffled(later.map(p => ({kind: 'power', id: p.id}))));
-  const out = [];
-  for (let k = 0; k < rareN && rare.length; k++) out.push(rare.shift());
-  while (out.length < n && (common.length || rare.length)) out.push(common.length && (Math.random() < .7 || !rare.length) ? common.shift() : rare.shift());
-  if (out.length < n) out.push({kind: 'next'});
-  return shuffled(out);
-}
-let evOpts = [], evDone = null;
-function chooseOpts(title, text, opts, then) {
-  evOpts = opts; evDone = then;
-  evShow(title, text, `<div class="pgrid">${opts.map(optCard).join('')}</div>`);
-}
-$('evBody').addEventListener('click', e => {
-  const b = e.target.closest('[data-k]'); if (!b) return;
-  SFX.play('click');
-  const k = b.dataset.k;
-  if (k.startsWith('drop:')) { evDone && evDone(k.slice(5)); return; }
-  if (k.startsWith('ch:')) { evDone && evDone(+k.slice(3)); return; }
-  const o = evOpts[+k]; if (o) takeOpt(o, evDone);
-});
-// seçilen ödülü sefere ekle; güç yuvası doluysa önce hangisinin bırakılacağı sorulur
-function takeOpt(o, then) {
-  if (o.start) { newRun(PROG.realm, o.id); openCamp(); return; }   // sefer başı güç seçimi
-  const r = PROG.run;
-  if (o.kind === 'relic') { r.relics.push(o.id); toast(`${RELMAP[o.id].icon} Emanet: <b>${RELMAP[o.id].name}</b>`); }
-  if (o.kind === 'next') r.next.ring = (r.next.ring || 0) + 1;
-  if (o.kind === 'power') {
-    if (r.powers.length < slotsOf(r)) r.powers.push(o.id);
-    else {
-      evDone = drop => { if (drop !== 'none') { r.powers = r.powers.filter(x => x !== drop); r.powers.push(o.id); } saveProg(); then(); };
-      evShow('Güç yuvan dolu', `<b>${IC(o.id, 20)} ${PW[o.id].name}</b> gücünü almak için bir gücünü bırakmalısın (yuva: ${slotsOf(r)}).`,
-        `<div class="pgrid">${r.powers.map(id => card('drop:' + id, IC(id, 24), PW[id].name + ' gücünü bırak', PW[id].desc)).join('')}
-         ${card('drop:none', IC('vazgec', 24), 'Vazgeç', `${PW[o.id].name} gücünü alma, güçlerin kalsın.`)}</div>`);
-      return;
-    }
+  if (!r) {   // yeni sefer: krallığa ad ver
+    $('camp').classList.remove('hidden');
+    $('campTitle').innerHTML = IC('sefer', 34) + ' Yeni Sefer';
+    $('realmInput').value = ''; setTimeout(() => $('realmInput').focus(), 50);
+    return;
   }
-  saveProg(); then();
+  $('camp').classList.add('hidden'); $('world').classList.remove('hidden');
+  buildWorld();
+  $('wTitle').innerHTML = `${IC('sefer', 30)} ${esc(PROG.realm)}`;
+  $('campInfo').innerHTML = `${ownedN(r)}/${BATTLES.length} bölge fethedildi · ${runStars(r)}/${BATTLES.length * 3} ${IC('yildiz', 16)}<br>${IC('kilitAcik', 16)} ${earnedCount()}/${POWERS.length} güç açık`
+    + (r.done ? `<br><b>${IC('zafer', 16)} Sefer tamamlandı!</b>` : '');
+  const first = !wSel || !REGMAP[wSel];
+  if (first) wSel = (BATTLES.find(R => canAttack(r, R.id)) || REGIONS[0]).id;
+  renderRegPanel();
+  requestAnimationFrame(() => { wResize(); if (first) wFocus('vadi', 1.6); else drawWorld(); });
 }
-// bekleyen iş: ödül seçimi, köy, olay
-function showPending() {
-  const r = PROG.run, p = r.pending;
-  const finish = () => {
-    if (p.kind === 'koy' || p.kind === 'olay') r.path.push(p.i);
-    const boss = p.kind === 'boss';
-    r.pending = null;
-    if (boss) {
-      if (r.act >= ACTS.length - 1) { r.done = true; PROG.runsDone = (PROG.runsDone || 0) + 1; unlock('seferSon'); if (r.all3) unlock('kusursuz'); }
-      else { r.act++; r.path = []; r.map = genAct(r.act); if (r.act >= 2) unlock('seferYari'); }
-      PROG.bestAct = Math.max(PROG.bestAct || 0, r.act + (r.done ? 1 : 0));
-    }
-    saveProg(); openCamp();
-  };
-  if (p.kind === 'reward') {
-    const n = p.stars >= 2 ? 3 : 2;
-    chooseOpts(`${IC('odul', 28)} Ödül ${starStr(p.stars, 22)}`, p.stars >= 3 ? 'Kusursuz zafer! Seçeneklerden biri kesin nadir.' : 'Zaferin karşılığında birini seç. Daha çok yıldız, daha iyi ödül demek.', rewardOpts(n, p.stars >= 3 ? 1 : 0), finish);
-  } else if (p.kind === 'zor') {
-    chooseOpts(`${IC('odul', 28)} Zorlu savaşın ödülü ${starStr(p.stars, 22)}`, 'Zorlu bir savaşı kazandın: hepsi nadir ödüller.', rewardOpts(3, 3), finish);
-  } else if (p.kind === 'boss') {
-    const B = BOSSES[ACTS[r.act].boss], last = r.act >= ACTS.length - 1;
-    chooseOpts(`${IC('durakPatron', 28)} ${B.name} yenildi!`, `Kalıcı olarak açılan güçler: <b>${B.unlock.map(id => PW[id].name).join(', ')}</b>. Büyük ödülünü seç.`
-      + (!last && r.act + 1 === 3 ? '<br>Bir sonraki perdede güç yuvan 3\'e çıkıyor.' : ''), rewardOpts(3, 3), finish);
-  } else if (p.kind === 'koy') {
-    const relic = shuffled(RELICS.filter(x => !r.relics.includes(x.id) && !x.rare))[0] || shuffled(RELICS.filter(x => !r.relics.includes(x.id)))[0];
-    const pw = shuffled(POWERS.filter(q => !r.powers.includes(q.id) && powerEarned(q.id)))[0] || shuffled(POWERS.filter(q => !r.powers.includes(q.id)))[0];
-    const opts = [];
-    if (relic) opts.push({kind: 'relic', id: relic.id});
-    if (pw) opts.push({kind: 'power', id: pw.id});
-    if (!opts.length) opts.push({kind: 'next'});
-    chooseOpts(IC('koy', 28) + ' Köy', 'Köylüler ordunu sıcak karşılıyor. Yaşlılar sana iki şey öneriyor; birini seç:'
-      + (pw && r.powers.length >= slotsOf(r) ? '<br><small>Gücü seçersen, yuvan dolu olduğu için bir gücünü bırakırsın (güç değiştirme).</small>' : ''), opts, finish);
-  } else if (p.kind === 'olay') {
-    const ev = EVENTS[r.map[p.s][p.i].ev];
-    evDone = idx => runChoice(ev, ev.choices[idx], finish);
-    evShow(`${IC('durakOlay', 28)} ${ev.title}`, ev.text, `<div class="evCh">${ev.choices.map((c, k) =>
-      `<button class="${c.none ? 'sec' : ''}" data-k="ch:${k}" ${c.needRelic && !r.relics.length ? 'disabled title="Emanetin yok"' : ''}>${c.label}${c.roll ? ` <small>(${IC('d20', 14)} ${c.roll}+)</small>` : ''}</button>`).join('')}</div>`);
-  }
-}
-// olay seçimi: varsa zar at (d20), etkiyi uygula, sonucu göster
-function runChoice(ev, c, finish) {
-  const r = PROG.run;
-  const done = (text, eff) => {
-    const notes = applyEff(eff), more = eff && eff.power;
-    evShow(`${IC('durakOlay', 28)} ${ev.title}`, text + (notes.length ? `<br><b>${notes.join(' · ')}</b>` : ''), '',
-      `<button id="evGo">${more ? 'Gücünü seç ▶' : 'Devam ▶'}</button>`);
-    $('evGo').onclick = () => { SFX.play('click'); if (more) chooseOpts('Yeni bir güç', 'Birini seç:', powerOffer(2), finish); else finish(); };
-  };
-  if (!c.roll) { done(c.text, c.effect); return; }
-  const v = 1 + Math.floor(Math.random() * 20);
-  evShow(`${IC('durakOlay', 28)} ${ev.title}`, `Zar atılıyor… hedef <b>${c.roll}+</b>`, '<div id="evDice" class="evDice">20</div>');
-  SFX.play('roll', .7, 1);
-  let t = 0;
-  const iv = setInterval(() => {
-    $('evDice').textContent = 1 + Math.floor(Math.random() * 20);
-    if (++t >= 12) {
-      clearInterval(iv); $('evDice').textContent = v;
-      const ok = v >= c.roll, bad = !ok && v <= 5 && c.bad;
-      $('evDice').classList.add(ok ? 'ok' : 'bad'); SFX.play(ok ? 'success' : 'fail');
-      setTimeout(() => done(`${IC('d20', 16)} <b>${v}</b> attın. ` + (ok ? c.okText : bad ? c.badText : c.midText), ok ? c.ok : bad ? c.bad : null), 700);
-    }
-  }, 60);
-}
-function applyEff(e) {
-  const r = PROG.run, out = [];
-  if (!e) return out;
-  if (e.loseRelic && r.relics.length) { const x = r.relics.splice(Math.floor(Math.random() * r.relics.length), 1)[0]; out.push(`${RELMAP[x].icon} ${RELMAP[x].name} gitti`); }
-  if (e.relic) { const x = shuffled(RELICS.filter(q => !r.relics.includes(q.id)))[0]; if (x) { r.relics.push(x.id); out.push(`Emanet: ${x.icon} ${x.name}`); } }
-  if (e.next) for (const [k, v] of Object.entries(e.next)) r.next[k] = (r.next[k] || 0) + v;
-  saveProg();
-  return out;
-}
-const powerOffer = n => {
-  const r = PROG.run, own = POWERS.filter(p => !r.powers.includes(p.id));
-  return [...shuffled(own.filter(p => powerEarned(p.id))), ...shuffled(own.filter(p => !powerEarned(p.id)))].slice(0, n).map(p => ({kind: 'power', id: p.id}));
+$('nextChBtn').onclick = openCamp;
+$('campBackBtn').onclick = openCamp;
+$('retryBtn').onclick = () => { if (PROG.run && REGMAP[cfg.chapter]) startRegion(cfg.chapter); };
+$('pickBack').onclick = () => {
+  if (pickIdx > 0) { pickIdx--; chosen = picks[pickIdx] || []; renderPicks(); return; }
+  $('picks').classList.add('hidden');
+  if (cfg.chapter != null) openCamp(); else showSetup();
 };
-// sefer başı: 3 rastgele açık güçten biri (açık güç azsa kalanlar kilitlilerden)
-function openStarter() {
-  const open = shuffled(POWERS.filter(p => powerEarned(p.id))), rest = shuffled(POWERS.filter(p => !powerEarned(p.id)));
-  const opts = [...open, ...rest].slice(0, 3).map(p => ({kind: 'power', id: p.id, start: true}));
-  chooseOpts(`${IC('sefer', 28)} ${esc(PROG.realm)}`, 'Seferine bir güçle başlıyorsun. Birini seç; yol boyunca yenilerini toplayacaksın.', opts, () => {});
-}
-function showFinale() {
-  const r = PROG.run;
-  evShow(IC('zafer', 32) + ' Sefer tamamlandı!', kText(`Dünya artık tek bir adla anılıyor: {K}.`) +
-    `<br>${r.battles} zafer · ${r.stars} ${IC('yildiz', 16)}${r.all3 ? ' · bütün savaşlardan üç yıldız!' : ''}<br>Güçler: ${r.powers.map(id => PW[id].name).join(', ') || 'yok'} · Emanetler: ${r.relics.map(id => RELMAP[id].icon + ' ' + RELMAP[id].name).join(', ') || 'yok'}`,
-    '', '<button class="sec" id="finMenu">◀ Ana Menü</button><button id="finNew">' + IC('sefer', 20) + ' Yeni sefer</button>');
-  $('finMenu').onclick = showMenu;
-  $('finNew').onclick = () => { PROG.run = null; PROG.realm = ''; saveProg(); openCamp(); };
-}
 $('realmOk').onclick = () => {
   const name = $('realmInput').value.replace(/[<>&"']/g, '').trim();
   if (!name) { $('realmInput').placeholder = 'Önce bir ad yaz!'; $('realmInput').focus(); return; }
-  PROG.realm = name; openStarter();
+  newRun(name); wSel = null; openCamp();
 };
 $('realmInput').addEventListener('keydown', e => { if (e.key === 'Enter') $('realmOk').click(); });
 $('campNameBack').onclick = showMenu;
@@ -3730,7 +3739,7 @@ $('xferLoad').onclick = () => {
     const inc = JSON.parse(decodeURIComponent(escape(atob(raw.slice(4)))));
     // birleştir: hiçbir şey kaybolmaz, her alanda en iyisi alınır
     // süren sefer: bu bilgisayarda sefer yoksa gelen sefer alınır
-    if (!PROG.run && inc.run && inc.run.map) { PROG.run = inc.run; PROG.realm = String(inc.realm || 'Krallığım').replace(/[<>&"']/g, '').slice(0, 28); }
+    if (!PROG.run && inc.run && inc.run.v === 2 && inc.run.owned) { PROG.run = inc.run; PROG.realm = String(inc.realm || 'Krallığım').replace(/[<>&"']/g, '').slice(0, 28); }
     // eski sürümün kodu: bitirilen bölümlerin açtığı güçler
     const OLD = ['fatih', 'kale', 'ikinci', 'akinci', 'yildirim', 'cift', 'karsi', 'keskin', 'genis'];
     for (const k of Object.keys(inc.stars || {})) if (OLD[+k]) PROG.powOpen[OLD[+k]] = 1;
@@ -3739,9 +3748,8 @@ $('xferLoad').onclick = () => {
     for (const k of Object.keys(inc.powWins || {})) if (PW[k]) PROG.powWins[k] = 1;
     PROG.games = Math.max(PROG.games || 0, +inc.games || 0);
     PROG.runsDone = Math.max(PROG.runsDone || 0, +inc.runsDone || 0);
-    PROG.bestAct = Math.max(PROG.bestAct || 0, +inc.bestAct || 0);
     saveProg();
-    $('xferMsg').innerHTML = `${IC('basarili', 16)} Birleştirildi: ${achCount()} başarım, ${earnedCount()}/${POWERS.length} açık güç` + (PROG.run ? `, sefer: ${PROG.run.act + 1}. perde.` : '.');
+    $('xferMsg').innerHTML = `${IC('basarili', 16)} Birleştirildi: ${achCount()} başarım, ${earnedCount()}/${POWERS.length} açık güç` + (PROG.run ? `, sefer: ${ownedN(PROG.run)} bölge.` : '.');
   } catch (e) { $('xferMsg').innerHTML = IC('uyari', 16) + ' Kod okunamadı. Tamamını kopyaladığından emin ol ("TS1:" ile başlamalı).'; }
 };
 
@@ -3784,16 +3792,15 @@ function showMenu(silent) {
   const r = PROG.run;
   $('mCont').disabled = !r;
   $('mContInfo').textContent = !r ? 'Henüz bir sefer yok'
-    : r.done ? `${PROG.realm} · sefer tamamlandı · ${r.stars} ★`
-    : campSave ? `${PROG.realm} · ${r.act + 1}. perde, savaşın ${s.turn}. turundan devam`
-    : `${PROG.realm} · ${r.act + 1}. perde · ${r.stars} ★`;
+    : campSave && REGMAP[s.cfg.chapter] ? `${PROG.realm} · ${REGMAP[s.cfg.chapter].name} savaşı, ${s.turn}. turdan devam`
+    : `${PROG.realm} · ${ownedN(r)}/${BATTLES.length} bölge · ${runStars(r)} ★` + (r.done ? ' · tamamlandı' : '');
   $('mFreeInfo').textContent = freeSave ? `Kayıtlı oyun var (tur ${s.turn})` : '';
   renderCampSummary();
 }
 $('mNew').onclick = async () => {
-  if (PROG.run && !PROG.run.done && !await ask(IC('sefer', 26) + ' Yeni sefer', `<b>${esc(PROG.realm)}</b> seferi silinir, yeni bir krallıkla baştan başlarsın. Patron yenerek kalıcı açtığın güçler ve başarımlar kalır.`, 'Yeni sefere başla', 'Vazgeç')) return;
+  if (PROG.run && !PROG.run.done && !await ask(IC('sefer', 26) + ' Yeni sefer', `<b>${esc(PROG.realm)}</b> seferi silinir, yeni bir krallıkla baştan başlarsın. Başkent alarak kalıcı açtığın güçler ve başarımlar kalır.`, 'Yeni sefere başla', 'Vazgeç')) return;
   const s = loadSave(); if (s && s.cfg && s.cfg.chapter != null) clearSave();   // yarım kalan sefer savaşı da gider
-  PROG.run = null; PROG.realm = ''; saveProg(); openCamp();
+  PROG.run = null; PROG.realm = ''; saveProg(); wSel = null; openCamp();
 };
 $('mCont').onclick = () => {
   const s = loadSave();
@@ -3945,9 +3952,6 @@ document.querySelectorAll('#pause i[data-ic]').forEach(el => { el.innerHTML = ZS
 let tipFor = null, tipX = 0, tipY = 0;
 function tipHtml(spec) {
   const [kind, pid, one] = spec.split(':'), p = players[+pid];
-  // sefer haritasındaki çanta: w = güç, r = emanet
-  if (kind === 'w' && PW[pid]) return `<div class="th">Güç</div><div class="tp"><span class="ic">${IC(pid, 26)}</span><div><b>${PW[pid].name}<span class="cat">${PW[pid].cat}</span></b><div class="d">${PW[pid].desc}</div></div></div>`;
-  if (kind === 'r' && RELMAP[pid]) return `<div class="th">Emanet</div><div class="tp"><span class="ic">${IC(RELMAP[pid].ic, 26)}</span><div><b>${RELMAP[pid].name}</b><div class="d">${RELMAP[pid].desc}</div></div></div>`;
   if (!p) return '';
   const ids = kind === 'g' ? [one] : p.powers;
   const cdTxt = id => {
@@ -3959,8 +3963,7 @@ function tipHtml(spec) {
       <b>${PW[id].name}<span class="cat">${PW[id].cat}</span></b><div class="d">${PW[id].desc}</div>${cdTxt(id)}</div></div>`).join('')
     : '<div class="none">Bu ülkenin gücü yok.</div>';
   const boss = kind === 'p' && p.bossKind ? `<div class="tp"><span class="ic">${IC('durakPatron', 26)}</span><div><b>Patron</b><div class="d">${BOSSES[p.bossKind].desc}</div></div></div>` : '';
-  const rels = kind === 'p' && p.relics && p.relics.length ? p.relics.map(id => `<div class="tp"><span class="ic">${IC(RELMAP[id].ic, 26)}</span><div><b>${RELMAP[id].name}<span class="cat">emanet</span></b><div class="d">${RELMAP[id].desc}</div></div></div>`).join('') : '';
-  return `<div class="th">${head}</div>${boss}${body}${rels}`;
+  return `<div class="th">${head}</div>${boss}${body}`;
 }
 function showTip(el) {
   const html = tipHtml(el.dataset.tip);
