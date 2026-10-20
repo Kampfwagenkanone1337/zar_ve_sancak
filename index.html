@@ -348,7 +348,7 @@
       <li><i data-ic="senaryo" data-sz="16"></i> Her oyunda harita farklıdır. Arazinin ele geçirme maliyeti: <i data-ic="arCayir" data-sz="16"></i> çayır 1, <i data-ic="arOrman" data-sz="16"></i> orman ve <i data-ic="arTepe" data-sz="16"></i> tepe 1,5, <i data-ic="arAkarsu" data-sz="16"></i> akarsu ve <i data-ic="koy" data-sz="16"></i> köy 2, <i data-ic="arDag" data-sz="16"></i> dağ 3 kare sayılır. Akarsuyu geçmek +2, tepedeki düşmana saldırmak +1 zorluk. <i data-ic="arDeniz" data-sz="16"></i> Deniz alınamaz; denizin karşısına çıkarma yapmak +3 zorluk.</li>
       <li><i data-ic="koy" data-sz="16"></i> Bir köyün tamamı elindeyse kazanma hesabında <b>fazladan 25 kare</b> sayılır. Hedef, karaların belirli bir payına ulaşmak ya da (serbest oyunda seçilirse) bütün rakipleri yıkmaktır.</li>
       <li><b>20</b> her zaman kazanır (kritik). <b>1</b> felakettir: kendi toprağından kaybedersin.</li>
-      <li><i data-ic="mSancak" data-sz="16"></i> Her ülkenin ortasında bir <b>sancak</b> var. Sancağın tamamını içeren saldırının hedef zarı <b>+10</b> artar; büyüklük indirimi (güç üstünlüğü) geçmez ve hedef 20'yi aşarsa sancak alınamaz. Başarırsan o ülke yıkılır: sana yakın yarısı senin olur, kalanı sahipsiz kalır. Senin sancağın düşerse kaybedersin, onu koru!</li>
+      <li><i data-ic="mSancak" data-sz="16"></i> Her ülkenin ortasında bir <b>sancak</b> var. Sancağa saldırmak için önce onu <b>kuşatmalısın</b>: sancağın 5 kare çevresinin en az %40'ı senin olmalı. Sancağın tamamını içeren saldırının hedef zarı <b>+10</b> artar; büyüklük indirimi (güç üstünlüğü) geçmez ve hedef 20'yi aşarsa sancak alınamaz. Başarısız her sancak saldırısı o sancağı <b>alarma</b> geçirir: sonraki saldırılar +3 zorlaşır (her tur 1 azalır). Başarırsan o ülke yıkılır: sana yakın yarısı senin olur, kalanı sahipsiz kalır. Senin sancağın düşerse kaybedersin, onu koru!</li>
       <li>Oyun başında <b>güç</b> seçersin (aynı kategoriden iki tane olmaz). Oyun sırasında fareyi bir gücün üstüne getirince ne yaptığı yazar.</li>
       <li>Oyun sırasında <b>Esc</b> oyun menüsünü açar: oyun durur; ayarları değiştirebilir ya da ana menüye dönebilirsin.</li>
       <li>Fare tekerleği ile yakınlaş/uzaklaş; sağ tuş, orta tuş ya da Boşluk tuşu basılıyken sürükleyerek haritayı kaydır.</li>
@@ -943,7 +943,13 @@ const TUNE = {
   weakW: 1,
   // Kaleyi Tut: kaleyi bütünüyle alan saldırının ek değeri · kaleye her kare yaklaşmanın değeri
   // (simülasyon, 200'er oyun, 4 ülke: kaleye yönelen saldırı %18 → %48, kalenin ilk alındığı tur 9 → 7, kale hiç alınmayan oyun %9 → %3)
-  kaleAI: true, kaleVal: 80, kaleNear: 4,                   // ortalamanın yarısından küçük ülkenin hedef değeri çarpanı (1 = kapalı)
+  kaleAI: true, kaleVal: 80, kaleNear: 4,
+  // sancak: çevresindeki halkanın (sancaktan ringW kare uzağa kadar, deniz hariç) en az siegeNeed kadarı saldıranın değilse sancağa
+  // saldırılamaz · her başarısız sancak saldırısı o sancağı alarmUp kadar zorlaştırır (her tur 1 söner) ·
+  // yapay zekâ: kendi sancağının çevresindeki düşmanı geri almak (defW) ve başkasının sancağını kuşatmak (siegeW) değerli
+  // simülasyon (100'er oyun, 4 yapay zekâ, 100×100 Normal): oyun başına sancak denemesi 6,7 → 4,3; ilk deneme 8. → 13. tur;
+  // ilk düşüş 11. → 17. tur. Daha sıkı kuşatma ya da daha güçlü savunma oyunları kilitliyordu (çoğu süre dolarak bitiyordu)
+  ringW: 5, siegeNeed: .4, alarmUp: 3, defW: 1, defMin: .3, siegeW: 1.5, sancakRule: true,                   // ortalamanın yarısından küçük ülkenin hedef değeri çarpanı (1 = kapalı)
   sancak: 10, sancakSize: 5,  // sancağa saldırıda hedef zara eklenen (simülasyon: tek başına sancak ~%35) · sancak bloğunun kenarı
   npcSeaMax: 1 / 3, npcWasteMax: 0.5,   // NPC aday alanı: en çok bu oranda deniz · deniz + kendi toprağı en çok bu oranda (yoksa denize saldırıyormuş gibi görünür)
 };
@@ -1375,13 +1381,15 @@ function analyze(r, pid, noFlags = false) {
   if (villages.some(v => v.own >= 0 && v.own !== pid && !ally(pid, v.own) && has(players[v.own], 'milis') && r.x1 >= v.x0 && r.x0 <= v.x1 && r.y1 >= v.y0 && r.y0 <= v.y1))
     mods.push(['Milisler', TUNE.milis, 'milis']);
   for (const f of flags) mods.push([`${players[f].name} sancağı`, TUNE.sancak, 'mSancak']);
+  for (const f of flags) if (players[f].alarm) mods.push(['sancak alarmda', players[f].alarm, 'uyari']);
   // sefer: patron kuralları
   if (bossRiver) mods.push(['Değirmenci Kral\'ın nehri', 2, 'patronNehri']);
   if (!p.human && diffOf().dc) mods.push(['zorluk', diffOf().dc]);
   const dc = Math.max(2, 1 + mods.reduce((s, m) => s + m[1], 0));
   // hedef 20'yi aşan saldırıyla sancak alınamaz (kritik 20 sancak düşürmez): sancak kareleri korunur, gerisi normal saldırı
   if (flags.length && dc > 20) return {...analyze(r, pid, true), flagTooBig: flags};
-  return {taken, enemy, neutral: taken - enemy, by, touches, hidden, mods, mainDef, dc, flags, shielded, tc, objN, seaN, ownN,
+  const noSiege = noFlags ? [] : flagsCovered(r, pid).filter(v => !flags.includes(v));   // seçili ama kuşatılmamış sancaklar
+  return {taken, enemy, neutral: taken - enemy, by, touches, hidden, mods, mainDef, dc, flags, shielded, tc, objN, seaN, ownN, takenIdx, noSiege,
     valid: taken > 0 && touches && hidden === 0};
 }
 
@@ -1961,7 +1969,21 @@ function placeFlag(p) {
   return best;
 }
 const covers = (r, f) => !!f && r.x0 <= f.x0 && r.y0 <= f.y0 && r.x1 >= f.x1 && r.y1 >= f.y1;
-const flagsIn = (r, pid) => players.filter(q => q.alive && q.id !== pid && !ally(pid, q.id) && covers(r, q.flag)).map(q => q.id);
+const flagsCovered = (r, pid) => players.filter(q => q.alive && q.id !== pid && !ally(pid, q.id) && covers(r, q.flag)).map(q => q.id);
+// sancağa ancak kuşatılmışsa saldırılabilir (ilk hamlede sancağa koşmak olmasın)
+const flagsIn = (r, pid) => flagsCovered(r, pid).filter(v => !TUNE.sancakRule || siegeShare(v, pid) >= TUNE.siegeNeed);
+const flagRing = f => expand(f, TUNE.ringW, TUNE.ringW);
+// vid'in sancağının çevresinden (sancak ve deniz hariç) pid'in ve müttefiklerinin payı
+function siegeShare(vid, pid) {
+  const f = players[vid].flag; if (!f) return 0;
+  const R = flagRing(f); let n = 0, mine = 0;
+  for (let y = R.y0; y <= R.y1; y++) for (let x = R.x0; x <= R.x1; x++) {
+    if (x >= f.x0 && x <= f.x1 && y >= f.y0 && y <= f.y1) continue;
+    const i = y * M + x; if (terr && terr[i] === T.DENIZ) continue;
+    n++; const o = own[i]; if (o === pid || ally(pid, o)) mine++;
+  }
+  return n ? mine / n : 1;
+}
 // Yıkılan ülkenin toprağı düz bir çizgiyle ikiye bölünür: sancağı alanın geldiği yöndeki yarı ona geçer.
 // Bölme ızgaranın 5×5 bloklarıyla yapılır; sınır basamaklı değil, düz ve bloklara oturan çizgiler olur.
 function splitNear(vid, pid) {
@@ -2075,6 +2097,10 @@ function resolveAttack(pid, r, a, useDbl) {
       const res = takeBlock(pid, d.id, r, TUNE.karsiSize);
       if (res.lost) { txt += ` ${IC('karsi', 16)} ${tag(d)} karşı saldırıyla ${res.lost} kare kaptı!`; flash = {r: res.rect, color: d.color}; countered = d.id; }
     }
+  }
+  if (!ok) for (const f of a.flags) {   // sancak alarmda: sonraki saldırılar daha zor (her tur 1 söner)
+    players[f].alarm = (players[f].alarm || 0) + TUNE.alarmUp;
+    txt += ` ${IC('uyari', 16)} ${tag(players[f])} sancağı alarmda (+${players[f].alarm}).`;
   }
   if (pre.length) txt = pre.join(' · ') + ' · ' + txt;
   countCells();
@@ -2287,7 +2313,7 @@ function scenRound() {
 }
 function nextTurn() {
   players[cur].extraNow = false;
-  do { cur = (cur + 1) % players.length; if (cur === firstP) { turn++; glSnap(); glSave(); if (scenRound()) return; } } while (!players[cur].alive);
+  do { cur = (cur + 1) % players.length; if (cur === firstP) { turn++; for (const q of players) if (q.alarm) q.alarm--; glSnap(); glSave(); if (scenRound()) return; } } while (!players[cur].alive);
   if (cfg.turns && turn > cfg.turns) { timeUp(); return; }
   startTurn();
 }
@@ -2313,6 +2339,11 @@ function npcMove() {
   const canDbl = ready(p, 'cift');
   const D = diffOf();
   const aliveP = players.filter(q => q.alive), weakLine = aliveP.reduce((s, q) => s + q.score, 0) / aliveP.length * 0.5;
+  // sancak halkaları: ringOf[i] = o kare kimin sancağının çevresinde (sancak kareleri hariç)
+  const ringOf = new Int8Array(M * M).fill(-1);
+  if (TUNE.sancakRule) for (const q of aliveP) if (q.flag) { const Rg = flagRing(q.flag); for (let y = Rg.y0; y <= Rg.y1; y++) for (let x = Rg.x0; x <= Rg.x1; x++) if (flagAt[y * M + x] < 0) ringOf[y * M + x] = q.id; }
+  // kendi sancağının çevresine düşman girdiyse tehdit (0–1): ne kadar girdiyse savunma o kadar acil
+  let threat = 0; if (p.flag && TUNE.sancakRule) threat = 1 - siegeShare(pid, pid);
   // Kaleyi Tut: kaleye yaklaşmak, kaleyi bütünüyle almak ve tutanı durdurmak değerli.
   // urg: kale boşken 1; başkası tutuyorsa tuttuğu tur arttıkça telaş artar; kendisi tutuyorsa kaleye daha az bakar
   const ob = TUNE.kaleAI && scenOf().goal === 'kale' && SC.obj ? SC.obj : null;
@@ -2350,6 +2381,11 @@ function npcMove() {
       gain += a.by[k] * wgt;
     }
     gain += a.objN * 8;   // Kaleyi Tut: kale kareleri değerli
+    if (TUNE.sancakRule) {   // sancak çevresi: kendi halkasını geri al, başkasınınkini kuşat
+      let def = 0, sie = 0;
+      for (const i of a.takenIdx) { const ro = ringOf[i]; if (ro < 0) continue; if (ro === pid) { if (own[i] >= 0) def++; } else if (own[i] === ro) sie++; }
+      gain += (threat > TUNE.defMin ? def * TUNE.defW * (1 + 3 * threat) : 0) + sie * TUNE.siegeW;   // savunma ancak kuşatma ciddileşince
+    }
     if (ob) { const d = gapTo(r); if (d < fortD) gain += (fortD - d) * TUNE.kaleNear * urg; }   // kaleye yaklaştıran saldırı
     let ch = chanceOf(p, a.dc, false, true), useD = false;
     if (canDbl && ch < 0.6) { ch = chanceOf(p, a.dc, true, true); useD = true; }
@@ -2893,6 +2929,9 @@ $('snapSeg').addEventListener('click', e => {
   requestDraw();
 });
 renderSnap();
+// kuşatılmamış sancak için açıklama
+const siegeMsg = (v, pid) => `${IC('mSancak', 14)} ${players[v].name} sancağına saldırmak için önce çevresini kuşat: çevresinin `
+  + `${yuzde(siegeShare(v, pid) * 100)} senin, en az ${yuzde(TUNE.siegeNeed * 100)} gerekli.`;
 function updateSel() {
   const el = $('selInfo'), owner = selOwner(), p = players[owner];
   if (!p || over || (busy && players[cur].human)) return;     // kendi zarın atılırken dokunma
@@ -2902,7 +2941,8 @@ function updateSel() {
   if (!sel) { el.innerHTML = wait + `Haritada <b>sürükleyerek</b> saldırmak istediğin alanı seç. Seçim ${snap}×${snap} karelik bloklara oturur (en fazla ${ms}×${ms}).`; updateButtons(); return; }
   const a = analyze(sel, owner), w = sel.x1 - sel.x0 + 1, h = sel.y1 - sel.y0 + 1;
   if (!a.valid) {
-    const why = a.taken === 0 && a.shielded ? IC('mSancak', 16) + ' Sancağı almak için sancağın tamamını seçmelisin.'
+    const why = a.noSiege && a.noSiege.length ? siegeMsg(a.noSiege[0], owner)
+      : a.taken === 0 && a.shielded ? IC('mSancak', 16) + ' Sancağı almak için sancağın tamamını seçmelisin.'
       : a.taken === 0 ? 'Bu alan zaten senin' + (cfg.coop && cfg.humans > 1 ? ' ya da takım arkadaşının.' : '.')
       : a.hidden ? IC('sis', 16) + ' Sisli alana saldıramazsın.' : 'Alan kendi toprağına değmeli!';
     el.innerHTML = wait + `${w}×${h} alan · <span style="color:var(--bad)">${why}</span>`;
@@ -2913,7 +2953,8 @@ function updateSel() {
     const modTxt = a.mods.map(([n0, v, ic]) => { const n = ic ? `${IC(ic, 16)} ${n0}` : n0; return v < 0 ? `<span style="color:var(--ok)">− ${-v} (${n})</span>`
       : n0 === 'boyut' || n0 === 'düşman toprağı' ? `+ ${v} (${n})` : `<span style="color:var(--bad)">+ ${v} (${n})</span>`; }).join(' ');
     const flagTxt = a.flags.map(f => `<br><b style="color:${lite(players[f].color)}">${IC('mSancak', 16)} ${players[f].name} sancağı!</b> Başarırsan ülke ${has(players[f], 'yedek') && !players[f].flagUsed ? `yarısını kaybeder (${IC('yedek', 16)} Yedek Sancak)` : 'yıkılır'}.`).join('')
-      + (a.flagTooBig ? '<br><small>' + IC('mSancak', 14) + ' Bu kadar büyük bir saldırıyla sancak alınamaz (hedef 20\'yi aşıyor). Sancak için daha küçük bir alan seç.</small>'
+      + (a.noSiege && a.noSiege.length ? '<br><small>' + siegeMsg(a.noSiege[0], owner) + '</small>'
+        : a.flagTooBig ? '<br><small>' + IC('mSancak', 14) + ' Bu kadar büyük bir saldırıyla sancak alınamaz (hedef 20\'yi aşıyor). Sancak için daha küçük bir alan seç.</small>'
         : a.shielded ? '<br><small>' + IC('mSancak', 14) + ' Sancağın sadece bir kısmı seçili; o kareler alınamaz. Sancağı almak için tamamını seç.</small>' : '')
       + (a.flags.length && a.mainDef >= 0 && p.cells > players[a.mainDef].cells ? '<br><small>Sancak saldırısında güç üstünlüğü indirimi geçmez.</small>' : '');
     const rr = [has(p, 'sansli') && !has(p, 'istikrar') ? IC('sansli', 14) + ' Şanslı' : '', ready(p, 'ikinci') ? IC('ikinci', 14) + ' İkinci Şans' : ''].filter(Boolean);
