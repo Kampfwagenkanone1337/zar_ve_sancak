@@ -3672,7 +3672,10 @@ function buildWorld() {
     const wg = water.getContext('2d'); wg.fillStyle = '#1c4268'; wg.fillRect(0, 0, water.width, water.height);
     wg.scale(WS, WS); wg.translate(0, -WORLD_Y0); wg.lineJoin = 'round'; wg.lineCap = 'round';
     for (let k = 0; k < 9; k++) { wg.strokeStyle = `rgba(104,170,190,${k < 8 ? .085 : .3})`; wg.lineWidth = 18 * Math.pow(.72, k); wg.stroke(coast); }
-    WD = {N, img: terrImg, ppc: PPC, reg, adj, paths: outlines, border, outlines, coast, water};
+    // ülke adı için aday noktalar: her ülkenin kara kareleri (3 karede bir)
+    const landCells = LANDS.map(() => []);
+    for (let y = WORLD_Y0; y < WORLD_Y0 + WORLD_H; y += 3) for (let x = 0; x < N; x += 3) { const k = reg[y * N + x]; if (k >= 0) landCells[REGIONS[k].land].push(y * N + x); }
+    WD = {N, img: terrImg, ppc: PPC, reg, adj, paths: outlines, border, outlines, coast, water, landCells};
   } finally { ({M, terr, height, villages, rivers, LAND, tseed, terrImg, PPC} = keep); }
   return WD;
 }
@@ -3787,21 +3790,11 @@ function drawWorld() {
   g.strokeStyle = HUMAN_COLORS[0]; g.lineWidth = 3.2 / s; g.stroke(ownedOutline);
   if (wSel && REGMAP[wSel]) { g.strokeStyle = '#2b2118'; g.lineWidth = 3.4 / s; g.stroke(WD.outlines[idx[wSel]]); }
   g.restore();
-  // ülke adları: uzaktan bakınca büyük, aralıklı harflerle
   const ui = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ui')) || 1;
-  g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
-  const zoomK = s / wFit();
-  if (zoomK < 2.2) LANDS.forEach((L, li) => {
-    const rs = REGIONS.filter(R => R.land === li), cx = rs.reduce((a, R) => a + R.x, 0) / rs.length, cy = rs.reduce((a, R) => a + R.y, 0) / rs.length;
-    g.font = `700 ${Math.round(17 * ui)}px Alegreya, Georgia, serif`; g.globalAlpha = Math.max(0, .75 - (zoomK - 1) * .55);
-    const t = L.name.toLocaleUpperCase('tr-TR').split('').join(String.fromCharCode(8202));
-    const x = wv.ox + cx * N * s, y = wv.oy + cy * WORLD_H * s - 20 * ui;
-    g.lineWidth = 5; g.strokeStyle = 'rgba(43,33,24,.75)'; g.strokeText(t, x, y); g.fillStyle = '#f2e9d4'; g.fillText(t, x, y);
-    g.globalAlpha = 1;
-  });
+  g.lineJoin = 'round';
   // bölge adları, simgeler, yıldızlar (yazı boyu ekranda sabit)
   const fs = Math.round(13 * ui), isz = Math.round(fs * 1.4);
-  g.textBaseline = 'top';
+  g.textAlign = 'center'; g.textBaseline = 'top';
   for (const R of REGIONS) {
     const own = R.id in r.owned, can = !own && canAttack(r, R.id);
     const x = wv.ox + R.x * N * s, y = wv.oy + R.y * WORLD_H * s + Math.max(6, 2.8 * s);
@@ -3819,6 +3812,57 @@ function drawWorld() {
       if (im.complete) g.drawImage(im, x - isz / 2, y2, isz, isz);
     }
   }
+  // ülke adları: uzaktan bakınca büyük, aralıklı harflerle; bölge yazılarının üstünde ve onlarla çakışmayan bir boşlukta
+  const zoomK = s / wFit();
+  if (zoomK < 2.2) {
+    const lf = Math.round(17 * ui), pos = landLabels(g, s, ui, fs, isz, lf);
+    g.font = `700 ${lf}px Alegreya, Georgia, serif`; g.textBaseline = 'middle';
+    g.globalAlpha = Math.min(1, Math.max(0, 1 - (zoomK - 1.4) * 1.25));
+    LANDS.forEach((L, li) => {
+      const x = wv.ox + pos[li].x, y = wv.oy + pos[li].y;
+      g.lineWidth = 5; g.strokeStyle = 'rgba(43,33,24,.85)'; g.strokeText(pos[li].t, x, y); g.fillStyle = '#f2e9d4'; g.fillText(pos[li].t, x, y);
+    });
+    g.globalAlpha = 1;
+  }
+}
+// ülke adlarının yeri (haritanın sol üstüne göre, ekran pikseli): ülkenin kara karelerinden, bölge adı ve simgesi
+// kutularıyla en az çakışan ve ülkenin ortasına en yakın nokta. Yakınlaştırma değişmedikçe yeniden hesaplanmaz.
+let landLabelKey = '', landLabelPos = null;
+function landLabels(g, s, ui, fs, isz, lf) {
+  const key = `${s.toFixed(4)},${ui}`;
+  if (key === landLabelKey) return landLabelPos;
+  const N = WD.N, boxes = [];
+  g.font = `700 ${fs}px Alegreya, Georgia, serif`;
+  for (const R of REGIONS) {   // simge (merkezde) + ad + yıldız ya da kilit
+    const x = R.x * N * s, y = R.y * WORLD_H * s, w = g.measureText(R.name).width + 8;
+    boxes.push([x - w / 2, y - Math.max(5, 2.5 * s) - 4, x + w / 2, y + Math.max(6, 2.8 * s) + fs + 2 + isz + 3]);
+  }
+  g.font = `700 ${lf}px Alegreya, Georgia, serif`;
+  landLabelPos = LANDS.map((L, li) => {
+    const t = L.name.toLocaleUpperCase('tr-TR').split('').join(String.fromCharCode(8202));
+    const hw = g.measureText(t).width / 2 + 4, hh = lf * .6;
+    const rs = REGIONS.filter(R => R.land === li);
+    const cx = rs.reduce((a, R) => a + R.x, 0) / rs.length * N * s, cy = rs.reduce((a, R) => a + R.y, 0) / rs.length * WORLD_H * s;
+    let best = null, bs = Infinity;
+    for (const i of WD.landCells[li]) {
+      const x = (i % N + .5) * s, y = (Math.floor(i / N) - WORLD_Y0 + .5) * s;
+      let ov = 0;
+      for (const b of boxes) {
+        const ox = Math.min(x + hw, b[2]) - Math.max(x - hw, b[0]), oy = Math.min(y + hh, b[3]) - Math.max(y - hh, b[1]);
+        if (ox > 0 && oy > 0) ov += ox * oy;
+      }
+      let out = 0;   // yazının boyunca 9 noktadan ülkenin dışında (deniz ya da başka ülke) kalanlar
+      for (let q = 0; q <= 8; q++) {
+        const px = Math.floor((x - hw + q * hw / 4) / s), py = Math.floor(y / s) + WORLD_Y0, k = px >= 0 && px < N ? WD.reg[py * N + px] : -1;
+        if (k < 0 || REGIONS[k].land !== li) out++;
+      }
+      const sc = ov * 2 + out * 400 + Math.hypot(x - cx, (y - cy) * 1.5);
+      if (sc < bs) { bs = sc; best = {x, y}; }
+    }
+    return {t, ...(best || {x: cx, y: cy})};
+  });
+  landLabelKey = key;
+  return landLabelPos;
 }
 function regAt(e) {
   const b = $('worldMap').getBoundingClientRect(), N = WD.N;
