@@ -3569,13 +3569,14 @@ const runStars = r => Object.values(r.owned).reduce((a, b) => a + b, 0);
 const canAttack = (r, id) => !(id in r.owned) && buildWorld().adj[id].some(n => n in r.owned);
 
 // ---- dünya haritası: sabit tohumla üretilir (her açılışta aynı) ----
-// Kara, bölge merkezlerinin çevresinde birleşen kütlelerden oluşur; kıyı gürültüyle girintili çıkıntılı, kenarlar ve
-// körfezler deniz. Arazi kare bir haritada üretilir, ekranda yatay bir şerit (WORLD_Y0'dan WORLD_H satır, 3:2) kullanılır.
+// Kara, bölge merkezlerinin çevresinde birleşen kütlelerden oluşur; harita önce gürültüyle bükülür (yuvarlak kütleler
+// yerine yarımada ve koylar), kıyı fraktal gürültüyle girintili çıkıntılı, kenarlar ve körfezler deniz. Arazi kare bir haritada üretilir, ekranda yatay bir şerit (WORLD_Y0'dan WORLD_H satır, 3:2) kullanılır.
 // Bölgelerin x, y'si bu şeritte 0–1; uzaklıklar ekrandaki oranla (yatay WORLD_AR kat) ölçülür.
 // 51 bölge (50 savaş): kara ≈340×226 kare, çevresinde her yandan geniş açık deniz (WORLD_MY) → şerit 396×282.
 // Arazi resmi kare başına 8 px (dev resim belleği şişirmesin)
 const WORLD_N = 396, WORLD_Y0 = 57, WORLD_H = 282, WORLD_SEED = 20261019, WORLD_AR = WORLD_N / WORLD_H, WORLD_PPC = 8;
-let WORLD_CORE = .06, WORLD_BLOB = .096;   // yerleşimin çevresindeki kesin kara yarıçapı (şerit yüksekliği cinsinden; kıyısı gürültüyle bozulur)
+// WK: kıyı gürültüsünün büyük/orta/küçük ölçekleri, bölge sınırının kıvrılması, açıklarda ada ve burun eşikleri
+let WORLD_BLOB = .105, WORLD_WARP = .32, WK = [1.4, .55, .18, .09, .6, .62];   // yerleşimin çevresindeki kara yarıçapı ve haritanın bükülme gücü (şerit yüksekliği cinsinden)
 // körfezler ve iç denizler: x, y, yarıçap (şerit yüksekliği cinsinden); kıyıları gürültüyle bozulur
 const GULFS = [{x: .06, y: .14, r: .12}, {x: .63, y: .9, r: .1}, {x: .4, y: .27, r: .045}, {x: .97, y: .88, r: .14}, {x: .2, y: .97, r: .07}];
 // dış deniz: bölgelerin ve körfezlerin 0–1 konumları şeridin iç çerçevesine taşınır (yatay pay, dikeyle aynı kare sayısı)
@@ -3590,30 +3591,45 @@ function buildWorld() {
     const N = M = WORLD_N, S = TUNE.sancakSize;
     genTerrain(WORLD_SEED, {sea: .02});
     const cn = noise2(WORLD_SEED + 77), fn = noise2(WORLD_SEED + 177), gn = noise2(WORLD_SEED + 277);
+    const wxn = noise2(WORLD_SEED + 377), wyn = noise2(WORLD_SEED + 477);
     const uv = (x, y) => [(x + .5) / N, (y + .5 - WORLD_Y0) / WORLD_H];
     const dist = (u, v, p) => Math.hypot((u - p.x) * WORLD_AR, v - p.y);
+    // alan bükme: harita, uzaklık ölçülmeden önce gürültüyle kıvrılır. Böylece yerleşimlerin çevresindeki kara daire
+    // olmaz; yarımadalar, koylar, kıvrık bölge sınırları çıkar. Bölge merkezleri de aynı bükmeyle taşınır.
+    const warp = (u, v) => {
+      const a = wxn(u * 2.1, v * 1.5, 4) - .5 + (wxn(u * 8 + 5, v * 6, 3) - .5) * .45;
+      const b = wyn(u * 2.1, v * 1.5, 4) - .5 + (wyn(u * 8 - 3, v * 6, 3) - .5) * .45;
+      return {x: u + a * WORLD_WARP / WORLD_AR, y: v + b * WORLD_WARP};
+    };
+    const WREG = REGIONS.map(R => warp(R.x, R.y)), WGULF = GULFS.map(G => ({...warp(G.x, G.y), r: G.r}));
+    const near = (u, v) => { const p = warp(u, v); let d1 = Infinity, d2 = Infinity, k = -1;
+      WREG.forEach((q, j) => { const d = dist(p.x, p.y, q) + (gn(u * 11 + j * 7.3, v * 8 - j * 3.1, 3) - .5) * WK[3]; if (d < d1) { d2 = d1; d1 = d; k = j; } else if (d < d2) d2 = d; });
+      return {p, d1, d2, k}; };
+    const nearR = new Int8Array(N * N).fill(-1), S0 = S / 2 + 3;
     for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-      const [u, v] = uv(x, y);
-      let s = -1;
-      for (const R of REGIONS) s = Math.max(s, 1 - dist(u, v, R) / WORLD_BLOB);
-      const wob = 1 + (gn(u * 7, v * 5, 3) - .5) * 1.1;   // körfez kıyıları daire gibi olmasın
-      for (const G of GULFS) s -= Math.max(0, 1 - dist(u, v, G) / (G.r * wob)) * 1.6;
-      s += (cn(u * 4, v * 2.7, 4) - .5) * .9 + (fn(u * 18, v * 12, 3) - .5) * .35;
-      // her yerleşimin çevresi sağlam kara: iç deniz ve körfezler yerleşimleri yutmasın, aralarında kalsın
-      // (arazi üreticisinin kendi denizi de burada karaya döner)
-      let dmin = Infinity; for (const R of REGIONS) dmin = Math.min(dmin, dist(u, v, R));
-      const core = dmin < WORLD_CORE * (1 + (gn(u * 6 + 3, v * 4 - 5, 3) - .5) * 1.1 + (fn(u * 26 + 1, v * 17, 2) - .5) * .6);
+      const [u, v] = uv(x, y), i = y * N + x, {p, d1, k} = near(u, v);
+      nearR[i] = k;
+      if (terr[i] === T.DENIZ) terr[i] = T.CAYIR;   // arazi üreticisinin kendi denizi yok sayılır: kıyıyı yalnızca bu döngü çizer
+      let s = 1 - d1 / WORLD_BLOB;
+      for (const G of WGULF) s -= Math.max(0, 1 - dist(p.x, p.y, G) / G.r) * 1.6;
+      // fraktal kıyı: büyük koylar ve burunlardan küçük girintilere kadar
+      s += (cn(u * 3.2, v * 2.3, 6) - .5) * WK[0] + (fn(u * 20, v * 14, 4) - .5) * WK[1] + (gn(u * 60, v * 42, 2) - .5) * WK[2];
       const edge = Math.min(u * WORLD_AR, v, (1 - u) * WORLD_AR, 1 - v);   // şeridin kenarına uzaklık
-      s -= Math.max(0, .06 - edge) * 10;
-      if (core && edge > .05) { if (terr[y * N + x] === T.DENIZ) terr[y * N + x] = T.CAYIR; }
-      else if (s < .1) terr[y * N + x] = T.DENIZ;
+      s -= Math.max(0, .07 - edge) * 12;
+      // kıyı açıklarında küçük adalar
+      const isle = edge > .08 && s > -WK[4] && gn(u * 34 + 7, v * 24 - 2, 3) > WK[5];
+      if (s < .1 && !isle) terr[i] = T.DENIZ;
     }
-    cleanSmall();
     // takımadalar: Kıyı Adaları ve İmparatorluk Limanı çevresi
     for (const A of [REGMAP.kiyi, REGMAP.liman]) for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
       const [u, v] = uv(x, y), d = dist(u, v, A);
       if (d < .096 && cn(u * 40 + 9, v * 27 - 4, 2) < .54 - d * 4) terr[y * N + x] = T.DENIZ;
     }
+    // yerleşimler karada: merkezin hemen çevresi kara (arazi üreticisinin gölü de)
+    for (const R of REGIONS) { const cx = R.x * N, cy = WORLD_Y0 + R.y * WORLD_H;
+      for (let y = Math.floor(cy - S0); y <= cy + S0; y++) for (let x = Math.floor(cx - S0); x <= cx + S0; x++)
+        if (Math.hypot(x + .5 - cx, y + .5 - cy) <= S0 && terr[y * N + x] === T.DENIZ) terr[y * N + x] = T.CAYIR; }
+    cleanSmall();
     // akarsular denize vardığı yerde biter; kesilen parçalar karaya döner
     rivers = rivers.map(rv => { const k = rv.findIndex(i => terr[i] === T.DENIZ); return k < 0 ? rv : rv.slice(0, k + 1); }).filter(rv => rv.length > 6);
     const onRiver = new Uint8Array(N * N); for (const rv of rivers) for (const i of rv) onRiver[i] = 1;
@@ -3633,13 +3649,10 @@ function buildWorld() {
     }
     buildTerrainImage(WORLD_PPC); drawRivers(terrImg.getContext('2d'), PPC, 0, 0);
     terr = terr0;
-    // bölgeler: her kara karesi en yakın bölge merkezine (biraz gürültüyle: sınırlar cetvel gibi düz olmasın)
-    const reg = new Int8Array(N * N).fill(-1), wn = noise2(WORLD_SEED + 99);
+    // bölgeler: her kara karesi bükülmüş haritada en yakın bölge merkezine (sınırlar kıvrık)
+    const reg = new Int8Array(N * N).fill(-1);
     for (let y = WORLD_Y0; y < WORLD_Y0 + WORLD_H; y++) for (let x = 0; x < N; x++) {
-      const i = y * N + x; if (terr[i] === T.DENIZ) continue;
-      const [u, v] = uv(x, y); let best = -1, bd = Infinity;
-      REGIONS.forEach((R, k) => { const d = dist(u, v, R) + (wn(u * 9 + k * 7.3, v * 6 - k * 3.1, 3) - .5) * .05; if (d < bd) { bd = d; best = k; } });
-      reg[i] = best;
+      const i = y * N + x; if (terr[i] !== T.DENIZ) reg[i] = nearR[i];
     }
     // komşuluk: en az 3 karelik ortak sınır (köşeden değmek sayılmaz)
     const shared = new Map(), border = new Path2D();
