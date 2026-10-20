@@ -86,8 +86,11 @@
   .box { position:relative; padding:13px 15px 12px; }
   .box h3 { margin:0 0 8px; font-family:var(--title); font-weight:400; font-size:21px; color:var(--ink); letter-spacing:.03em;
     padding-bottom:6px; border-bottom:2px solid var(--accent); }
-  #turnInfo { font-size:21px; font-weight:700; line-height:1.3; }
-  #turnInfo small { display:block; font-size:14px; color:var(--muted); font-weight:400; margin-top:4px; }
+  /* panel sabit dursun: yazılar uzayıp kısalınca kutular oynamasın (tek satır …, sabit satır sayıları) */
+  #turnInfo { font-size:21px; font-weight:700; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #turnInfo small { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; white-space:normal; height:calc(1.35em * 2);
+    font-size:14px; line-height:1.35; color:var(--muted); font-weight:400; margin-top:4px; }
+  #turnInfo small.chap1 { -webkit-line-clamp:1; height:1.35em; margin:0 0 4px; }
   .row { display:flex; align-items:center; gap:8px; margin:6px 0; font-size:17px; }
   .sw { width:14px; height:14px; flex-shrink:0; border:2px solid var(--ink); }
   .row .nm { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -98,9 +101,11 @@
   .bar { height:6px; background:rgba(43,33,24,.12); overflow:hidden; margin:-2px 0 6px 22px; }
   .bar > div { height:100%; }
   .team { font-size:16px; margin-top:6px; border-top:1px solid var(--line); padding-top:6px; }
-  #powers { font-size:15px; color:var(--muted); margin-bottom:10px; line-height:1.55; }
+  #powers { font-size:15px; color:var(--muted); margin-bottom:10px; line-height:1.55; min-height:1.55em; }
   #powers b { color:var(--ink); }
-  #selInfo { font-size:16px; line-height:1.5; min-height:60px; }
+  #selInfo { font-size:16px; line-height:1.5; height:calc(1.5em * 7); overflow-y:auto; }
+  #selInfo .selTop { line-height:1.25; margin-bottom:4px; } #selInfo .selFlag { font-size:15px; line-height:1.35; margin-bottom:4px; }
+  #selInfo .selDet { font-size:14px; line-height:1.4; color:#4a3b2c; } #selInfo .selDet small { font-size:13px; }
   .chance { font-size:28px; font-weight:700; }
   .btns { display:flex; gap:10px; margin-top:10px; }
   /* düğmeler: ana = kırmızı, ikincil = bej; düz renk, 2px kenar, köşesiz */
@@ -111,7 +116,7 @@
   button.sec, #zoomBar button, .seg button, #dblBtn { color:var(--ink); background:var(--beige); }
   button.sec:hover:not(:disabled), #zoomBar button:hover:not(:disabled), .seg button:hover:not(:disabled), #dblBtn:hover:not(:disabled) { background:#efe1bf; }
   button:disabled { opacity:.45; cursor:not-allowed; }
-  #dblBtn { width:100%; margin-bottom:8px; font-size:16px; padding:8px; }
+  #dblBtn { width:100%; margin-bottom:8px; font-size:16px; padding:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   /* seçili seçenek: koyu zemin, açık yazı */
   .seg button.on, .seg button.on:hover, #dblBtn.on, #dblBtn.on:hover { color:var(--panel); background:var(--ink); }
   .snapRow { display:flex; align-items:center; gap:8px; font-size:15px; color:var(--muted); margin-bottom:10px; }
@@ -123,7 +128,7 @@
     font-size:30px; font-weight:700; color:var(--ink); background:var(--beige);
     clip-path:polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); transition:background .2s; }
   #dice.ok { background:var(--ok); color:#fffaf0; } #dice.bad { background:var(--bad); color:#fffaf0; }
-  #diceText { font-size:16px; line-height:1.45; }
+  #diceText { font-size:16px; line-height:1.45; height:calc(1.45em * 3); overflow:hidden; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; }
   /* Olaylar kutusu panelde kalan yeri doldurur; panel kaydırılmaz, sadece olay listesi kayar */
   .logBox { flex:1 1 0; min-height:110px; display:flex; flex-direction:column; }
   #log { flex:1; min-height:0; font-size:15px; line-height:1.45; overflow-y:auto; color:#4a3b2c; }
@@ -240,7 +245,9 @@
   .achG small { color:var(--muted); letter-spacing:0; margin-left:6px; }
   .goalBig { font-size:20px; font-weight:700; color:var(--ink); margin:2px 0 8px; }
   /* arayüz ölçeği (--ui, JS ayarlar): 1080p'de 1, 1440p'de ~1.33. Harita tuvali ölçeklenmez, sadece paneller ve pencereler */
-  #panel, .modal, #toasts, #zoomBar, #hint { zoom:var(--ui, 1); }
+  #panel, .modal, #toasts, #zoomBar, #hint, #overBar { zoom:var(--ui, 1); }
+  #overBar { position:absolute; top:12px; left:50%; transform:translateX(-50%); display:flex; gap:10px; z-index:5; }
+  #overBar button { flex:0 0 auto; white-space:nowrap; box-shadow:4px 4px 0 var(--ink); }
   @media (max-width: 800px) {
     #game { flex-direction:column; height:auto; min-height:100vh; }
     #mapWrap { flex:none; height:65vh; }
@@ -285,6 +292,7 @@
   <div id="mapWrap">
     <canvas id="map"></canvas>
     <div id="hint"><i data-ic="fare" data-sz="16"></i> Sol tık sürükle: alan seç · Tekerlek: yakınlaştır · Sağ tık / orta tık sürükle: kaydır</div>
+    <div id="overBar" class="hidden"><button class="sec" id="ovResult">◀ Sonuç</button><button id="ovNext"></button></div>
     <div id="zoomBar">
       <button id="zIn" title="Yakınlaştır">＋</button>
       <button id="zOut" title="Uzaklaştır">－</button>
@@ -1243,6 +1251,7 @@ function newGame(humanPicks) {
   firstP = cur = Math.floor(Math.random() * players.length); turn = 1; busy = false; over = false; halted = false; paused = false; npcWaiting = false; sel = null; anim = null; hover = null; dbl = false; lastViewer = 0;
   npcSel = null; selFor = -1; lastHuman = 0;
   gs = newGameStats();
+  $('overBar').classList.add('hidden');
   $('log').innerHTML = '';
   ['setup', 'picks', 'endModal'].forEach(id => $(id).classList.add('hidden'));
   setDice('20', '', 'Zar bekleniyor…');
@@ -2431,6 +2440,7 @@ function loadSave() { try { return JSON.parse(localStorage.getItem(SAVE_KEY)); }
 function clearSave() { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} }
 function continueGame() {
   const s = loadSave(); if (!s) return;
+  $('overBar').classList.add('hidden');
   Object.assign(cfg, s.cfg, {fog: false});   // savaş sisi oyundan kaldırıldı (eski kayıtlarda da kapalı)
   M = s.M; UNIT = s.UNIT; MAX_SIDE = s.MAX_SIDE; cur = s.cur; firstP = s.firstP || 0; turn = s.turn; snap = s.snap; lastViewer = s.lastViewer;
   own = new Int8Array(M * M);
@@ -2842,7 +2852,7 @@ const powerIcons = p => (p.bossKind ? IC('durakPatron') : '') + p.powers.map(id 
 function renderPanel() {
   if (!players.length) return;
   const p = players[cur], multi = cfg.humans > 1;
-  const chap = cfg.chapter != null && cfg.campLabel ? `<small style="margin:0 0 4px">${IC('sefer', 14)} ${esc(cfg.campLabel)}</small>` : '';
+  const chap = cfg.chapter != null && cfg.campLabel ? `<small class="chap1">${IC('sefer', 14)} ${esc(cfg.campLabel)}</small>` : '';
   $('turnInfo').innerHTML = chap + `Tur ${turn}${cfg.turns ? '/' + cfg.turns : ''} · <span style="color:${lite(p.color)}">${
     p.human ? (multi ? p.name + ' oynuyor' : 'Senin sıran!') : p.name + ' oynuyor…'}</span>${p.extraNow ? ' ' + IC('yildirim', 16) : ''}
     <small>${scenOf().id !== 'klasik' ? `${IC('senaryo', 14)} ${scenOf().name} · ` : ''}${goalText()} · Harita ${M}×${M}</small>`;
@@ -2861,16 +2871,16 @@ function renderPanel() {
   refreshTip();
 }
 function renderPowers() {
-  const p = players[cur];
+  const p = players[cur] && players[cur].human ? players[cur] : players[selOwner()];
   if (!p || !p.human) { $('powers').innerHTML = ''; $('dblBtn').classList.add('hidden'); refreshTip(); return; }
   const cd = k => has(p, k) ? (ready(p, k) ? ' <span style="color:var(--ok)">hazır</span>' : ` (${p.ready[k] - turn} tur)`) : '';
-  $('powers').innerHTML = !p.powers.length ? '' : 'Güçlerin: ' + p.powers.map(id => `<b data-tip="g:${cur}:${id}">${PW[id].icon} ${PW[id].name}</b>${['ikinci', 'cift', 'yildirim'].includes(id) ? cd(id) : ''}`).join(' · ');
+  $('powers').innerHTML = !p.powers.length ? '' : 'Güçlerin: ' + p.powers.map(id => `<b data-tip="g:${p.id}:${id}">${PW[id].icon} ${PW[id].name}</b>${['ikinci', 'cift', 'yildirim'].includes(id) ? cd(id) : ''}`).join(' · ');
   refreshTip();
   const b = $('dblBtn');
   b.classList.toggle('hidden', !has(p, 'cift'));
   b.disabled = !ready(p, 'cift') || busy;
   b.classList.toggle('on', dbl);
-  b.innerHTML = IC('cift', 18) + ' ' + (ready(p, 'cift') ? (dbl ? 'Çift Zar AÇIK (bu saldırıda kullanılacak)' : 'Çift Zar kullan') : `Çift Zar: ${p.ready.cift - turn} tur sonra`);
+  b.innerHTML = IC('cift', 18) + ' ' + (ready(p, 'cift') ? (dbl ? 'Çift Zar AÇIK: bu saldırıda' : 'Çift Zar kullan') : `Çift Zar: ${p.ready.cift - turn} tur sonra`);
 }
 $('dblBtn').onclick = () => { dbl = !dbl; renderPowers(); updateSel(); };
 function renderSnap() {
@@ -2908,10 +2918,11 @@ function updateSel() {
       + (a.flags.length && a.mainDef >= 0 && p.cells > players[a.mainDef].cells ? '<br><small>Sancak saldırısında güç üstünlüğü indirimi geçmez.</small>' : '');
     const rr = [has(p, 'sansli') && !has(p, 'istikrar') ? IC('sansli', 14) + ' Şanslı' : '', ready(p, 'ikinci') ? IC('ikinci', 14) + ' İkinci Şans' : ''].filter(Boolean);
     const second = rr.length ? `<br><small>${rr.join(' ve ')} yeniden atışı dahil</small>` : '';
-    el.innerHTML = wait + `${w}×${h} alan · alınacak <b>${a.taken}</b> kare (${parts.join(', ')})<br><small>${terrParts}</small><br>
-      Hedef zar: 1 ${modTxt} = <b>${a.dc}+</b>${dbl ? ' · ' + IC('cift', 16) + ' çift zar' : ''}<br>
-      <span class="chance" style="color:${col}">%${Math.round(ch * 100)}</span> başarı şansı${second}${flagTxt}
-      ${ch === 0 ? '<br><small>Bu alan alınamaz!</small>' : ''}`;
+    // önce en önemlisi (şans, hedef zar, sancak); ayrıntılar altta küçük yazıyla: kutu sabit boyda, uzarsa içi kayar
+    el.innerHTML = wait + `<div class="selTop"><span class="chance" style="color:${col}">%${Math.round(ch * 100)}</span> başarı · hedef <b>${a.dc}+</b>${dbl ? ' · ' + IC('cift', 16) + ' çift zar' : ''}</div>`
+      + (flagTxt ? `<div class="selFlag">${flagTxt.replace(/^<br>/, '')}</div>` : '')
+      + `<div class="selDet">${ch === 0 ? '<b style="color:var(--bad)">Bu alan alınamaz!</b><br>' : ''}${w}×${h} alan · alınacak <b>${a.taken}</b> kare (${parts.join(', ')}) ${terrParts}<br>
+      Hedef zar: 1 ${modTxt} = <b>${a.dc}+</b>${second}</div>`;
   }
   updateButtons();
 }
@@ -3223,25 +3234,25 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;',
 
 // ============ BAŞARIMLAR ============
 const ACH = [
-  {id: 'seferIlk', g: 'sefer', icon: '🚩', name: 'İlk Adım', desc: 'Seferde ilk bölgeni fethet.'},
+  {id: 'seferIlk', g: 'sefer', icon: '🚩', name: 'İlk Adım', desc: 'Seferde 3 bölge fethet.'},
   {id: 'seferYari', g: 'sefer', icon: '🏰', name: 'Yarı Yol', desc: 'Seferde bölgelerin yarısını fethet.'},
   {id: 'seferSon', g: 'sefer', icon: '👑', name: 'Dünyanın Hükümdarı', desc: 'Seferi bitir: Taht Şehri\'ni al, Son İmparator\'u yen.'},
   {id: 'kusursuz', g: 'sefer', icon: '🌟', name: 'Kusursuz Hükümdar', desc: 'Seferde bütün bölgelerden üç yıldız al.'},
   {id: 'inatci', g: 'sefer', icon: '🐂', name: 'İnatçı', desc: 'Seferde aynı bölgede 3 kez yenildikten sonra orayı fethet.'},
   {id: 'ilkZafer', g: 'zafer', icon: '🏆', name: 'İlk Zafer', desc: 'Herhangi bir oyunu kazan.'},
-  {id: 'yildirimHarekat', g: 'zafer', icon: '⚡', name: 'Yıldırım Harekâtı', desc: 'Bir oyunu 10. turdan önce kazan.'},
+  {id: 'yildirimHarekat', g: 'zafer', icon: '⚡', name: 'Yıldırım Harekâtı', desc: 'En az 100×100 haritada bir oyunu 10. turdan önce kazan.'},
   {id: 'sonKale', g: 'zafer', icon: '🛡️', name: 'Son Kale', desc: 'Toprağın %5\'in altına düştükten sonra kazan.'},
   {id: 'tekBasina', g: 'zafer', icon: '⚔️', name: 'Tek Başına', desc: 'Bütün rakipleri haritadan silerek kazan.'},
-  {id: 'gucsuz', g: 'zafer', icon: '💪', name: 'Güçsüz Kahraman', desc: 'Hiç güç almadan bir oyun kazan.'},
+  {id: 'gucsuz', g: 'zafer', icon: '💪', name: 'Güçsüz Kahraman', desc: 'Hiç güç almadan, güçlü rakiplere karşı Normal ya da Zor seviyede kazan.'},
   {id: 'zorYoldan', g: 'zafer', icon: '😈', name: 'Zor Yoldan', desc: 'Zor seviyede bir oyun kazan.'},
   {id: 'takim', g: 'zafer', icon: '🤝', name: 'Takım Ruhu', desc: 'Co-op modunda kazan.'},
-  {id: 'kader', g: 'zar', icon: '🎲', name: 'Kader Gülümsedi', desc: 'İlk kritik 20\'ni at.'},
+  {id: 'kader', g: 'zar', icon: '🎲', name: 'Kader Gülümsedi', desc: 'Bir rakibin sancağını kritik 20 ile düşür.'},
   {id: 'ustuste', g: 'zar', icon: '🎰', name: 'Üst Üste', desc: 'Arka arkaya iki saldırıda 20 at.'},
   {id: 'karaKedi', g: 'zar', icon: '🐈‍⬛', name: 'Kara Kedi', desc: 'Bir oyunda üç kez 1 at.'},
   {id: 'kumarSansi', g: 'zar', icon: '🍀', name: 'Kumarbazın Şansı', desc: '%10 ya da daha düşük şansla bir saldırıyı kazan.'},
   {id: 'tutmayan', g: 'zar', icon: '😩', name: 'Tutmayan Zar', desc: 'Arka arkaya 5 saldırıyı kaybet.'},
   {id: 'buyukLokma', g: 'zafer', icon: '🍖', name: 'Büyük Lokma', desc: 'Tek saldırıda 400 ya da daha fazla kare al.'},
-  {id: 'yarisi', g: 'zafer', icon: '🗺️', name: 'Haritanın Yarısı', desc: 'Karaların %50\'sini ele geçir.'},
+  {id: 'yarisi', g: 'zafer', icon: '🗺️', name: 'Dörtte Üç', desc: 'Karaların %75\'ini ele geçir.'},
   {id: 'avci', g: 'zafer', icon: '🎯', name: 'Avcı', desc: 'Bir rakibin sancağını düşürüp ülkesini yık.'},
   {id: 'kartopu', g: 'zar', icon: '☃️', name: 'Kartopu', desc: 'Bir oyunda 5 saldırıyı üst üste başar.'},
   {id: 'usta', g: 'guc', icon: '🧙', name: 'Usta', desc: 'Her güçle en az bir oyun kazan.'},
@@ -3259,19 +3270,19 @@ const ACH = [
   {id: 'curetkar', g: 'sefer', ic: 'avci', name: 'Cüretkâr', desc: 'Seferde bir başkenti, o ülkenin hiçbir çevre bölgesini almadan fethet.'},
   {id: 'ulkeFatihi', g: 'sefer', ic: 'sefer', name: 'Ülke Fatihi', desc: 'Seferde bir ülkenin bütün bölgelerini fethet.'},
   // senaryolar: her biri ayrı, hepsi için Senaryo Ustası (serbest oyunda ya da seferde)
-  {id: 'scKlasik', g: 'senaryo', ic: 'durakSavas', name: 'Eski Usul', desc: 'Klasik senaryoyu kazan.'},
-  {id: 'scFetih', g: 'senaryo', ic: 'fetih', name: 'Ezici Güç', desc: 'Hepsini Yık senaryosunu kazan.'},
-  {id: 'scTakimada', g: 'senaryo', ic: 'arDeniz', name: 'Adalar Hâkimi', desc: 'Takımada senaryosunu kazan.'},
-  {id: 'scDag', g: 'senaryo', ic: 'arDag', name: 'Dağ Keçisi', desc: 'Dağ Geçidi senaryosunu kazan.'},
-  {id: 'scNehir', g: 'senaryo', ic: 'arAkarsu', name: 'Köprübaşı', desc: 'Büyük Nehir senaryosunu kazan.'},
-  {id: 'scOrman', g: 'senaryo', ic: 'arOrman', name: 'Orman Yolu', desc: 'Yaban Ormanı senaryosunu kazan.'},
-  {id: 'scKale', g: 'senaryo', ic: 'kale', name: 'Kale Muhafızı', desc: 'Kaleyi Tut senaryosunu kazan.'},
-  {id: 'scHayatta', g: 'senaryo', ic: 'sonKale', name: 'Son Nefes', desc: 'Hayatta Kal senaryosunu kazan.'},
-  {id: 'scAkin', g: 'senaryo', ic: 'yildirimHarekat', name: 'Rüzgâr Gibi', desc: 'Akın senaryosunu kazan.'},
-  {id: 'scBas', g: 'senaryo', ic: 'avci', name: 'Baş Avcısı', desc: 'Baş Kesmek senaryosunu kazan.'},
-  {id: 'scKardes', g: 'senaryo', ic: 'muttefik', name: 'Kardeş Kavgası', desc: 'Kardeş Beylikler senaryosunu kazan.'},
-  {id: 'scKitlik', g: 'senaryo', ic: 'koy', name: 'Bereket', desc: 'Kıtlık senaryosunu kazan.'},
-  {id: 'senaryoUstasi', g: 'senaryo', ic: 'senaryo', name: 'Senaryo Ustası', desc: 'Bütün senaryoları en az birer kez kazan.'},
+  {id: 'scKlasik', g: 'senaryo', ic: 'durakSavas', name: 'Eski Usul', desc: 'Klasik senaryoyu Normal ya da Zor seviyede kazan.'},
+  {id: 'scFetih', g: 'senaryo', ic: 'fetih', name: 'Ezici Güç', desc: 'Hepsini Yık senaryosunu Normal ya da Zor seviyede kazan.'},
+  {id: 'scTakimada', g: 'senaryo', ic: 'arDeniz', name: 'Adalar Hâkimi', desc: 'Takımada senaryosunu Normal ya da Zor seviyede kazan.'},
+  {id: 'scDag', g: 'senaryo', ic: 'arDag', name: 'Dağ Keçisi', desc: 'Dağ Geçidi senaryosunu Normal ya da Zor seviyede kazan.'},
+  {id: 'scNehir', g: 'senaryo', ic: 'arAkarsu', name: 'Köprübaşı', desc: 'Büyük Nehir senaryosunu Normal ya da Zor seviyede kazan.'},
+  {id: 'scOrman', g: 'senaryo', ic: 'arOrman', name: 'Orman Yolu', desc: 'Yaban Ormanı senaryosunu Normal ya da Zor seviyede kazan.'},
+  {id: 'scKale', g: 'senaryo', ic: 'kale', name: 'Kale Muhafızı', desc: 'Kaleyi Tut senaryosunu Normal ya da Zor seviyede kazan.'},
+  {id: 'scHayatta', g: 'senaryo', ic: 'sonKale', name: 'Son Nefes', desc: 'Hayatta Kal senaryosunu Normal ya da Zor seviyede kazan.'},
+  {id: 'scAkin', g: 'senaryo', ic: 'yildirimHarekat', name: 'Rüzgâr Gibi', desc: 'Akın senaryosunu Normal ya da Zor seviyede kazan.'},
+  {id: 'scBas', g: 'senaryo', ic: 'avci', name: 'Baş Avcısı', desc: 'Baş Kesmek senaryosunu Normal ya da Zor seviyede kazan.'},
+  {id: 'scKardes', g: 'senaryo', ic: 'muttefik', name: 'Kardeş Kavgası', desc: 'Kardeş Beylikler senaryosunu Normal ya da Zor seviyede kazan.'},
+  {id: 'scKitlik', g: 'senaryo', ic: 'koy', name: 'Bereket', desc: 'Kıtlık senaryosunu Normal ya da Zor seviyede kazan.'},
+  {id: 'senaryoUstasi', g: 'senaryo', ic: 'senaryo', name: 'Senaryo Ustası', desc: 'Bütün senaryoları Normal ya da Zor seviyede en az birer kez kazan.'},
   // köyler
   {id: 'koyAgasi', g: 'koy', ic: 'koy', name: 'Köy Ağası', desc: 'Bir oyunda aynı anda 6 köye sahip ol (başkentin dahil).'},
   {id: 'seferberlik', g: 'koy', ic: 'merkezi', name: 'Seferberlik', desc: 'Merkezi Ordu ile bir saldırının hedef zarını 2 düşür.'},
@@ -3355,7 +3366,7 @@ function trackAttack(p, res, o) {
   if (!gs) gs = newGameStats();
   const ist = has(p, 'istikrar');
   if (p.human) {
-    if (!ist && res.ok && res.roll === 20) { unlock('kader'); if (gs.last20) unlock('ustuste'); gs.last20 = true; } else gs.last20 = false;
+    if (!ist && res.ok && res.roll === 20) { if (res.fell && res.fell.length) unlock('kader'); if (gs.last20) unlock('ustuste'); gs.last20 = true; } else gs.last20 = false;
     if (!ist && res.roll === 1 && ++gs.ones >= 3) unlock('karaKedi');
     if (res.ok) {
       gs.failStreak = 0;
@@ -3371,7 +3382,7 @@ function trackAttack(p, res, o) {
   if (res.countered >= 0 && players[res.countered].human) unlock('karsilik');
   const share = players.filter(q => q.human).reduce((s, q) => s + q.score, 0) / LAND;
   gs.minShare = Math.min(gs.minShare, share);
-  if (share >= .5) unlock('yarisi');
+  if (share >= .75) unlock('yarisi');
 }
 
 // ============ İSTATİSTİKLER (bu bilgisayarda, insan oyuncuların hamleleri) ============
@@ -3445,15 +3456,15 @@ function onGameEnd(win) {
   if (M === 250) unlock('devHarita');
   if (win) {
     unlock('ilkZafer');
-    if (turn < 10) unlock('yildirimHarekat');
+    if (turn < 10 && M >= 100) unlock('yildirimHarekat');
     if (gs.minShare < .05) unlock('sonKale');
     if (players.every(q => q.human || !q.alive)) unlock('tekBasina');
-    if (humans.every(q => !q.powers.length)) unlock('gucsuz');
+    if (humans.every(q => !q.powers.length) && cfg.diff !== 'kolay' && players.some(q => !q.human && q.powers.length)) unlock('gucsuz');
     if (cfg.diff === 'zor') unlock('zorYoldan');
     if (cfg.coop && humans.length > 1) unlock('takim');
     humans.forEach(h => h.powers.forEach(id => PROG.powWins[id] = 1));
     if (POWERS.every(pw => PROG.powWins[pw.id])) unlock('usta');
-    if (SCEN_ACH[cfg.scen]) {   // senaryo başarımı (serbest oyunda ya da seferde)
+    if (SCEN_ACH[cfg.scen] && cfg.diff !== 'kolay') {   // senaryo başarımı (serbest oyunda ya da seferde; Normal ya da Zor)
       unlock(SCEN_ACH[cfg.scen]); (PROG.scenWins = PROG.scenWins || {})[cfg.scen] = 1;
       if (Object.keys(SCEN_ACH).every(k => PROG.scenWins[k])) unlock('senaryoUstasi');
     }
@@ -3465,7 +3476,7 @@ function onGameEnd(win) {
       stars = battleStars();
       if ((run.fails[ch] || 0) >= 3) unlock('inatci');
       run.owned[ch] = Math.max(run.owned[ch] || 0, stars);
-      unlock('seferIlk');
+      if (ownedN(run) >= 3) unlock('seferIlk');
       checkStarUnlocks();
       if (R.boss) {   // başkent düştü: güç kilitleri, patron başarımı, çevresi alınmadan alındıysa Cüretkâr
         const L = LANDS[R.land];
@@ -3520,11 +3531,16 @@ const canAttack = (r, id) => !(id in r.owned) && buildWorld().adj[id].some(n => 
 // Kara, bölge merkezlerinin çevresinde birleşen kütlelerden oluşur; kıyı gürültüyle girintili çıkıntılı, kenarlar ve
 // körfezler deniz. Arazi kare bir haritada üretilir, ekranda yatay bir şerit (WORLD_Y0'dan WORLD_H satır, 3:2) kullanılır.
 // Bölgelerin x, y'si bu şeritte 0–1; uzaklıklar ekrandaki oranla (yatay WORLD_AR kat) ölçülür.
-// 51 bölge (50 savaş): harita 340×226; bir kare ekranda en fazla 10 px çizilir (dev resim belleği şişirmesin)
-const WORLD_N = 340, WORLD_Y0 = 57, WORLD_H = 226, WORLD_SEED = 20261019, WORLD_AR = WORLD_N / WORLD_H, WORLD_PPC = 10;
-let WORLD_CORE = .075, WORLD_BLOB = .12;   // yerleşimin çevresindeki kesin kara yarıçapı (şerit yüksekliği cinsinden; kıyısı gürültüyle bozulur)
+// 51 bölge (50 savaş): kara ≈340×226 kare, çevresinde her yandan geniş açık deniz (WORLD_MY) → şerit 396×282.
+// Arazi resmi kare başına 8 px (dev resim belleği şişirmesin)
+const WORLD_N = 396, WORLD_Y0 = 57, WORLD_H = 282, WORLD_SEED = 20261019, WORLD_AR = WORLD_N / WORLD_H, WORLD_PPC = 8;
+let WORLD_CORE = .06, WORLD_BLOB = .096;   // yerleşimin çevresindeki kesin kara yarıçapı (şerit yüksekliği cinsinden; kıyısı gürültüyle bozulur)
 // körfezler ve iç denizler: x, y, yarıçap (şerit yüksekliği cinsinden); kıyıları gürültüyle bozulur
 const GULFS = [{x: .06, y: .14, r: .12}, {x: .63, y: .9, r: .1}, {x: .4, y: .27, r: .045}, {x: .97, y: .88, r: .14}, {x: .2, y: .97, r: .07}];
+// dış deniz: bölgelerin ve körfezlerin 0–1 konumları şeridin iç çerçevesine taşınır (yatay pay, dikeyle aynı kare sayısı)
+const WORLD_MY = .1, WORLD_MX = WORLD_MY * WORLD_H / WORLD_N;
+for (const P of [...REGIONS, ...GULFS]) { P.x = WORLD_MX + P.x * (1 - 2 * WORLD_MX); P.y = WORLD_MY + P.y * (1 - 2 * WORLD_MY); }
+for (const G of GULFS) G.r *= 1 - 2 * WORLD_MY;
 let WD = null;
 function buildWorld() {
   if (WD) return WD;
@@ -3548,14 +3564,14 @@ function buildWorld() {
       const core = dmin < WORLD_CORE * (1 + (gn(u * 6 + 3, v * 4 - 5, 3) - .5) * 1.1 + (fn(u * 26 + 1, v * 17, 2) - .5) * .6);
       const edge = Math.min(u * WORLD_AR, v, (1 - u) * WORLD_AR, 1 - v);   // şeridin kenarına uzaklık
       s -= Math.max(0, .06 - edge) * 10;
-      if (core) { if (terr[y * N + x] === T.DENIZ) terr[y * N + x] = T.CAYIR; }
+      if (core && edge > .05) { if (terr[y * N + x] === T.DENIZ) terr[y * N + x] = T.CAYIR; }
       else if (s < .1) terr[y * N + x] = T.DENIZ;
     }
     cleanSmall();
     // takımadalar: Kıyı Adaları ve İmparatorluk Limanı çevresi
     for (const A of [REGMAP.kiyi, REGMAP.liman]) for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
       const [u, v] = uv(x, y), d = dist(u, v, A);
-      if (d < .12 && cn(u * 40 + 9, v * 27 - 4, 2) < .54 - d * 3.2) terr[y * N + x] = T.DENIZ;
+      if (d < .096 && cn(u * 40 + 9, v * 27 - 4, 2) < .54 - d * 4) terr[y * N + x] = T.DENIZ;
     }
     // akarsular denize vardığı yerde biter; kesilen parçalar karaya döner
     rivers = rivers.map(rv => { const k = rv.findIndex(i => terr[i] === T.DENIZ); return k < 0 ? rv : rv.slice(0, k + 1); }).filter(rv => rv.length > 6);
@@ -3568,7 +3584,14 @@ function buildWorld() {
       markVillage({x0, y0, x1: x0 + S - 1, y1: y0 + S - 1}, R.boss || R.home ? 0 : -1);
     }
     LAND = 0; for (let i = 0; i < N * N; i++) if (terr[i] !== T.DENIZ) LAND++;
+    const land = new Uint8Array(N * N); for (let i = 0; i < N * N; i++) land[i] = terr[i] !== T.DENIZ ? 1 : 0;
+    const terr0 = terr.slice();
+    for (let y = 1; y < N - 1; y++) for (let x = 1; x < N - 1; x++) {
+      const i = y * N + x; if (land[i]) continue;
+      for (const k of [i - 1, i + 1, i - N, i + N, i - N - 1, i - N + 1, i + N - 1, i + N + 1]) if (land[k]) { terr[i] = terr0[k] === T.KOY ? T.CAYIR : terr0[k]; break; }
+    }
     buildTerrainImage(WORLD_PPC); drawRivers(terrImg.getContext('2d'), PPC, 0, 0);
+    terr = terr0;
     // bölgeler: her kara karesi en yakın bölge merkezine (biraz gürültüyle: sınırlar cetvel gibi düz olmasın)
     const reg = new Int8Array(N * N).fill(-1), wn = noise2(WORLD_SEED + 99);
     for (let y = WORLD_Y0; y < WORLD_Y0 + WORLD_H; y++) for (let x = 0; x < N; x++) {
@@ -3587,19 +3610,44 @@ function buildWorld() {
     }
     const adj = Object.fromEntries(REGIONS.map(R => [R.id, []]));
     for (const [k, n] of shared) if (n >= 3) { const a = REGIONS[Math.floor(k / 100)].id, b = REGIONS[k % 100].id; adj[a].push(b); adj[b].push(a); }
-    // bölge alanları (boyama için, satır satır birleşik dikdörtgenler) ve dış çizgileri
-    const paths = REGIONS.map(() => new Path2D());
-    for (let y = 0; y < N; y++) for (let x = 0; x < N;) {
-      const a = reg[y * N + x]; let x2 = x + 1;
-      while (x2 < N && reg[y * N + x2] === a) x2++;
-      if (a >= 0) paths[a].rect(x, y, x2 - x, 1);
-      x = x2;
-    }
-    WD = {N, img: terrImg, ppc: PPC, reg, adj, paths, border, outlines: REGIONS.map((_, k) => cellOutline(N, reg, i => reg[i] === k))};
+    // bölge alanları ve dış çizgileri: kare kenarları yerine yumuşatılmış halkalar (boyama evenodd ile)
+    const outlines = REGIONS.map((_, k) => smoothOutline(N, reg, i => reg[i] === k));
+    WD = {N, img: terrImg, ppc: PPC, reg, adj, paths: outlines, border, outlines, coast: smoothOutline(N, reg, i => land[i] === 1)};
   } finally { ({M, terr, height, villages, rivers, LAND, tseed, terrImg, PPC} = keep); }
   return WD;
 }
-// bir kare kümesinin dış çizgisi (inSet(i): kare kümede mi); yalnızca kullanılan şerit
+// bir kare kümesinin yumuşak dış çizgisi (inSet(i): kare kümede mi; yalnızca kullanılan şerit). Kare merkezlerinden
+// "yürüyen kareler" ile kenar ortalarından geçen halkalar çıkarılır (merdiven yerine eğik çizgiler), sonra Chaikin
+// yöntemiyle iki kez yumuşatılır. Kapalı halkalardan oluşan Path2D döner (kare koordinatlarında; delikler evenodd ile).
+function smoothOutline(N, reg, inSet) {
+  const y0 = WORLD_Y0, y1 = WORLD_Y0 + WORLD_H;
+  const at = (x, y) => x >= 0 && x < N && y >= y0 && y < y1 && inSet(y * N + x) ? 1 : 0;
+  const nb = new Map(), K = (x2, y2) => x2 * 4096 + y2;   // kenar ortaları 2 katı tam sayı koordinatta
+  const link = (a, b) => { const ka = K(a[0], a[1]), kb = K(b[0], b[1]); (nb.get(ka) || nb.set(ka, []).get(ka)).push(kb); (nb.get(kb) || nb.set(kb, []).get(kb)).push(ka); };
+  for (let y = y0 - 1; y < y1; y++) for (let x = -1; x < N; x++) {
+    const a = at(x, y), b = at(x + 1, y), c = at(x + 1, y + 1), d = at(x, y + 1);
+    if (a + b + c + d === 0 || a + b + c + d === 4) continue;
+    const T = [2 * x + 2, 2 * y + 1], Rt = [2 * x + 3, 2 * y + 2], B = [2 * x + 2, 2 * y + 3], L = [2 * x + 1, 2 * y + 2];
+    if (a === c && b === d) { if (a) { link(T, Rt); link(B, L); } else { link(T, L); link(Rt, B); } continue; }   // eyer: çapraz iki parça
+    const e = []; if (a !== b) e.push(T); if (b !== c) e.push(Rt); if (c !== d) e.push(B); if (d !== a) e.push(L);
+    link(e[0], e[1]);
+  }
+  const p = new Path2D(), seen = new Set();
+  for (const start of nb.keys()) {
+    if (seen.has(start)) continue;
+    let pts = [], prev = -1, cur = start;
+    do { seen.add(cur); pts.push([Math.floor(cur / 4096) / 2, (cur % 4096) / 2]); const n = nb.get(cur), nx = n[0] !== prev ? n[0] : n[1]; prev = cur; cur = nx; }
+    while (cur !== start && !seen.has(cur));
+    for (let it = 0; it < 2; it++) {   // Chaikin: her kenarı ¼–¾ noktalarıyla değiştir
+      const q = [];
+      for (let k = 0; k < pts.length; k++) { const P = pts[k], Q = pts[(k + 1) % pts.length]; q.push([P[0] * .75 + Q[0] * .25, P[1] * .75 + Q[1] * .25], [P[0] * .25 + Q[0] * .75, P[1] * .25 + Q[1] * .75]); }
+      pts = q;
+    }
+    p.moveTo(pts[0][0], pts[0][1]); for (let k = 1; k < pts.length; k++) p.lineTo(pts[k][0], pts[k][1]); p.closePath();
+  }
+  return p;
+}
+// (eski) kare kenarlarından dış çizgi
 function cellOutline(N, reg, inSet) {
   const p = new Path2D();
   for (let y = WORLD_Y0; y < WORLD_Y0 + WORLD_H; y++) for (let x = 0; x < N; x++) {
@@ -3651,25 +3699,30 @@ function drawWorld() {
   if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
   const g = cv.getContext('2d'), N = WD.N, s = wv.s, idx = Object.fromEntries(REGIONS.map((R, k) => [R.id, k]));
   g.setTransform(dpr, 0, 0, dpr, 0, 0);
-  g.fillStyle = '#1d3d58'; g.fillRect(0, 0, W, H);   // açık deniz
+  g.fillStyle = '#1c4268'; g.fillRect(0, 0, W, H);   // açık deniz (arazi resmindeki derin deniz rengi)
   g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
-  g.drawImage(WD.img, 0, WORLD_Y0 * WD.ppc, N * WD.ppc, WORLD_H * WD.ppc, wv.ox, wv.oy, N * s, WORLD_H * s);
+  const img = () => g.drawImage(WD.img, 0, WORLD_Y0 * WD.ppc, N * WD.ppc, WORLD_H * WD.ppc, 0, WORLD_Y0, N, WORLD_H);
   g.save(); g.translate(wv.ox, wv.oy); g.scale(s, s); g.translate(0, -WORLD_Y0);
+  // yumuşak kıyı: resim (kara bir kare taşkın) → kıyı boyunca sığ deniz şeridi taşkını örter → kara, kıyı çizgisiyle kırpılıp yeniden
+  img();
+  g.lineJoin = 'round'; g.strokeStyle = 'rgb(92,160,178)'; g.lineWidth = 2.8; g.stroke(WD.coast);
+  g.save(); g.clip(WD.coast, 'evenodd'); img(); g.restore();
+  g.strokeStyle = 'rgba(232,240,228,.55)'; g.lineWidth = Math.max(.35, 1.2 / s); g.stroke(WD.coast);
   // fethedilenler krallığın renginde; saldırılamayanlar karartılır
   REGIONS.forEach((R, k) => {
     const own = R.id in r.owned, can = !own && canAttack(r, R.id);
-    if (own) { g.globalAlpha = .42; g.fillStyle = HUMAN_COLORS[0]; g.fill(WD.paths[k]); }
-    else if (!can) { g.globalAlpha = .34; g.fillStyle = '#2b2118'; g.fill(WD.paths[k]); }
-    if (R.id === wHover && (own || can)) { g.globalAlpha = .2; g.fillStyle = '#fffaf0'; g.fill(WD.paths[k]); }
+    if (own) { g.globalAlpha = .42; g.fillStyle = HUMAN_COLORS[0]; g.fill(WD.paths[k], 'evenodd'); }
+    else if (!can) { g.globalAlpha = .34; g.fillStyle = '#2b2118'; g.fill(WD.paths[k], 'evenodd'); }
+    if (R.id === wHover && (own || can)) { g.globalAlpha = .2; g.fillStyle = '#fffaf0'; g.fill(WD.paths[k], 'evenodd'); }
   });
   g.globalAlpha = 1; g.lineCap = 'round'; g.lineJoin = 'round';
-  g.strokeStyle = 'rgba(43,33,24,.6)'; g.lineWidth = 1.3 / s; g.setLineDash([3 / s, 3 / s]); g.stroke(WD.border); g.setLineDash([]);
+  g.strokeStyle = 'rgba(43,33,24,.42)'; g.lineWidth = 1.1 / s; for (const o of WD.outlines) g.stroke(o);   // bölge sınırları
   // saldırılabilir bölgeler kırmızı kesikli; krallığın sınırı kendi renginde; seçili bölge kalın mürekkeple
   g.strokeStyle = '#b9412f'; g.lineWidth = 2.6 / s; g.setLineDash([6 / s, 4 / s]);
   REGIONS.forEach((R, k) => { if (canAttack(r, R.id)) g.stroke(WD.outlines[k]); });
   g.setLineDash([]);
   const key = Object.keys(r.owned).sort().join();
-  if (key !== ownedKey) { ownedKey = key; ownedOutline = cellOutline(N, WD.reg, i => WD.reg[i] >= 0 && REGIONS[WD.reg[i]].id in r.owned); }
+  if (key !== ownedKey) { ownedKey = key; ownedOutline = smoothOutline(N, WD.reg, i => WD.reg[i] >= 0 && REGIONS[WD.reg[i]].id in r.owned); }
   g.strokeStyle = HUMAN_COLORS[0]; g.lineWidth = 3.2 / s; g.stroke(ownedOutline);
   if (wSel && REGMAP[wSel]) { g.strokeStyle = '#2b2118'; g.lineWidth = 3.4 / s; g.stroke(WD.outlines[idx[wSel]]); }
   g.restore();
@@ -4131,7 +4184,15 @@ document.addEventListener('pointerout', e => {
   if (el && !el.contains(e.relatedTarget)) hideTip();
 });
 $('againBtn').onclick = showSetup;
-$('lookBtn').onclick = () => $('endModal').classList.add('hidden');
+// oyun bitti, harita inceleniyor: üstte sonuca ve sefer haritasına (ya da ana menüye) dönüş düğmeleri
+$('lookBtn').onclick = () => {
+  $('endModal').classList.add('hidden');
+  const camp = cfg.chapter != null && REGMAP[cfg.chapter];
+  $('ovNext').innerHTML = camp ? IC('sefer', 18) + ' Fetih haritası ▶' : IC('baskent', 18) + ' Ana Menü';
+  $('overBar').classList.remove('hidden');
+};
+$('ovResult').onclick = () => { SFX.play('click'); $('overBar').classList.add('hidden'); $('endModal').classList.remove('hidden'); };
+$('ovNext').onclick = () => { $('overBar').classList.add('hidden'); if (cfg.chapter != null && REGMAP[cfg.chapter]) { SFX.play('click'); openCamp(); } else showMenu(); };
 showMenu(true);
 </script>
 </body>
