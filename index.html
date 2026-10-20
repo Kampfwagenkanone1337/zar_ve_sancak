@@ -1101,7 +1101,7 @@ function showSetup() {
 let picks = [], pickIdx = 0, chosen = [];
 function openPicks() {
   picks = []; pickIdx = 0; chosen = [];
-  ['setup', 'camp', 'world'].forEach(id => $(id).classList.add('hidden'));   // seferden gelince sefer haritası da kapansın
+  hideAll(); $('overBar').classList.add('hidden');   // kurulum, sefer haritası ya da oyun sonu penceresi (Tekrar dene) kapansın
   renderPicks(); $('picks').classList.remove('hidden');
 }
 function renderPicks() {
