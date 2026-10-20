@@ -236,6 +236,8 @@
   #regPanel .siege { font-size:14px; line-height:1.45; background:var(--hl); border-left:3px solid var(--accent); padding:7px 10px; margin:8px 0; }
   #regPanel .btns { margin-top:12px; }
   #regPanel .btns button { width:100%; }
+  .achG { margin:16px 0 8px; font:700 15px var(--hand); letter-spacing:.1em; text-transform:uppercase; color:var(--accent); }
+  .achG small { color:var(--muted); letter-spacing:0; margin-left:6px; }
   .goalBig { font-size:20px; font-weight:700; color:var(--ink); margin:2px 0 8px; }
   /* arayüz ölçeği (--ui, JS ayarlar): 1080p'de 1, 1440p'de ~1.33. Harita tuvali ölçeklenmez, sadece paneller ve pencereler */
   #panel, .modal, #toasts, #zoomBar, #hint { zoom:var(--ui, 1); }
@@ -564,6 +566,11 @@
     akinci: p => `<rect x="2" y="2" width="20" height="20" fill="${p.w2}"/><path d="M8.7 2v20M15.3 2v20M2 8.7h20M2 15.3h20" stroke="${p.s}" stroke-width=".8"/><path d="M3 19.5C8 19.5 13.5 15 16.8 8.6" stroke="${p.b}" stroke-width="2.6" fill="none"/><path d="M20 3.5l-6 3.8 5.2 2.6z" fill="${p.b}"/>`,
     genis: p => `<rect x="6.5" y="7" width="11" height="10" fill="${p.b2}"/><path d="M10.2 7v10M13.8 7v10M6.5 12h11" stroke="${p.b}" stroke-width=".8"/><path d="M6.5 9.5V7H9M17.5 9.5V7H15M6.5 14.5V17H9M17.5 14.5V17H15" stroke="${p.m}" stroke-width="1.6" fill="none"/>` + arrow(6, 12, .8, 12, 1.6, p.m) + arrow(18, 12, 23.2, 12, 1.6, p.m),
     tiran: p => `<rect x="8.5" y="9" width="7" height="7" fill="${p.m}"/><path d="M9.8 14.5v-3.5l1.2 1.2 1-1.8 1 1.8 1.2-1.2v3.5z" fill="${p.k}"/>` + arrow(1.5, 1.5, 8, 8, 1.6, p.r) + arrow(22.5, 1.5, 16, 8, 1.6, p.r) + arrow(12, 23, 12, 17, 1.6, p.r),
+    // KÖY güçleri: üç köyden toplanan ordu sancakta birleşir; köylüler evini kalkan ve yabayla korur
+    merkezi: p => `<path d="M12 .3l1.4 2.1h-2.8z" fill="${p.m}"/><rect x="11.1" y="2.2" width="1.8" height="13" fill="${p.br}"/><path d="M12.9 2.2h8l-2.2 3.1 2.2 3.1h-8z" fill="${p.r}"/>` + arrow(3.4, 13.8, 9, 9.6, 1.9, p.m) + arrow(20.6, 13.8, 15, 9.6, 1.9, p.m) +
+      [.9, 8.7, 16.5].map(x => `<path d="M${f(x - .6)} 18.6L${f(x + 3.3)} 14.8L${f(x + 7.2)} 18.6Z" fill="${p.r2}"/><rect x="${x}" y="18.6" width="6.6" height="4.4" fill="${p.w2}"/><rect x="${f(x + 2.4)}" y="20.2" width="1.8" height="2.8" fill="${p.br}"/>`).join(''),
+    milis: p => `<rect x="1" y="21.5" width="22" height="1.6" rx=".6" fill="${p.g2}"/><path d="M1 11.5 7.5 4.6l6.5 6.9z" fill="${p.r}"/><rect x="2.5" y="11.5" width="10" height="10" fill="${p.w2}"/><rect x="5.4" y="15.4" width="2.4" height="6.1" fill="${p.br}"/><rect x="18.3" y="5" width="1.4" height="16.5" fill="${p.br}"/><path d="M15.8 1v3.4c0 1.2.9 2 2 2h2.4c1.1 0 2-.8 2-2V1h-1.3v3.3h-1.3V1h-1.2v3.3h-1.3V1z" fill="${p.s2}"/>` +
+      shield(15.4, 10.6, 10, 12.4, p.b) + `<circle cx="15.4" cy="15.4" r="2.4" fill="${p.m}"/><circle cx="15.4" cy="15.4" r="1" fill="${p.m2}"/>`,
     // SAVUNMA
     kale: p => `<rect x="11.6" y="1" width=".8" height="6" fill="${p.br}"/><path d="M12.4 1.2H16l-1 1.3 1 1.3h-3.6z" fill="${p.r}"/><path d="M2 22V5h1.5v1.5H5V5h1.5v1.5H8V5h0v17z" fill="${p.s}"/><path d="M16 22V5h1.5v1.5H19V5h1.5v1.5H22V5v17z" fill="${p.s}"/><path d="M8 22V9h1.6v1.4h1.6V9h1.6v1.4h1.6V9H16v13z" fill="${p.s2}"/><path d="M9.5 22v-5a2.5 2.5 0 0 1 5 0v5z" fill="${p.k}"/><rect x="4.2" y="10" width="1.6" height="3" fill="${p.k}"/><rect x="18.2" y="10" width="1.6" height="3" fill="${p.k}"/>`,
     sansli: p => d20(9.5, 10.5, 8.5, p, p.w, p.w2) + shield(17.5, 11.5, 10, 11, p.g) + `<path d="M14.3 16.8l2.2 2.2 4.1-4.5" stroke="${p.w}" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
@@ -616,7 +623,7 @@
     kartopu: p => `<rect x="1" y="21" width="22" height="1.6" rx=".6" fill="${p.s}"/><circle cx="3.6" cy="19" r="2" fill="${p.b2}"/><circle cx="9.2" cy="17.4" r="3.6" fill="${p.b2}"/><circle cx="17" cy="15" r="6" fill="${p.b2}"/><path d="M11.22 16.6A6 6 0 0 0 22.78 16.6 5.78 2.4 0 0 1 11.22 16.6z" fill="${p.b}"/><circle cx="15" cy="12.4" r="1.8" fill="${p.w}"/><circle cx="8.2" cy="16" r="1.1" fill="${p.w}"/>`,
     // BAŞARIMLAR — güçler
     usta: p => `<ellipse cx="12" cy="19.2" rx="10.5" ry="3" fill="${p.b2}"/><path d="M5.8 18.6 9.6 7.5C10.4 5 12 3.2 15.5 1.5c-.8 2-1.3 3.6-.7 6.2l3.4 10.9z" fill="${p.b}"/><path d="M5.6 17.4h12.6l.6 2H5z" fill="${p.m2}"/>` + star(11.6, 11.5, 1.9, p.m) + star(14.4, 6.6, 1.2, p.m),
-    karsilik: p => shield(8, 3.5, 12, 17, p.b) + `<path d="M8 6.5v8.5M4.5 9.5h7" stroke="${p.b2}" stroke-width="1.6"/><path d="M22.5 5.5h-6a4.8 4.8 0 0 0 0 9.6h2.2" stroke="${p.r}" stroke-width="2.4" fill="none"/><path d="M23 15.1l-4.4-3v6z" fill="${p.r}"/>`,
+    karsilik: p => shield(8, 3.5, 12, 17, p.b) + `<circle cx="8" cy="10.4" r="2.4" fill="${p.m}"/><circle cx="8" cy="10.4" r="1" fill="${p.m2}"/><path d="M22.5 5.5h-6a4.8 4.8 0 0 0 0 9.6h2.2" stroke="${p.r}" stroke-width="2.4" fill="none"/><path d="M23 15.1l-4.4-3v6z" fill="${p.r}"/>`,
     kumarbazKral: p => d20(12, 14.6, 8.4, p, p.w, p.w2) + crown(12, 1.2, 12, 7.4, p),
     durdurulamaz: p => `<circle cx="12" cy="12" r="11.5" fill="${p.r2}"/><path d="M9 3.2 4.4 12h3.3L6 21l6-10.7H9l2.4-7.1zM16.6 3.2 12 12h3.3l-1.7 9 6-10.7h-3L19 3.2z" fill="${p.m}"/>`,
     // BAŞARIMLAR — sadakat
@@ -667,7 +674,7 @@
     sureDoldu: p => `<circle cx="20.8" cy="18.6" r="2" stroke="${p.m2}" stroke-width="1.3" fill="none"/><ellipse cx="12" cy="20.4" rx="9" ry="2.4" fill="${p.m2}"/><ellipse cx="12" cy="19.8" rx="7.6" ry="1.6" fill="${p.m}"/><ellipse cx="12" cy="19.9" rx="4.6" ry="1" fill="${p.w2}"/><rect x="8.6" y="12.2" width="6.8" height="7.7" fill="${p.w2}"/><ellipse cx="12" cy="12.2" rx="3.4" ry="1" fill="${p.w}"/><path d="M12 12.2v-2c0-.6.6-.6.6-1.2" stroke="${p.k}" stroke-width=".9" fill="none"/><path d="M12.6 8.4c-1.6-1.4 1.4-2.6 0-4.2s1.2-2.6 0-3.8" stroke="${p.s}" stroke-width="1.3" fill="none" stroke-linecap="round"/>`,
     kayit: p => `<rect x="5.6" y="3" width="14.4" height="19" rx="1" fill="${p.w2}"/><rect x="4" y="2" width="14" height="19" rx="1" fill="${p.b}"/><rect x="4" y="2" width="2.2" height="19" rx=".8" fill="${p.k}" opacity=".25"/><rect x="7.8" y="4.4" width="8" height="14.2" rx=".4" fill="none" stroke="${p.b2}" stroke-width=".8"/><path d="M13.4 20.6v3l1.2-1 1.2 1v-3z" fill="${p.r}"/><rect x="15.4" y="9.6" width="5.4" height="3.6" rx=".8" fill="${p.br}"/><rect x="17.6" y="10.4" width="1.6" height="2" fill="${p.m}"/><circle cx="11.8" cy="11.4" r="2.8" fill="${p.r}"/><circle cx="11.8" cy="11.4" r="1.2" fill="${p.r2}"/>`,
     uyari: p => `<path d="M12 1.8c.6 0 1 .3 1.3.8l9.4 17.2c.5 1-.1 2.2-1.3 2.2H2.6c-1.2 0-1.8-1.2-1.3-2.2L10.7 2.6c.3-.5.7-.8 1.3-.8z" fill="${p.r2}"/><path d="M12 4.6l8.4 15.4H3.6z" fill="${p.r}"/><rect x="10.8" y="8.6" width="2.4" height="6.8" rx="1.2" fill="${p.w}"/><circle cx="12" cy="17.6" r="1.35" fill="${p.w}"/>`,
-    bekle: p => `<path d="M7.01 2.5A5.5 5.5 0 1 0 12.08 10.1A4.6 4.6 0 0 1 7.01 2.5z" fill="${p.m}"/>` + spark(5, 17.5, 1.6, p.m2) + `<rect x="16.4" y="5" width="1.4" height="17" fill="${p.br}"/><path d="M17.1.6 19 5.4 17.1 6.6 15.2 5.4z" fill="${p.s}"/><path d="M15.6 6.8h3l-.6 2.6h-1.8z" fill="${p.r}"/><rect x="13" y="21.6" width="9" height="1.4" rx=".7" fill="${p.g2}"/>`,
+    bekle: p => `<path d="M1.96 17.93.48 16.89M4.49 15.8l-.76-1.63M7.2 15.2v-1.8M9.91 15.8l.76-1.63M12.44 17.93l1.48-1.04" stroke="${p.m2}" stroke-width="1.4" stroke-linecap="round"/><path d="M2.2 21.6a5 5 0 0 1 10 0z" fill="${p.m}"/><rect x="16.4" y="5" width="1.4" height="17" fill="${p.br}"/><path d="M17.1.6 19 5.4 17.1 6.6 15.2 5.4z" fill="${p.s}"/><path d="M15.6 6.8h3l-.6 2.6h-1.8z" fill="${p.r}"/><rect x="1" y="21.6" width="21.5" height="1.4" rx=".7" fill="${p.g2}"/>`,
     // OYUN SONU
     zafer: p => laurel(p) + `<g transform="rotate(-12 12 21)"><rect x="11.1" y="3.6" width="1.8" height="17.4" fill="${p.br}"/><path d="M12 1 13.3 4H10.7z" fill="${p.m}"/><path d="M12.9 4.8c2-1 4 .7 7.4-.4v7.8c-3.4 1.1-5.4-.6-7.4.4z" fill="${p.r}"/><path d="M12.9 10.9c2-1 4 .7 7.4-.4v1.7c-3.4 1.1-5.4-.6-7.4.4z" fill="${p.r2}"/><path d="M16.6 5.6l2 2.5-2 2.5-2-2.5z" fill="${p.m}"/></g><path d="M11.2 21.2 9 23.8l1.8-.2.8.9.9-2.8zM12.8 21.2l2.2 2.6-1.8-.2-.8.9-.9-2.8z" fill="${p.r2}"/><circle cx="12" cy="21.2" r="1.2" fill="${p.r}"/>`,
     yenilgi: p => `<rect x="1" y="21.4" width="22" height="1.6" rx=".6" fill="${p.br}"/><path d="M20 12.6l1.2 8.8M3.2 14.6l.6 6.8" stroke="${p.s2}" stroke-width="1"/><path d="M19.4 12.2l1.4-.2.2 1.6-1.4.2zM2.6 14.2l1.4-.1.1 1.6-1.4.1z" fill="${p.w2}"/><rect x="7.2" y="10.6" width="1.8" height="10.8" fill="${p.br}"/><path d="M7.2 10.8l.5-1.4.5.9.4-1.2.4 1.5z" fill="${p.br}"/><path d="M9.2 10.6 18.4 20.8" stroke="${p.br}" stroke-width="1.6" stroke-linecap="round"/><circle cx="19" cy="20.9" r="1.1" fill="${p.m}"/><path d="M12.8 14.9 17.6 20.2 15.8 21.4 14.6 20.6 13 21.4 11.6 20 12 17.6z" fill="${p.r}"/><path d="M12.8 14.9 14.6 16.9 13.4 19z" fill="${p.r2}"/>`,
@@ -897,6 +904,8 @@ const POWERS = [
   {id: 'buyuk',    cat: 'Tempo',   icon: '🌱', name: 'Büyük Başlangıç', desc: 'Oyuna yaklaşık %35 daha büyük toprakla başlarsın.'},
   {id: 'kumarbaz', cat: 'Riskli',  icon: '💀', name: 'Kumarbaz',       desc: '19 veya 20 atınca alanın yaklaşık iki katını alırsın; 1 atınca felaket de iki kat büyük.'},
   {id: 'tiran',    cat: 'Saldırı', icon: '👑', name: 'Tiran',          desc: 'Tüm saldırılarında hedef zar 3 düşer, ama yapay zekâ rakipler sana daha çok saldırır.'},
+  {id: 'merkezi',  cat: 'Saldırı', icon: '🏘️', name: 'Merkezi Ordu',   desc: 'Tamamı sende olan her 3 köy için saldırılarında hedef zar 1 düşer (başkentin de bir köy sayılır).'},
+  {id: 'milis',    cat: 'Savunma', icon: '🔱', name: 'Milisler',       desc: 'Tamamı sende olan köylere (başkentin dahil) dokunan saldırıların hedef zarı 3 artar.'},
 ];
 // güç simgeleri: Claude Design ikonları (icons.js, "tas" paleti); IC(isim, boyut) satır içi SVG döndürür
 const IC = (name, size = 18) => `<span class="zi">${ZS_ICONS.svg(name, ZS_ICONS.palettes.tas, size)}</span>`;
@@ -907,6 +916,7 @@ const PW = Object.fromEntries(POWERS.map(p => [p.id, p]));
 // güçsüz ~%25; güçler ~%25–35 bandında.
 const TUNE = {
   fatih: 1, tiran: 3, tiranTarget: 1.25, kale: 2, kaleRange: 10,   // Kale: başkent çevresinde +2
+  merkeziPer: 3, milis: 3,   // Merkezi Ordu: her bu kadar köy için hedef zar −1 · Milisler: köylerine dokunan saldırıya +
   akinci: 0.65,             // boş toprak zorluk çarpanı
   genis: 10, genisCost: 1.1, // ek alan · boyut maliyeti böleni
   keskinMin: 16, keskinRing: 1, kumarbazMin: 19, karsiSize: 5,
@@ -1085,8 +1095,8 @@ function renderPicks() {
   $('pickTitle').textContent = `${humanName(pickIdx)}: ${camp ? 'en fazla 2 güç seç' : '2 güç seç'}`;
   $('pickSw').style.background = HUMAN_COLORS[pickIdx];
   $('pickHelp').innerHTML = camp
-    ? (openN ? `Seferde güçler ülkelerin başkentlerini aldıkça ve başarım kazandıkça açılır (<b>${openN}/${POWERS.length}</b> açık). Farklı kategorilerden 1 ya da 2 güç seç.`
-             : 'Seferde güçler ülkelerin başkentlerini aldıkça ve başarım kazandıkça açılır. Henüz açık gücün yok: <b>Güçsüz oyna</b> ile başla.')
+    ? (openN ? `Seferde güçler başkentleri aldıkça, yıldız topladıkça ve başarım kazandıkça açılır (<b>${openN}/${POWERS.length}</b> açık). Farklı kategorilerden 1 ya da 2 güç seç.`
+             : 'Seferde güçler başkentleri aldıkça, yıldız topladıkça ve başarım kazandıkça açılır. Henüz açık gücün yok: <b>Güçsüz oyna</b> ile başla.')
     : 'Tüm güçler aşağıda. <b>Farklı kategorilerden 2 tane</b> seç; oyun boyunca senin olacaklar.';
   let html = '';
   for (const cat of [...new Set(POWERS.map(p => p.cat))]) {
@@ -1350,6 +1360,11 @@ function analyze(r, pid, noFlags = false) {
   }
   if (has(p, 'fatih') && TUNE.fatih) mods.push(['Fatih', -TUNE.fatih, 'fatih']);
   if (has(p, 'tiran') && TUNE.tiran) mods.push(['Tiran', -TUNE.tiran, 'tiran']);
+  const mk = has(p, 'merkezi') ? Math.floor((p.vill || 0) / TUNE.merkeziPer) : 0;
+  if (mk) mods.push([`Merkezi Ordu (${p.vill} köy)`, -mk, 'merkezi']);
+  // Milisler: alan, Milisler gücü olan bir rakibin tamamı elindeki bir köyüne dokunuyorsa
+  if (villages.some(v => v.own >= 0 && v.own !== pid && !ally(pid, v.own) && has(players[v.own], 'milis') && r.x1 >= v.x0 && r.x0 <= v.x1 && r.y1 >= v.y0 && r.y0 <= v.y1))
+    mods.push(['Milisler', TUNE.milis, 'milis']);
   for (const f of flags) mods.push([`${players[f].name} sancağı`, TUNE.sancak, 'mSancak']);
   // sefer: patron kuralları
   if (bossRiver) mods.push(['Değirmenci Kral\'ın nehri', 2, 'patronNehri']);
@@ -2080,6 +2095,10 @@ function attack(pid, r, a, useDbl) {
     glEvent({type: 'saldiri', p: pid, r, dc: a.dc, mods: a.mods, chance: Math.round(chance * 100), dbl: !!useDbl, roll: res.roll, ok: res.ok,
       fell: res.fell, txt: res.txt.replace(/<[^>]+>/g, '')});
     trackAttack(p, res, {chance, before, after: humanCells(), aliveBefore});
+    // köy başarımları: Köy Ağası (6 köy), Seferberlik (Merkezi Ordu −2), Halk Direnişi (Milisler'in koruduğu köyüne saldırı püskürtüldü)
+    if (players.some(q => q.human && q.vill >= 6)) unlock('koyAgasi');
+    if (p.human && a.mods.some(m => m[2] === 'merkezi' && m[1] <= -2)) unlock('seferberlik');
+    if (!p.human && !res.ok && a.mods.some(m => m[2] === 'milis') && Object.keys(a.by).some(k => players[k].human && has(players[k], 'milis'))) unlock('halkDirenisi');
     // sesler: zarın sonucu, sonra kalemle tarama (toprak alındı) ya da silgi (oyuncu toprak kaybetti)
     const vol = p.human ? 1 : .55, felaket = !res.ok && res.roll === 1 && !has(p, 'istikrar') && !has(p, 'sansli');
     if (res.ok && res.roll === 20 && !has(p, 'istikrar')) SFX.play('crit', 0, vol);
@@ -2122,10 +2141,10 @@ function countCells() {
   for (let i = 0; i < own.length; i++) if (own[i] >= 0) { players[own[i]].cells++; if (sc.ova && terr[i] === T.CAYIR) players[own[i]].ova++; }
   // köy: 5×5'in tamamı aynı ülkedeyse o ülkeye puan
   for (const v of villages) {
-    const o = own[v.y0 * M + v.x0]; if (o < 0) continue;
+    const o = own[v.y0 * M + v.x0]; v.own = -1; if (o < 0) continue;
     let all = true;
     for (let y = v.y0; y <= v.y1 && all; y++) for (let x = v.x0; x <= v.x1; x++) if (own[y * M + x] !== o) { all = false; break; }
-    if (all) players[o].vill++;
+    if (all) { players[o].vill++; v.own = o; }
   }
   for (const p of players) p.score = p.cells + p.vill * vv + (sc.ova ? p.ova * (sc.ova - 1) : 0);
   for (const p of players) if (p.alive && p.cells === 0) {
@@ -3204,42 +3223,73 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;',
 
 // ============ BAŞARIMLAR ============
 const ACH = [
-  {id: 'seferIlk', icon: '🚩', name: 'İlk Adım', desc: 'Seferde ilk bölgeni fethet.'},
-  {id: 'seferYari', icon: '🏰', name: 'Yarı Yol', desc: 'Seferde bölgelerin yarısını fethet.'},
-  {id: 'seferSon', icon: '👑', name: 'Dünyanın Hükümdarı', desc: 'Seferi bitir: Taht Şehri\'ni al, Son İmparator\'u yen.'},
-  {id: 'kusursuz', icon: '🌟', name: 'Kusursuz Hükümdar', desc: 'Seferde bütün bölgelerden üç yıldız al.'},
-  {id: 'inatci', icon: '🐂', name: 'İnatçı', desc: 'Seferde aynı bölgede 3 kez yenildikten sonra orayı fethet.'},
-  {id: 'ilkZafer', icon: '🏆', name: 'İlk Zafer', desc: 'Herhangi bir oyunu kazan.'},
-  {id: 'yildirimHarekat', icon: '⚡', name: 'Yıldırım Harekâtı', desc: 'Bir oyunu 10. turdan önce kazan.'},
-  {id: 'sonKale', icon: '🛡️', name: 'Son Kale', desc: 'Toprağın %5\'in altına düştükten sonra kazan.'},
-  {id: 'tekBasina', icon: '⚔️', name: 'Tek Başına', desc: 'Bütün rakipleri haritadan silerek kazan.'},
-  {id: 'gucsuz', icon: '💪', name: 'Güçsüz Kahraman', desc: 'Hiç güç almadan bir oyun kazan.'},
-  {id: 'zorYoldan', icon: '😈', name: 'Zor Yoldan', desc: 'Zor seviyede bir oyun kazan.'},
-  {id: 'takim', icon: '🤝', name: 'Takım Ruhu', desc: 'Co-op modunda kazan.'},
-  {id: 'kader', icon: '🎲', name: 'Kader Gülümsedi', desc: 'İlk kritik 20\'ni at.'},
-  {id: 'ustuste', icon: '🎰', name: 'Üst Üste', desc: 'Arka arkaya iki saldırıda 20 at.'},
-  {id: 'karaKedi', icon: '🐈‍⬛', name: 'Kara Kedi', desc: 'Bir oyunda üç kez 1 at.'},
-  {id: 'kumarSansi', icon: '🍀', name: 'Kumarbazın Şansı', desc: '%10 ya da daha düşük şansla bir saldırıyı kazan.'},
-  {id: 'tutmayan', icon: '😩', name: 'Tutmayan Zar', desc: 'Arka arkaya 5 saldırıyı kaybet.'},
-  {id: 'buyukLokma', icon: '🍖', name: 'Büyük Lokma', desc: 'Tek saldırıda 400 ya da daha fazla kare al.'},
-  {id: 'yarisi', icon: '🗺️', name: 'Haritanın Yarısı', desc: 'Karaların %50\'sini ele geçir.'},
-  {id: 'avci', icon: '🎯', name: 'Avcı', desc: 'Bir rakibin sancağını düşürüp ülkesini yık.'},
-  {id: 'kartopu', icon: '☃️', name: 'Kartopu', desc: 'Bir oyunda 5 saldırıyı üst üste başar.'},
-  {id: 'usta', icon: '🧙', name: 'Usta', desc: 'Her güçle en az bir oyun kazan.'},
-  {id: 'karsilik', icon: '🔁', name: 'Karşılık', desc: 'Karşı Saldırı ile toprak kap.'},
-  {id: 'kumarbazKral', icon: '💀', name: 'Kumarbaz Kral', desc: 'Kumarbaz gücüyle bir saldırıyı ikiye katla.'},
-  {id: 'durdurulamaz', icon: '🌩️', name: 'Durdurulamaz', desc: 'Yıldırım ile aynı turdaki iki saldırını da kazan.'},
-  {id: 'mudavim', icon: '📒', name: 'Müdavim', desc: '10 oyun oyna.'},
-  {id: 'gazi', icon: '🎖️', name: 'Gazi', desc: '50 oyun oyna.'},
-  {id: 'devHarita', icon: '🌍', name: 'Dev Harita', desc: '250×250 haritada bir oyun bitir.'},
+  {id: 'seferIlk', g: 'sefer', icon: '🚩', name: 'İlk Adım', desc: 'Seferde ilk bölgeni fethet.'},
+  {id: 'seferYari', g: 'sefer', icon: '🏰', name: 'Yarı Yol', desc: 'Seferde bölgelerin yarısını fethet.'},
+  {id: 'seferSon', g: 'sefer', icon: '👑', name: 'Dünyanın Hükümdarı', desc: 'Seferi bitir: Taht Şehri\'ni al, Son İmparator\'u yen.'},
+  {id: 'kusursuz', g: 'sefer', icon: '🌟', name: 'Kusursuz Hükümdar', desc: 'Seferde bütün bölgelerden üç yıldız al.'},
+  {id: 'inatci', g: 'sefer', icon: '🐂', name: 'İnatçı', desc: 'Seferde aynı bölgede 3 kez yenildikten sonra orayı fethet.'},
+  {id: 'ilkZafer', g: 'zafer', icon: '🏆', name: 'İlk Zafer', desc: 'Herhangi bir oyunu kazan.'},
+  {id: 'yildirimHarekat', g: 'zafer', icon: '⚡', name: 'Yıldırım Harekâtı', desc: 'Bir oyunu 10. turdan önce kazan.'},
+  {id: 'sonKale', g: 'zafer', icon: '🛡️', name: 'Son Kale', desc: 'Toprağın %5\'in altına düştükten sonra kazan.'},
+  {id: 'tekBasina', g: 'zafer', icon: '⚔️', name: 'Tek Başına', desc: 'Bütün rakipleri haritadan silerek kazan.'},
+  {id: 'gucsuz', g: 'zafer', icon: '💪', name: 'Güçsüz Kahraman', desc: 'Hiç güç almadan bir oyun kazan.'},
+  {id: 'zorYoldan', g: 'zafer', icon: '😈', name: 'Zor Yoldan', desc: 'Zor seviyede bir oyun kazan.'},
+  {id: 'takim', g: 'zafer', icon: '🤝', name: 'Takım Ruhu', desc: 'Co-op modunda kazan.'},
+  {id: 'kader', g: 'zar', icon: '🎲', name: 'Kader Gülümsedi', desc: 'İlk kritik 20\'ni at.'},
+  {id: 'ustuste', g: 'zar', icon: '🎰', name: 'Üst Üste', desc: 'Arka arkaya iki saldırıda 20 at.'},
+  {id: 'karaKedi', g: 'zar', icon: '🐈‍⬛', name: 'Kara Kedi', desc: 'Bir oyunda üç kez 1 at.'},
+  {id: 'kumarSansi', g: 'zar', icon: '🍀', name: 'Kumarbazın Şansı', desc: '%10 ya da daha düşük şansla bir saldırıyı kazan.'},
+  {id: 'tutmayan', g: 'zar', icon: '😩', name: 'Tutmayan Zar', desc: 'Arka arkaya 5 saldırıyı kaybet.'},
+  {id: 'buyukLokma', g: 'zafer', icon: '🍖', name: 'Büyük Lokma', desc: 'Tek saldırıda 400 ya da daha fazla kare al.'},
+  {id: 'yarisi', g: 'zafer', icon: '🗺️', name: 'Haritanın Yarısı', desc: 'Karaların %50\'sini ele geçir.'},
+  {id: 'avci', g: 'zafer', icon: '🎯', name: 'Avcı', desc: 'Bir rakibin sancağını düşürüp ülkesini yık.'},
+  {id: 'kartopu', g: 'zar', icon: '☃️', name: 'Kartopu', desc: 'Bir oyunda 5 saldırıyı üst üste başar.'},
+  {id: 'usta', g: 'guc', icon: '🧙', name: 'Usta', desc: 'Her güçle en az bir oyun kazan.'},
+  {id: 'karsilik', g: 'guc', icon: '🔁', name: 'Karşılık', desc: 'Karşı Saldırı ile toprak kap.'},
+  {id: 'kumarbazKral', g: 'guc', icon: '💀', name: 'Kumarbaz Kral', desc: 'Kumarbaz gücüyle bir saldırıyı ikiye katla.'},
+  {id: 'durdurulamaz', g: 'guc', icon: '🌩️', name: 'Durdurulamaz', desc: 'Yıldırım ile aynı turdaki iki saldırını da kazan.'},
+  {id: 'mudavim', g: 'genel', icon: '📒', name: 'Müdavim', desc: '10 oyun oyna.'},
+  {id: 'gazi', g: 'genel', icon: '🎖️', name: 'Gazi', desc: '50 oyun oyna.'},
+  {id: 'devHarita', g: 'zafer', icon: '🌍', name: 'Dev Harita', desc: '250×250 haritada bir oyun bitir.'},
+  // sefer: patronlar, cüretkâr başkent, bütün bir ülke (Son İmparator: Dünyanın Hükümdarı)
+  {id: 'patronSazlik', g: 'sefer', ic: 'durakPatron', name: 'Sazlık Düştü', desc: 'Seferde Sazlık Beyi\'ni yen.'},
+  {id: 'patronDegirmen', g: 'sefer', ic: 'patronNehri', name: 'Nehrin Efendisi', desc: 'Seferde Değirmenci Kral\'ı yen.'},
+  {id: 'patronOva', g: 'sefer', ic: 'durakPatron', name: 'Hanın Sonu', desc: 'Seferde Ova Hanı\'nı yen.'},
+  {id: 'patronDemir', g: 'sefer', ic: 'durakPatron', name: 'Demir Kırıldı', desc: 'Seferde Demir Lejyon Komutanı\'nı yen.'},
+  {id: 'curetkar', g: 'sefer', ic: 'avci', name: 'Cüretkâr', desc: 'Seferde bir başkenti, o ülkenin hiçbir çevre bölgesini almadan fethet.'},
+  {id: 'ulkeFatihi', g: 'sefer', ic: 'sefer', name: 'Ülke Fatihi', desc: 'Seferde bir ülkenin bütün bölgelerini fethet.'},
+  // senaryolar: her biri ayrı, hepsi için Senaryo Ustası (serbest oyunda ya da seferde)
+  {id: 'scKlasik', g: 'senaryo', ic: 'durakSavas', name: 'Eski Usul', desc: 'Klasik senaryoyu kazan.'},
+  {id: 'scFetih', g: 'senaryo', ic: 'fetih', name: 'Ezici Güç', desc: 'Hepsini Yık senaryosunu kazan.'},
+  {id: 'scTakimada', g: 'senaryo', ic: 'arDeniz', name: 'Adalar Hâkimi', desc: 'Takımada senaryosunu kazan.'},
+  {id: 'scDag', g: 'senaryo', ic: 'arDag', name: 'Dağ Keçisi', desc: 'Dağ Geçidi senaryosunu kazan.'},
+  {id: 'scNehir', g: 'senaryo', ic: 'arAkarsu', name: 'Köprübaşı', desc: 'Büyük Nehir senaryosunu kazan.'},
+  {id: 'scOrman', g: 'senaryo', ic: 'arOrman', name: 'Orman Yolu', desc: 'Yaban Ormanı senaryosunu kazan.'},
+  {id: 'scKale', g: 'senaryo', ic: 'kale', name: 'Kale Muhafızı', desc: 'Kaleyi Tut senaryosunu kazan.'},
+  {id: 'scHayatta', g: 'senaryo', ic: 'sonKale', name: 'Son Nefes', desc: 'Hayatta Kal senaryosunu kazan.'},
+  {id: 'scAkin', g: 'senaryo', ic: 'yildirimHarekat', name: 'Rüzgâr Gibi', desc: 'Akın senaryosunu kazan.'},
+  {id: 'scBas', g: 'senaryo', ic: 'avci', name: 'Baş Avcısı', desc: 'Baş Kesmek senaryosunu kazan.'},
+  {id: 'scKardes', g: 'senaryo', ic: 'muttefik', name: 'Kardeş Kavgası', desc: 'Kardeş Beylikler senaryosunu kazan.'},
+  {id: 'scKitlik', g: 'senaryo', ic: 'koy', name: 'Bereket', desc: 'Kıtlık senaryosunu kazan.'},
+  {id: 'senaryoUstasi', g: 'senaryo', ic: 'senaryo', name: 'Senaryo Ustası', desc: 'Bütün senaryoları en az birer kez kazan.'},
+  // köyler
+  {id: 'koyAgasi', g: 'koy', ic: 'koy', name: 'Köy Ağası', desc: 'Bir oyunda aynı anda 6 köye sahip ol (başkentin dahil).'},
+  {id: 'seferberlik', g: 'koy', ic: 'merkezi', name: 'Seferberlik', desc: 'Merkezi Ordu ile bir saldırının hedef zarını 2 düşür.'},
+  {id: 'halkDirenisi', g: 'koy', ic: 'milis', name: 'Halk Direnişi', desc: 'Milisler\'in koruduğu bir köyüne yapılan saldırıyı püskürt.'},
 ];
-for (const a of ACH) a.icon = IC(a.id);   // başarım simgeleri: Claude Design ikonları (icons.js)
+// başarım simgeleri: Claude Design ikonları (icons.js); kendi ikonu henüz yoksa ic'deki geçici ikon
+for (const a of ACH) { a.ic = ZS_ICONS.names.includes(a.id) ? a.id : a.ic || 'nisan'; a.icon = IC(a.ic); }
+const ACH_GROUPS = [['sefer', 'Sefer'], ['senaryo', 'Senaryolar'], ['zafer', 'Zafer'], ['koy', 'Köyler'], ['zar', 'Zar'], ['guc', 'Güçler'], ['genel', 'Genel']];
+// senaryo → başarımı
+const SCEN_ACH = {klasik: 'scKlasik', fetih: 'scFetih', takimada: 'scTakimada', dag: 'scDag', nehir: 'scNehir', orman: 'scOrman', kale: 'scKale',
+  hayatta: 'scHayatta', akin: 'scAkin', bas: 'scBas', kardes: 'scKardes', kitlik: 'scKitlik'};
+const BOSS_ACH = {sazlik: 'patronSazlik', degirmen: 'patronDegirmen', ova: 'patronOva', demir: 'patronDemir'};
 const ACHMAP = Object.fromEntries(ACH.map(a => [a.id, a]));
 
 // ilerleme: sefer, yıldızlar, başarımlar, sayaçlar (bu bilgisayarda; aktarma koduyla taşınır)
 const PROG_KEY = 'toprak-ilerleme';
 // run: süren sefer (fethedilen bölgeler ve yıldızları); powOpen: başkent (patron) alarak kalıcı açılan güçler
-const PROG = {realm: '', ach: {}, games: 0, powWins: {}, powOpen: {}, run: null, runsDone: 0};
+const PROG = {realm: '', ach: {}, games: 0, powWins: {}, powOpen: {}, run: null, runsDone: 0, scenWins: {}};
 try { Object.assign(PROG, JSON.parse(localStorage.getItem(PROG_KEY)) || {}); } catch (e) {}
 // eski 10 bölümlük seferden geçiş: bitirilmiş bölümlerin açtığı güçler açık kalır
 if (PROG.stars) {
@@ -3260,12 +3310,25 @@ const achCount = () => Object.keys(PROG.ach).filter(id => ACHMAP[id]).length;
 const POWER_UNLOCK = {
   fatih: {boss: 0}, kale: {boss: 0}, ikinci: {boss: 1}, akinci: {boss: 1}, yildirim: {boss: 2},
   cift: {boss: 2}, karsi: {boss: 3}, keskin: {boss: 3}, genis: {boss: 4},
-  buyuk: {ach: 'ilkZafer'}, kumarbaz: {ach: 'kader'}, sansli: {ach: 'karaKedi'}, istikrar: {ach: 'tutmayan'}, tiran: {ach: 'kartopu'},
-  yedek: {ach: 'avci'},
+  buyuk: {ach: 'koyAgasi'}, kumarbaz: {ach: 'ustuste'}, sansli: {ach: 'kumarSansi'}, istikrar: {ach: 'inatci'}, tiran: {ach: 'tekBasina'},
+  yedek: {ach: 'sonKale'},
+  milis: {stars: 30}, merkezi: {stars: 60},   // seferde toplam yıldızla
 };
+// güçlerin başarım bağları değişti (2026-10-20): eski bağla (İlk Zafer, Kader Gülümsedi …) açılmış güçler açık kalır
+if (!PROG.achLinkV2) {
+  const OLD = {buyuk: 'ilkZafer', kumarbaz: 'kader', sansli: 'karaKedi', istikrar: 'tutmayan', tiran: 'kartopu', yedek: 'avci'};
+  for (const [id, a] of Object.entries(OLD)) if (PROG.ach[a]) PROG.powOpen[id] = 1;
+  PROG.achLinkV2 = 1; saveProg();
+}
+// toplam yıldız eşiğine ulaşınca güç kalıcı olarak açılır (yeni sefere başlasan da açık kalır)
+function checkStarUnlocks() {
+  if (!PROG.run) return;
+  const n = runStars(PROG.run);
+  for (const [id, u] of Object.entries(POWER_UNLOCK)) if (u.stars && n >= u.stars && !PROG.powOpen[id]) { PROG.powOpen[id] = 1; saveProg(); setTimeout(() => toastPower(id), 1100); }
+}
 const powerEarned = id => { const u = POWER_UNLOCK[id]; return !u || !!PROG.powOpen[id] || (u.ach != null && !!PROG.ach[u.ach]); };
 const powerOpen = id => cfg.chapter == null || powerEarned(id);
-const unlockHint = id => { const u = POWER_UNLOCK[id]; return u.boss != null ? `Seferde ${REGIONS.find(R => R.boss && R.land === u.boss).name} bölgesini al (${BOSSES[LANDS[u.boss].boss].name})` : `Başarım: ${ACHMAP[u.ach].icon} ${ACHMAP[u.ach].name}`; };
+const unlockHint = id => { const u = POWER_UNLOCK[id]; return u.stars ? `Seferde toplam ${u.stars} yıldız topla` : u.boss != null ? `Seferde ${REGIONS.find(R => R.boss && R.land === u.boss).name} bölgesini al (${BOSSES[LANDS[u.boss].boss].name})` : `Başarım: ${ACHMAP[u.ach].icon} ${ACHMAP[u.ach].name}`; };
 const earnedCount = () => POWERS.filter(p => powerEarned(p.id)).length;
 
 function toast(html) {
@@ -3363,7 +3426,7 @@ function resetCamp() {
   const s0 = loadSave(); if (s0 && s0.cfg && s0.cfg.chapter != null) clearSave();   // yarım kalan sefer oyunu da gider
   Object.assign(PROG, {realm: '', run: null, powOpen: {}, runsDone: 0}); saveProg();
 }
-function resetAch() { Object.assign(PROG, {ach: {}, powWins: {}, games: 0}); saveProg(); }
+function resetAch() { Object.assign(PROG, {ach: {}, powWins: {}, games: 0, scenWins: {}}); saveProg(); }
 function resetStats() { STATS = newStats(); saveStats(); }
 const afterReset = msg => { renderCampSummary(); toast(msg); };
 $('rstCamp').onclick = async () => { if (await ask('Seferi sıfırla', 'Fetih haritasındaki ilerlemen ve başkent alarak kalıcı açtığın güçler silinir. Başarımlar ve istatistikler kalır.', 'Seferi sıfırla', 'Vazgeç')) { resetCamp(); afterReset('Sefer sıfırlandı.'); } };
@@ -3390,6 +3453,10 @@ function onGameEnd(win) {
     if (cfg.coop && humans.length > 1) unlock('takim');
     humans.forEach(h => h.powers.forEach(id => PROG.powWins[id] = 1));
     if (POWERS.every(pw => PROG.powWins[pw.id])) unlock('usta');
+    if (SCEN_ACH[cfg.scen]) {   // senaryo başarımı (serbest oyunda ya da seferde)
+      unlock(SCEN_ACH[cfg.scen]); (PROG.scenWins = PROG.scenWins || {})[cfg.scen] = 1;
+      if (Object.keys(SCEN_ACH).every(k => PROG.scenWins[k])) unlock('senaryoUstasi');
+    }
   }
   let stars = 0;
   const run = PROG.run, R = ch != null ? REGMAP[ch] : null, inCamp = !!R;
@@ -3399,11 +3466,15 @@ function onGameEnd(win) {
       if ((run.fails[ch] || 0) >= 3) unlock('inatci');
       run.owned[ch] = Math.max(run.owned[ch] || 0, stars);
       unlock('seferIlk');
-      if (R.boss) {   // başkent düştü: güç kilitleri
+      checkStarUnlocks();
+      if (R.boss) {   // başkent düştü: güç kilitleri, patron başarımı, çevresi alınmadan alındıysa Cüretkâr
         const L = LANDS[R.land];
+        if (BOSS_ACH[L.boss]) unlock(BOSS_ACH[L.boss]);
+        if (siegeOf(R).n === 0) unlock('curetkar');
         for (const id of BOSSES[L.boss].unlock) if (!PROG.powOpen[id]) { PROG.powOpen[id] = 1; setTimeout(() => toastPower(id), 900); }
       }
       if (ownedN(run) >= Math.ceil(BATTLES.length / 2)) unlock('seferYari');   // bölgelerin yarısı
+      if (REGIONS.filter(q => q.land === R.land).every(q => q.id in run.owned)) unlock('ulkeFatihi');
       if (R.id === 'taht' && !run.done) { run.done = true; PROG.runsDone = (PROG.runsDone || 0) + 1; unlock('seferSon'); }
       if (BATTLES.every(q => run.owned[q.id] === 3)) unlock('kusursuz');
     } else run.fails[ch] = (run.fails[ch] || 0) + 1;
@@ -3755,6 +3826,7 @@ function openCamp() {
   }
   $('camp').classList.add('hidden'); $('world').classList.remove('hidden');
   buildWorld();
+  checkStarUnlocks();   // eşiği önceden geçmiş seferler için
   $('wTitle').innerHTML = `${IC('sefer', 30)} ${esc(PROG.realm)}`;
   $('campInfo').innerHTML = `${ownedN(r)}/${BATTLES.length} bölge fethedildi · ${runStars(r)}/${BATTLES.length * 3} ${IC('yildiz', 16)}<br>${IC('kilitAcik', 16)} ${earnedCount()}/${POWERS.length} güç açık`
     + (r.done ? `<br><b>${IC('zafer', 16)} Sefer tamamlandı!</b>` : '');
@@ -3803,6 +3875,7 @@ $('xferLoad').onclick = () => {
     for (const k of Object.keys(inc.powOpen || {})) if (PW[k]) PROG.powOpen[k] = 1;
     for (const [k, v] of Object.entries(inc.ach || {})) if (ACHMAP[k]) PROG.ach[k] = Math.min(PROG.ach[k] || Infinity, +v || Date.now());
     for (const k of Object.keys(inc.powWins || {})) if (PW[k]) PROG.powWins[k] = 1;
+    for (const k of Object.keys(inc.scenWins || {})) if (SCEN_ACH[k]) (PROG.scenWins = PROG.scenWins || {})[k] = 1;
     PROG.games = Math.max(PROG.games || 0, +inc.games || 0);
     PROG.runsDone = Math.max(PROG.runsDone || 0, +inc.runsDone || 0);
     saveProg();
@@ -3815,12 +3888,16 @@ $('achOpen').onclick = () => {
   hideAll(); $('achv').classList.remove('hidden'); renderStats();
   $('statsTitle').innerHTML = `${IC('istatistik', 30)} İstatistikler`;
   $('achTitle').innerHTML = `${IC('basarimlar', 30)} Başarımlar · ${achCount()}/${ACH.length}`;
-  $('achList').innerHTML = '<div class="pgrid">' + ACH.map(a => {
+  const card = a => {
     const t = PROG.ach[a.id], rw = Object.entries(POWER_UNLOCK).find(([, u]) => u.ach === a.id);
-    return `<div class="ach ${t ? 'on' : 'off'}"><div class="ic">${IC(a.id, 34)}</div><div><div class="t">${a.name}</div><div class="d">${a.desc}</div>
+    return `<div class="ach ${t ? 'on' : 'off'}"><div class="ic">${IC(a.ic, 34)}</div><div><div class="t">${a.name}</div><div class="d">${a.desc}</div>
       ${rw ? `<div class="d">${IC('kilitAcik', 14)} Seferde ${PW[rw[0]].icon} ${PW[rw[0]].name} gücünü açar</div>` : ''}
       ${t ? `<div class="dt">✔ ${new Date(t).toLocaleDateString('tr-TR')}</div>` : ''}</div></div>`;
-  }).join('') + '</div>';
+  };
+  $('achList').innerHTML = ACH_GROUPS.map(([g, name]) => {
+    const list = ACH.filter(a => a.g === g), n = list.filter(a => PROG.ach[a.id]).length;
+    return `<h4 class="achG">${name} <small>${n}/${list.length}</small></h4><div class="pgrid">${list.map(card).join('')}</div>`;
+  }).join('');
 };
 $('achBack').onclick = showMenu;
 
