@@ -3612,7 +3612,13 @@ function buildWorld() {
     for (const [k, n] of shared) if (n >= 3) { const a = REGIONS[Math.floor(k / 100)].id, b = REGIONS[k % 100].id; adj[a].push(b); adj[b].push(a); }
     // bölge alanları ve dış çizgileri: kare kenarları yerine yumuşatılmış halkalar (boyama evenodd ile)
     const outlines = REGIONS.map((_, k) => smoothOutline(N, reg, i => reg[i] === k));
-    WD = {N, img: terrImg, ppc: PPC, reg, adj, paths: outlines, border, outlines, coast: smoothOutline(N, reg, i => land[i] === 1)};
+    const coast = smoothOutline(N, reg, i => land[i] === 1);
+    // su katmanı bir kez çizilir (her karede 9 kalın çizgi çizmek yavaştı): derin deniz + kıyıdan açığa koyulaşan sığlık
+    const WS = 4, water = document.createElement('canvas'); water.width = N * WS; water.height = WORLD_H * WS;
+    const wg = water.getContext('2d'); wg.fillStyle = '#1c4268'; wg.fillRect(0, 0, water.width, water.height);
+    wg.scale(WS, WS); wg.translate(0, -WORLD_Y0); wg.lineJoin = 'round'; wg.lineCap = 'round';
+    for (let k = 0; k < 9; k++) { wg.strokeStyle = `rgba(104,170,190,${k < 8 ? .085 : .3})`; wg.lineWidth = 18 * Math.pow(.72, k); wg.stroke(coast); }
+    WD = {N, img: terrImg, ppc: PPC, reg, adj, paths: outlines, border, outlines, coast, water};
   } finally { ({M, terr, height, villages, rivers, LAND, tseed, terrImg, PPC} = keep); }
   return WD;
 }
@@ -3703,9 +3709,10 @@ function drawWorld() {
   g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
   const img = () => g.drawImage(WD.img, 0, WORLD_Y0 * WD.ppc, N * WD.ppc, WORLD_H * WD.ppc, 0, WORLD_Y0, N, WORLD_H);
   g.save(); g.translate(wv.ox, wv.oy); g.scale(s, s); g.translate(0, -WORLD_Y0);
-  // yumuşak kıyı: resim (kara bir kare taşkın) → kıyı boyunca sığ deniz şeridi taşkını örter → kara, kıyı çizgisiyle kırpılıp yeniden
-  img();
-  g.lineJoin = 'round'; g.strokeStyle = 'rgb(92,160,178)'; g.lineWidth = 2.8; g.stroke(WD.coast);
+  // su resimden alınmaz (kare kare görünürdü): derin deniz zemini + kıyıdan açığa koyulaşan yumuşak sığlık katmanları;
+  // kara (resimde bir kare taşkın) yumuşak kıyı çizgisiyle kırpılıp üstüne çizilir
+  g.lineJoin = 'round'; g.lineCap = 'round';
+  g.drawImage(WD.water, 0, WORLD_Y0, N, WORLD_H);
   g.save(); g.clip(WD.coast, 'evenodd'); img(); g.restore();
   g.strokeStyle = 'rgba(232,240,228,.55)'; g.lineWidth = Math.max(.35, 1.2 / s); g.stroke(WD.coast);
   // fethedilenler krallığın renginde; saldırılamayanlar karartılır
