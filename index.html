@@ -1191,10 +1191,20 @@ function newGame(humanPicks) {
   const sc0 = scenOf(), tp = sc0.terrain || {};
   // Kaleyi Tut: kale bütün başlangıçlara aşağı yukarı eşit uzaklıkta değilse (8 kareden fazla fark) yeni harita denenir
   const fortBad = () => { if (sc0.goal !== 'kale') return false; const f = findFort(pos, s); return !f || f.spread > 8; };
-  for (let t = 0; t < 16 && (!pos || (t < 15 && fortBad())); t++) { pos = null; genTerrain((Math.random() * 2 ** 31) | 0, tp); pos = pickStarts(n, s, rng(tseed + 1), tp.startSea); }
+  for (let t = 0; t < 16 && (!pos || (t < 15 && fortBad())); t++) { pos = null; genTerrain((Math.random() * 2 ** 31) | 0, tp); pos = pickStarts(n, s, rng(tseed + 1), tp.startSea, t < 14 && !tp.startSea); }   // ilk 14 haritada başlangıçta hiç su olmasın
   if (!pos) {   // son çare: eski düzen, başlangıç karelerindeki deniz karaya çevrilir
     pos = placements(n, M, s).sort(() => Math.random() - .5);
+    // başkent karenin ortasına gelsin diye kare seçim ızgarasına göre kaydırılır (bkz. pickStarts)
+    const S = TUNE.sancakSize, off = Math.round((((S - s) / 2) % S + S) % S), sh = v => v + off + s < M ? v + off : v + off - S;
+    pos = pos.map(([x, y]) => [sh(x), sh(y)]);
     for (const [px, py] of pos) for (let y = py; y < py + s; y++) for (let x = px; x < px + s; x++) if (terr[y * M + x] === T.DENIZ) { terr[y * M + x] = T.CAYIR; LAND++; }
+    // döküldüğü göl karaya dönen akarsu silinir (karanın ortasında bitmesin); ona katılanlar da
+    for (let k = 0; k < 4; k++) rivers = rivers.filter(rv => {
+      const e = rv[rv.length - 1];
+      if (rv.big || terr[e] === T.DENIZ || rivers.some(o => o !== rv && o.includes(e))) return true;
+      for (const i of rv) if (terr[i] === T.NEHIR) terr[i] = T.CAYIR;
+      return false;
+    });
   }
   players = [];
   for (let i = 0; i < n; i++) {
@@ -1540,7 +1550,8 @@ function cleanSmall() {
   }
 }
 // akarsular: tepe/dağdan doğar, denize doğru akar. Önce "taşırarak doldurma" ile her karenin denize giden
-// yönü bulunur (çukurlar dolmuş sayılır), böylece akarsu kıvrılıp yumak olmaz, mutlaka denize/kenara ulaşır.
+// yönü bulunur (çukurlar dolmuş sayılır), böylece akarsu kıvrılıp yumak olmaz, mutlaka bir göle ya da denize dökülür
+// (harita kenarına akıp orada bitmez; hiç su yoksa akarsu da olmaz).
 function makeRivers(R) {
   rivers = [];
   const N = M * M, down = new Int32Array(N).fill(-1), done = new Uint8Array(N), fill = new Float32Array(N);
@@ -1553,7 +1564,7 @@ function makeRivers(R) {
   for (let i = 0; i < N; i++) rh[i] = height[i] + (mN((i % M) / M * 9, ((i / M) | 0) / M * 9, 3) - .5) * .05 * (hmx - hmn);
   for (let i = 0; i < N; i++) {
     const x = i % M, y = (i / M) | 0;
-    if (terr[i] === T.DENIZ || x === 0 || y === 0 || x === M - 1 || y === M - 1) { done[i] = 1; fill[i] = rh[i]; push(rh[i], i); }
+    if (terr[i] === T.DENIZ) { done[i] = 1; fill[i] = rh[i]; push(rh[i], i); }
   }
   while (heap.length) {
     const [h, i] = pop(), x = i % M, y = (i / M) | 0;
@@ -1572,27 +1583,41 @@ function makeRivers(R) {
     const path = [];
     let i = s0;
     while (i >= 0 && terr[i] !== T.DENIZ && !isRiver[i]) { path.push(i); i = down[i]; }
-    if (path.length < M / 6) continue;
+    if (path.length < M / 6 || i < 0) continue;   // suya varmayan akarsu olmaz
     for (const j of path) { terr[j] = T.NEHIR; isRiver[j] = 1; }
     rivers.push(i >= 0 ? [...path, i] : path);   // son nokta: deniz ya da katıldığı akarsu
   }
 }
-// başlangıç yerleri: denizsiz, birbirinden uzak ve olabildiğince adil kareler
-function pickStarts(n, s, R, seaMax = .06) {
-  const C = [];
-  for (let y = 5; y + s <= M - 5; y += 5) for (let x = 5; x + s <= M - 5; x += 5) {
-    let seaN = 0, mnt = 0, cost = 0;
-    for (let yy = y; yy < y + s; yy++) for (let xx = x; xx < x + s; xx++) {
-      const t = terr[yy * M + xx]; if (t === T.DENIZ) seaN++; else { cost += TERRAIN[t].cost; if (t === T.DAG) mnt++; }
+// başlangıç yerleri: denizsiz, birbirinden uzak ve olabildiğince adil kareler. Kareler, başkent (5×5 seçim ızgarasına
+// oturan blok) ortaya gelecek kadar kaydırılır. Şartlar adım adım gevşetilir: önce hiç su (göl, deniz) olmayan, kenardan
+// ve birbirinden uzak kareler; olmazsa biraz su, kenara ve birbirine daha yakın. (Eskiden şartlar tek ve sıkıydı, çoğu
+// haritada yer bulunamayıp başlangıçtaki göller karaya çevriliyordu: akarsular karanın ortasında kalıyordu.)
+function pickStarts(n, s, R, seaMax = .06, dry = false) {
+  const S = TUNE.sancakSize, off = Math.round((((S - s) / 2) % S + S) % S);
+  const steps = [[0, 5, 4, .2], [0, 3, 2, .25], [0, 2, 1, .35], [seaMax, 5, 4, .2], [seaMax, 3, 2, .25], [Math.max(seaMax, .12), 2, 1, .35]];
+  for (const [sea, edge, gap, mntMax] of steps) {
+    if (dry && sea) break;   // suyu olmayan yer yoksa yeni harita denenir
+    const C = [];
+    for (let y = off; y + s <= M - edge; y += S) for (let x = off; x + s <= M - edge; x += S) {
+      if (x < edge || y < edge) continue;
+      let seaN = 0, mnt = 0, cost = 0;
+      for (let yy = y; yy < y + s; yy++) for (let xx = x; xx < x + s; xx++) {
+        const t = terr[yy * M + xx]; if (t === T.DENIZ) seaN++; else { cost += TERRAIN[t].cost; if (t === T.DAG) mnt++; }
+      }
+      if (seaN <= s * s * sea && mnt <= s * s * mntMax) C.push({x, y, cost});
     }
-    if (seaN <= s * s * seaMax && mnt <= s * s * .2) C.push({x, y, cost});
+    const pick = pickFrom(n, s, R, C, gap);
+    if (pick) return pick;
   }
+  return null;
+}
+function pickFrom(n, s, R, C, gap) {
   if (C.length < n) return null;
   let best = null, bestScore = -Infinity;
   for (let t = 0; t < 300; t++) {
     const order = C.map(c => [R(), c]).sort((a, b) => a[0] - b[0]).map(e => e[1]), pick = [];
     for (const c of order) {
-      if (pick.every(q => Math.max(Math.abs(q.x - c.x), Math.abs(q.y - c.y)) >= s + 4)) pick.push(c);
+      if (pick.every(q => Math.max(Math.abs(q.x - c.x), Math.abs(q.y - c.y)) >= s + gap)) pick.push(c);
       if (pick.length === n) break;
     }
     if (pick.length < n) continue;
@@ -1606,9 +1631,9 @@ function pickStarts(n, s, R, seaMax = .06) {
 }
 // başkent: başlangıç karesinin ortasına en yakın, tamamı kara olan 5×5 blok
 function capitalBlock([px, py], s) {
-  const S = TUNE.sancakSize, cx = px + s / 2, cy = py + s / 2;
+  const S = TUNE.sancakSize, cx = px + s / 2, cy = py + s / 2, g = v => Math.ceil(v / S) * S;   // seçim ızgarasına oturur
   let best = null, bd = Infinity;
-  for (let y0 = py; y0 + S <= py + s; y0 += S) for (let x0 = px; x0 + S <= px + s; x0 += S) {
+  for (let y0 = g(py); y0 + S <= py + s; y0 += S) for (let x0 = g(px); x0 + S <= px + s; x0 += S) {
     let ok = true;
     for (let y = y0; y < y0 + S && ok; y++) for (let x = x0; x < x0 + S; x++) if (terr[y * M + x] === T.DENIZ) { ok = false; break; }
     const d = (x0 + S / 2 - cx) ** 2 + (y0 + S / 2 - cy) ** 2;
