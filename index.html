@@ -348,7 +348,7 @@
       <li><i data-ic="senaryo" data-sz="16"></i> Her oyunda harita farklıdır. Arazinin ele geçirme maliyeti: <i data-ic="arCayir" data-sz="16"></i> çayır 1, <i data-ic="arOrman" data-sz="16"></i> orman ve <i data-ic="arTepe" data-sz="16"></i> tepe 1,5, <i data-ic="arAkarsu" data-sz="16"></i> akarsu ve <i data-ic="koy" data-sz="16"></i> köy 2, <i data-ic="arDag" data-sz="16"></i> dağ 3 kare sayılır. Akarsuyu geçmek +2, tepedeki düşmana saldırmak +1 zorluk. <i data-ic="arDeniz" data-sz="16"></i> Deniz alınamaz; denizin karşısına çıkarma yapmak +3 zorluk.</li>
       <li><i data-ic="koy" data-sz="16"></i> Bir köyün tamamı elindeyse kazanma hesabında <b>fazladan 25 kare</b> sayılır. Hedef, karaların belirli bir payına ulaşmak ya da (serbest oyunda seçilirse) bütün rakipleri yıkmaktır.</li>
       <li><b>20</b> her zaman kazanır (kritik). <b>1</b> felakettir: kendi toprağından kaybedersin.</li>
-      <li><i data-ic="mSancak" data-sz="16"></i> Her ülkenin ortasında bir <b>sancak</b> var. Sancağa saldırmak için önce onu <b>kuşatmalısın</b>: sancağın 5 kare çevresinin en az %40'ı senin olmalı. Sancağın tamamını içeren saldırının hedef zarı <b>+10</b> artar; büyüklük indirimi (güç üstünlüğü) geçmez ve hedef 20'yi aşarsa sancak alınamaz. Başarısız her sancak saldırısı o sancağı <b>alarma</b> geçirir: sonraki saldırılar +3 zorlaşır (her tur 1 azalır). Başarırsan o ülke yıkılır: sana yakın yarısı senin olur, kalanı sahipsiz kalır. Senin sancağın düşerse kaybedersin, onu koru!</li>
+      <li><i data-ic="mSancak" data-sz="16"></i> Her ülkenin ortasında bir <b>sancak</b> var. Sancağa saldırmak için önce onu <b>kuşatmalısın</b>: sancağın 5 kare çevresinin en az %40'ı senin olmalı. Sancağın tamamını içeren saldırının hedef zarı <b>+10</b> artar; büyüklük indirimi (güç üstünlüğü) geçmez ve hedef 20'yi aşarsa sancak alınamaz. Başarısız her sancak saldırısı o sancağı <b>alarma</b> geçirir: sonraki saldırılar +3 zorlaşır (her tur 1 azalır). Seferin patron savaşlarında patronun sancağı için çevrenin %25'i yeter ve alarm yalnızca +1. Başarırsan o ülke yıkılır: sana yakın yarısı senin olur, kalanı sahipsiz kalır. Senin sancağın düşerse kaybedersin, onu koru!</li>
       <li>Oyun başında <b>güç</b> seçersin (aynı kategoriden iki tane olmaz). Oyun sırasında fareyi bir gücün üstüne getirince ne yaptığı yazar.</li>
       <li>Oyun sırasında <b>Esc</b> oyun menüsünü açar: oyun durur; ayarları değiştirebilir ya da ana menüye dönebilirsin.</li>
       <li>Fare tekerleği ile yakınlaş/uzaklaş; sağ tuş, orta tuş ya da Boşluk tuşu basılıyken sürükleyerek haritayı kaydır.</li>
@@ -949,7 +949,10 @@ const TUNE = {
   // yapay zekâ: kendi sancağının çevresindeki düşmanı geri almak (defW) ve başkasının sancağını kuşatmak (siegeW) değerli
   // simülasyon (100'er oyun, 4 yapay zekâ, 100×100 Normal): oyun başına sancak denemesi 6,7 → 4,3; ilk deneme 8. → 13. tur;
   // ilk düşüş 11. → 17. tur. Daha sıkı kuşatma ya da daha güçlü savunma oyunları kilitliyordu (çoğu süre dolarak bitiyordu)
-  ringW: 5, siegeNeed: .4, alarmUp: 3, defW: 1, defMin: .3, siegeW: 1.5, sancakRule: true,                   // ortalamanın yarısından küçük ülkenin hedef değeri çarpanı (1 = kapalı)
+  ringW: 5, siegeNeed: .4, alarmUp: 3, defW: 1, defMin: .3, siegeW: 1.5, sancakRule: true,
+  // patron savaşında hedef patronun sancağı: kuşatma şartı ve alarm daha hafif (simülasyon, build/patron-simulasyon.js:
+  // Değirmenci Kral'da %40 / +3 ile zafer %12, %25 / +1 ile %50; öteki patronlarda da en iyisi)
+  bossSiege: .25, bossAlarm: 1,                   // ortalamanın yarısından küçük ülkenin hedef değeri çarpanı (1 = kapalı)
   sancak: 10, sancakSize: 5,  // sancağa saldırıda hedef zara eklenen (simülasyon: tek başına sancak ~%35) · sancak bloğunun kenarı
   npcSeaMax: 1 / 3, npcWasteMax: 0.5,   // NPC aday alanı: en çok bu oranda deniz · deniz + kendi toprağı en çok bu oranda (yoksa denize saldırıyormuş gibi görünür)
 };
@@ -1970,7 +1973,8 @@ function placeFlag(p) {
 const covers = (r, f) => !!f && r.x0 <= f.x0 && r.y0 <= f.y0 && r.x1 >= f.x1 && r.y1 >= f.y1;
 const flagsCovered = (r, pid) => players.filter(q => q.alive && q.id !== pid && !ally(pid, q.id) && covers(r, q.flag)).map(q => q.id);
 // sancağa ancak kuşatılmışsa saldırılabilir (ilk hamlede sancağa koşmak olmasın)
-const flagsIn = (r, pid) => flagsCovered(r, pid).filter(v => !TUNE.sancakRule || siegeShare(v, pid) >= TUNE.siegeNeed);
+const siegeNeedOf = v => v === SC.boss ? TUNE.bossSiege : TUNE.siegeNeed;
+const flagsIn = (r, pid) => flagsCovered(r, pid).filter(v => !TUNE.sancakRule || siegeShare(v, pid) >= siegeNeedOf(v));
 const flagRing = f => expand(f, TUNE.ringW, TUNE.ringW);
 // vid'in sancağının çevresinden (sancak ve deniz hariç) pid'in ve müttefiklerinin payı
 function siegeShare(vid, pid) {
@@ -2098,7 +2102,7 @@ function resolveAttack(pid, r, a, useDbl) {
     }
   }
   if (!ok) for (const f of a.flags) {   // sancak alarmda: sonraki saldırılar daha zor (her tur 1 söner)
-    players[f].alarm = (players[f].alarm || 0) + TUNE.alarmUp;
+    players[f].alarm = (players[f].alarm || 0) + (f === SC.boss ? TUNE.bossAlarm : TUNE.alarmUp);
     txt += ` ${IC('uyari', 16)} ${tag(players[f])} sancağı alarmda (+${players[f].alarm}).`;
   }
   if (pre.length) txt = pre.join(' · ') + ' · ' + txt;
@@ -2930,7 +2934,7 @@ $('snapSeg').addEventListener('click', e => {
 renderSnap();
 // kuşatılmamış sancak için açıklama
 const siegeMsg = (v, pid) => `${IC('mSancak', 14)} ${players[v].name} sancağına saldırmak için önce çevresini kuşat: çevresinin `
-  + `${yuzde(siegeShare(v, pid) * 100)} senin, en az ${yuzde(TUNE.siegeNeed * 100)} gerekli.`;
+  + `${yuzde(siegeShare(v, pid) * 100)} senin, en az ${yuzde(siegeNeedOf(v) * 100)} gerekli.`;
 function updateSel() {
   const el = $('selInfo'), owner = selOwner(), p = players[owner];
   if (!p || over || (busy && players[cur].human)) return;     // kendi zarın atılırken dokunma
