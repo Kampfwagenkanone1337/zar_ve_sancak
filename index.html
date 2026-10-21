@@ -3983,7 +3983,7 @@ function renderRegPanel() {
     h += `<p class="note">${IC('kilitAcik', 16)} Yenince kalıcı olarak açılan güçler: <b>${B.unlock.map(id => PW[id].name).join(', ')}</b>.</p>`;
   }
   if (own) h += `<p class="note">Fethedildi · en iyi sonuç ${starStr(r.owned[R.id], 16)}</p>`;
-  if (r.fails[R.id]) h += `<p class="note">Bu bölgede ${r.fails[R.id]} kez yenildin. Her denemede harita yeni.</p>`;
+  if (r.fails[R.id] && !own) h += `<p class="note">Bu bölgede ${r.fails[R.id]} kez yenildin. Her denemede savaş haritası yeniden ve farklı üretilir.</p>`;
   h += `<div class="btns">` + (can ? `<button id="regGo">${IC('durakSavas', 20)} Saldır</button>`
     : own ? `<button class="sec" id="regGo">↻ Tekrar oyna</button>`
     : `<button disabled>${IC('kilit', 18)} Önce komşu bir bölgeyi al</button>`) + '</div>';
