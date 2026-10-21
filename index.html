@@ -991,9 +991,10 @@ const SCEN = [
   {id: 'kale', name: 'Kaleyi Tut', goal: 'kale', desc: 'Haritanın ortasındaki kaleyi ele geçir ve 4 tur boyunca elinde tut. Boş kalede garnizon var (+8); ele geçirilmiş kalenin surları +3.',
     win: 0.6, turns: 40, lock: ['win']},
   {id: 'hayatta', name: 'Hayatta Kal', goal: 'hayatta', desc: 'Rakipler senden büyük başlar ve sana yüklenir. 25 tur boyunca ayakta kal.',
-    win: 0.6, turns: 25, lock: ['win', 'turns'], npcRing: 0.16, hunt: 2.4, needNpc: 1},
+    win: 0.6, turns: 25, lock: ['win', 'turns'], npcRing: 0.16, hunt: 2.4, needNpc: 1, stars: [.25, .12], star1: 'ayakta kalmak'},
   {id: 'akin', name: 'Akın', desc: 'Kısa bir savaş: 15 tur sonunda en büyük ülke ol (ya da daha önce %50\'ye ulaş).',
-    win: 0.5, turns: 15, lock: ['turns']},
+    // yıldızlar 15. turdaki paya göre (tura göre olsaydı 3 yıldız için 8. turda %50 gerekirdi: neredeyse imkânsız)
+    win: 0.5, turns: 15, lock: ['turns'], stars: [.35, .28], star1: 'en büyük olmak'},
   {id: 'bas', name: 'Baş Kesmek', goal: 'bas', desc: `İşaretli ${IC('avci', 16)} rakip büyük başlar. Onun sancağını sen düşür; başkası düşürürse kaybedersin.`,
     win: 0.6, turns: 40, lock: ['win'], needNpc: 1},
   {id: 'kardes', name: 'Kardeş Beylikler', desc: `İki rakip müttefik ${IC('muttefik', 16)}: birbirine saldırmaz, sancaklarını korur.`,
@@ -3269,7 +3270,8 @@ const LOSE_TEXT = '{K} geri çekildi. Ordular toparlanıp yeniden denemeli.';
 // yıldızlar: hızlı kazandıkça çok (savaşın tur sınırına göre). Hayatta Kal'da sona kalan topraklara göre.
 function battleStars() {
   const sc = scenOf();
-  if (sc.goal === 'hayatta') { const me = players.find(q => q.human); const sh = me ? me.score / LAND : 0; return sh >= .25 ? 3 : sh >= .12 ? 2 : 1; }
+  // stars: [3 yıldız, 2 yıldız] için savaş sonunda gereken kara payı (Hayatta Kal, Akın); öteki senaryolarda kazanma turuna göre
+  if (sc.stars) { const me = players.find(q => q.human), sh = me ? me.score / LAND : 0; return sh >= sc.stars[0] ? 3 : sh >= sc.stars[1] ? 2 : 1; }
   const [s3, s2] = starLimits(); return turn <= s3 ? 3 : turn <= s2 ? 2 : 1;
 }
 function starLimits() { const T = cfg.turns || 35; return [Math.round(T * .55), Math.round(T * .8)]; }
@@ -3973,7 +3975,7 @@ function renderRegPanel() {
   h += `<div class="goalBig">Hedef: ${preGoal()}</div>`;
   h += `<p class="note">${B ? `${IC('durakPatron', 16)} Patron: <b>${B.name}</b>. ${B.desc}` : `${IC(regIc(R), 16)} Senaryo: <b>${sc.name}</b>. ${sc.desc}`}</p>`;
   h += `<p class="note">${cfg.npc} rakip · ${cfg.map}×${cfg.map} harita · ${DIFF_LABEL[cfg.diff]} · ${cfg.turns} tur${cfg.npcPowers ? ' · rakipler güçlü' : ''}<br>`
-    + (sc.goal === 'hayatta' ? `${starStr(3, 14)} karaların %25'i · ${starStr(2, 14)} %12'si · ${starStr(1, 14)} ayakta kalmak`
+    + (sc.stars ? `${starStr(3, 14)} savaş sonunda karaların ${yuzde(sc.stars[0] * 100)} · ${starStr(2, 14)} ${yuzde(sc.stars[1] * 100)} · ${starStr(1, 14)} ${sc.star1}`
       : `${starStr(3, 14)} ${s3}. tura kadar · ${starStr(2, 14)} ${s2}. tura kadar · ${starStr(1, 14)} sonrası`) + '</p>';
   if (B) {
     const sg = siegeOf(R), free = 1 - sg.n / sg.of;
