@@ -1890,8 +1890,7 @@ function drawRivers(g, cs = view.cs, ox = view.ox, oy = view.oy) {
     for (const [colr, wk, bank] of [['rgba(25,40,50,.55)', 1, true], ['#5196b6', .74, false], ['rgba(185,225,240,.55)', .26, false]]) {
       g.strokeStyle = colr;
       for (let q = 0; q < parts; q++) {
-        const a = Math.floor(q * (n - 1) / parts);
-        let b = Math.floor((q + 1) * (n - 1) / parts);
+        let a = Math.floor(q * (n - 1) / parts), b = Math.floor((q + 1) * (n - 1) / parts);
         if (mouth && q === parts - 1) b = bank ? b - 1 : b;
         if (rv.mouth0 && q === 0 && bank) a++;   // başı da denizdeyse koyu kıyı orada da denize varmadan biter
         if (b <= a) continue;
