@@ -3730,7 +3730,18 @@ function icImg(name, size) {
 }
 // görünüm: s = ekranda bir karenin boyu (px), ox/oy = şeridin sol üst köşesinin ekrandaki yeri
 const wv = {s: 0, ox: 0, oy: 0, W: 0, H: 0};
-let wHover = null, wSel = null, ownedKey = '', ownedOutline = null;
+let wHover = null, wSel = null, ownedKey = '', ownedOutline = null, hatchPat = null;
+// krallığın toprakları için çapraz tarama deseni (ekranda yakınlaştırmadan bağımsız aralık)
+function ownHatch(g, s) {
+  if (!hatchPat) {
+    const c = document.createElement('canvas'); c.width = c.height = 10;
+    const h = c.getContext('2d'); h.strokeStyle = HUMAN_COLORS[0]; h.lineWidth = 2.2; h.lineCap = 'square';
+    h.beginPath(); h.moveTo(-1, 11); h.lineTo(11, -1); h.moveTo(-1, 1); h.lineTo(1, -1); h.moveTo(9, 11); h.lineTo(11, 9); h.stroke();
+    hatchPat = g.createPattern(c, 'repeat');
+  }
+  hatchPat.setTransform(new DOMMatrix([1 / s, 0, 0, 1 / s, 0, 0]));
+  return hatchPat;
+}
 const wFit = () => Math.min(wv.W / WORLD_N, wv.H / WORLD_H);
 function wClamp() {
   wv.s = Math.max(wFit() * .95, Math.min(wFit() * 5, wv.s));
@@ -3775,7 +3786,10 @@ function drawWorld() {
   // fethedilenler krallığın renginde; saldırılamayanlar karartılır
   REGIONS.forEach((R, k) => {
     const own = R.id in r.owned, can = !own && canAttack(r, R.id);
-    if (own) { g.globalAlpha = .42; g.fillStyle = HUMAN_COLORS[0]; g.fill(WD.paths[k], 'evenodd'); }
+    if (own) {   // hafif mavi ve çapraz tarama: düz mavi denizle karışıyordu
+      g.globalAlpha = .18; g.fillStyle = HUMAN_COLORS[0]; g.fill(WD.paths[k], 'evenodd');
+      g.globalAlpha = .55; g.fillStyle = ownHatch(g, s); g.fill(WD.paths[k], 'evenodd');
+    }
     else if (!can) { g.globalAlpha = .34; g.fillStyle = '#2b2118'; g.fill(WD.paths[k], 'evenodd'); }
     if (R.id === wHover && (own || can)) { g.globalAlpha = .2; g.fillStyle = '#fffaf0'; g.fill(WD.paths[k], 'evenodd'); }
   });
@@ -3787,6 +3801,7 @@ function drawWorld() {
   g.setLineDash([]);
   const key = Object.keys(r.owned).sort().join();
   if (key !== ownedKey) { ownedKey = key; ownedOutline = smoothOutline(N, WD.reg, i => WD.reg[i] >= 0 && REGIONS[WD.reg[i]].id in r.owned); }
+  g.strokeStyle = '#f2e9d4'; g.lineWidth = 6 / s; g.stroke(ownedOutline);   // krem kenar: sınır kıyıda da denizden ayrılsın
   g.strokeStyle = HUMAN_COLORS[0]; g.lineWidth = 3.2 / s; g.stroke(ownedOutline);
   if (wSel && REGMAP[wSel]) { g.strokeStyle = '#2b2118'; g.lineWidth = 3.4 / s; g.stroke(WD.outlines[idx[wSel]]); }
   g.restore();
