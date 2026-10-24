@@ -291,47 +291,47 @@
 <div id="game">
   <div id="mapWrap">
     <canvas id="map"></canvas>
-    <div id="hint"><i data-ic="fare" data-sz="16"></i> Sol tık sürükle: alan seç · Tekerlek: yakınlaştır · Sağ tık / orta tık sürükle: kaydır</div>
-    <div id="overBar" class="hidden"><button class="sec" id="ovResult">◀ Sonuç</button><button id="ovNext"></button></div>
+    <div data-en="&lt;i data-ic=&quot;fare&quot; data-sz=&quot;16&quot;&gt;&lt;/i&gt; Left-drag: select area · Wheel: zoom · Right / middle drag: pan" id="hint"><i data-ic="fare" data-sz="16"></i> Sol tık sürükle: alan seç · Tekerlek: yakınlaştır · Sağ tık / orta tık sürükle: kaydır</div>
+    <div id="overBar" class="hidden"><button data-en="◀ Result" class="sec" id="ovResult">◀ Sonuç</button><button id="ovNext"></button></div>
     <div id="zoomBar">
-      <button id="zIn" title="Yakınlaştır">＋</button>
-      <button id="zOut" title="Uzaklaştır">－</button>
-      <button id="zFit" title="Tüm haritayı göster">⤢</button>
-      <button id="zMe" title="Ülkeme git"><i data-ic="baskent" data-sz="22"></i></button>
+      <button data-en-title="Zoom in" id="zIn" title="Yakınlaştır">＋</button>
+      <button data-en-title="Zoom out" id="zOut" title="Uzaklaştır">－</button>
+      <button data-en-title="Show the whole map" id="zFit" title="Tüm haritayı göster">⤢</button>
+      <button data-en-title="Go to my realm" id="zMe" title="Ülkeme git"><i data-ic="baskent" data-sz="22"></i></button>
     </div>
   </div>
   <div id="panel">
     <div class="box paper"><div id="turnInfo"></div></div>
-    <div class="box paper"><h3>Ülkeler</h3><div id="scores"></div></div>
+    <div class="box paper"><h3 data-en="Realms">Ülkeler</h3><div id="scores"></div></div>
     <div class="box paper">
-      <h3>Saldırı</h3>
+      <h3 data-en="Attack">Saldırı</h3>
       <div id="powers"></div>
       <button id="dblBtn" class="hidden"></button>
-      <div class="snapRow">Seçim ızgarası: <div class="seg" id="snapSeg"></div></div>
+      <div data-en="Selection grid: &lt;div class=&quot;seg&quot; id=&quot;snapSeg&quot;&gt;&lt;/div&gt;" class="snapRow">Seçim ızgarası: <div class="seg" id="snapSeg"></div></div>
       <div id="selInfo"></div>
-      <div class="btns"><button id="rollBtn" disabled><i data-ic="d20" data-sz="20"></i> Zar At</button><button id="passBtn" class="sec">Pas</button></div>
+      <div class="btns"><button data-en="&lt;i data-ic=&quot;d20&quot; data-sz=&quot;20&quot;&gt;&lt;/i&gt; Roll" id="rollBtn" disabled><i data-ic="d20" data-sz="20"></i> Zar At</button><button data-en="Pass" id="passBtn" class="sec">Pas</button></div>
     </div>
-    <div class="box paper"><div id="diceRow"><div id="dice">20</div><div id="diceText">Zar bekleniyor…</div></div></div>
-    <div class="box paper logBox"><h3>Olaylar</h3><div id="log"></div></div>
+    <div class="box paper"><div id="diceRow"><div id="dice">20</div><div data-en="Waiting for a roll…" id="diceText">Zar bekleniyor…</div></div></div>
+    <div class="box paper logBox"><h3 data-en="Events">Olaylar</h3><div id="log"></div></div>
     <input type="checkbox" id="fast" hidden>
-    <div id="notes"><div id="saveNote"></div><div id="escNote"><kbd>Esc</kbd> Menü · Ayarlar</div></div>
+    <div id="notes"><div id="saveNote"></div><div data-en="&lt;kbd&gt;Esc&lt;/kbd&gt; Menu · Settings" id="escNote"><kbd>Esc</kbd> Menü · Ayarlar</div></div>
   </div>
 </div>
 
 <!-- Ana menü -->
 <div class="modal" id="menu">
   <div class="card menuCard">
-    <h1>ZAR VE SANCAK</h1>
+    <h1 data-en="DICE &amp;amp; BANNER">ZAR VE SANCAK</h1>
     <div class="menuOrn"><span></span><i></i><span></span></div>
     <div class="menuBtns">
-      <button id="mNew"><i data-ic="sefer"></i><span class="tx">Yeni Sefer</span></button>
-      <button id="mCont"><i data-ic="devam"></i><span class="tx">Sefere Devam Et<small id="mContInfo"></small></span></button>
-      <button id="mFree"><i data-ic="d20"></i><span class="tx">Serbest Oyun<small id="mFreeInfo"></small></span></button>
+      <button id="mNew"><i data-ic="sefer"></i><span data-en="New Campaign" class="tx">Yeni Sefer</span></button>
+      <button id="mCont"><i data-ic="devam"></i><span data-en="Continue Campaign&lt;small id=&quot;mContInfo&quot;&gt;&lt;/small&gt;" class="tx">Sefere Devam Et<small id="mContInfo"></small></span></button>
+      <button id="mFree"><i data-ic="d20"></i><span data-en="Skirmish&lt;small id=&quot;mFreeInfo&quot;&gt;&lt;/small&gt;" class="tx">Serbest Oyun<small id="mFreeInfo"></small></span></button>
       <hr class="menuSep">
-      <button class="sec" id="mHow"><i data-ic="tomar"></i><span class="tx">Nasıl Oynanır</span></button>
-      <button class="sec" id="mSet"><i data-ic="ayar"></i><span class="tx">Ayarlar</span></button>
-      <button class="sec" id="achOpen"><i data-ic="basarimlar"></i><span class="tx">Başarımlar</span><small id="campSummary"></small></button>
-      <button class="sec" id="mExit"><i data-ic="cikis"></i><span class="tx">Çıkış</span></button>
+      <button class="sec" id="mHow"><i data-ic="tomar"></i><span data-en="How to Play" class="tx">Nasıl Oynanır</span></button>
+      <button class="sec" id="mSet"><i data-ic="ayar"></i><span data-en="Settings" class="tx">Ayarlar</span></button>
+      <button class="sec" id="achOpen"><i data-ic="basarimlar"></i><span data-en="Achievements" class="tx">Başarımlar</span><small id="campSummary"></small></button>
+      <button class="sec" id="mExit"><i data-ic="cikis"></i><span data-en="Quit" class="tx">Çıkış</span></button>
     </div>
   </div>
 </div>
@@ -339,72 +339,74 @@
 <!-- Nasıl oynanır -->
 <div class="modal hidden" id="howto">
   <div class="card paper">
-    <h2><i data-ic="tomar" data-sz="28"></i> Nasıl Oynanır</h2>
+    <h2 data-en="&lt;i data-ic=&quot;tomar&quot; data-sz=&quot;28&quot;&gt;&lt;/i&gt; How to Play"><i data-ic="tomar" data-sz="28"></i> Nasıl Oynanır</h2>
     <div class="rules"><ul style="margin:0;padding-left:18px;font-size:15px;line-height:1.55">
-      <li>Her ülke küçük bir toprakla başlar. Amaç haritanın belirlenen payını (ör. yarısını) almak ya da tur sınırı dolduğunda en büyük ülke olmak.</li>
-      <li>Sıran gelince haritada <b>sürükleyerek</b> bir alan seç. Seçim kareli ızgaraya oturur ve alan <b>kendi toprağına değmeli</b>.</li>
-      <li>Sonra <b><i data-ic="d20" data-sz="16"></i> Zar At</b> (ya da Enter). 20'lik zarda hedef sayıyı ya da üstünü atarsan alan senin olur.</li>
-      <li>Alan büyüdükçe hedef zar <b>yükselir</b>. Başka ülkenin toprağına saldırmak boş toprağa göre daha zordur.</li>
-      <li><i data-ic="senaryo" data-sz="16"></i> Her oyunda harita farklıdır. Arazinin ele geçirme maliyeti: <i data-ic="arCayir" data-sz="16"></i> çayır 1, <i data-ic="arOrman" data-sz="16"></i> orman ve <i data-ic="arTepe" data-sz="16"></i> tepe 1,5, <i data-ic="arAkarsu" data-sz="16"></i> akarsu ve <i data-ic="koy" data-sz="16"></i> köy 2, <i data-ic="arDag" data-sz="16"></i> dağ 3 kare sayılır. Akarsuyu geçmek +2, tepedeki düşmana saldırmak +1 zorluk. <i data-ic="arDeniz" data-sz="16"></i> Deniz alınamaz; denizin karşısına çıkarma yapmak +3 zorluk.</li>
-      <li><i data-ic="koy" data-sz="16"></i> Bir köyün tamamı elindeyse kazanma hesabında <b>fazladan 25 kare</b> sayılır. Hedef, karaların belirli bir payına ulaşmak ya da (serbest oyunda seçilirse) bütün rakipleri yıkmaktır.</li>
-      <li><b>20</b> her zaman kazanır (kritik). <b>1</b> felakettir: kendi toprağından kaybedersin.</li>
-      <li><i data-ic="mSancak" data-sz="16"></i> Her ülkenin ortasında bir <b>sancak</b> var. Sancağa saldırmak için önce onu <b>kuşatmalısın</b>: sancağın 5 kare çevresinin en az %40'ı senin olmalı. Sancağın tamamını içeren saldırının hedef zarı <b>+10</b> artar; büyüklük indirimi (güç üstünlüğü) geçmez ve hedef 20'yi aşarsa sancak alınamaz. Başarısız her sancak saldırısı o sancağı <b>alarma</b> geçirir: sonraki saldırılar +3 zorlaşır (her tur 1 azalır). Seferin patron savaşlarında patronun sancağı için çevrenin %25'i yeter ve alarm yalnızca +1. Başarırsan o ülke yıkılır: sana yakın yarısı senin olur, kalanı sahipsiz kalır. Senin sancağın düşerse kaybedersin, onu koru!</li>
-      <li>Oyun başında <b>güç</b> seçersin (aynı kategoriden iki tane olmaz). Oyun sırasında fareyi bir gücün üstüne getirince ne yaptığı yazar.</li>
-      <li>Oyun sırasında <b>Esc</b> oyun menüsünü açar: oyun durur; ayarları değiştirebilir ya da ana menüye dönebilirsin.</li>
-      <li>Fare tekerleği ile yakınlaş/uzaklaş; sağ tuş, orta tuş ya da Boşluk tuşu basılıyken sürükleyerek haritayı kaydır.</li>
-      <li>Oyun her turda <b>otomatik kaydedilir</b>; kapatıp sonra devam edebilirsin.</li>
+      <li data-en="Every realm starts with a small piece of land. The goal is to take the required share of the map (e.g. half), or to be the largest realm when the turn limit runs out.">Her ülke küçük bir toprakla başlar. Amaç haritanın belirlenen payını (ör. yarısını) almak ya da tur sınırı dolduğunda en büyük ülke olmak.</li>
+      <li data-en="On your turn, &lt;b&gt;drag&lt;/b&gt; on the map to select an area. The selection snaps to the grid, and the area &lt;b&gt;must touch your own land&lt;/b&gt;.">Sıran gelince haritada <b>sürükleyerek</b> bir alan seç. Seçim kareli ızgaraya oturur ve alan <b>kendi toprağına değmeli</b>.</li>
+      <li data-en="Then &lt;b&gt;&lt;i data-ic=&quot;d20&quot; data-sz=&quot;16&quot;&gt;&lt;/i&gt; Roll&lt;/b&gt; (or press Enter). If you roll the target number or higher on the d20, the area is yours.">Sonra <b><i data-ic="d20" data-sz="16"></i> Zar At</b> (ya da Enter). 20'lik zarda hedef sayıyı ya da üstünü atarsan alan senin olur.</li>
+      <li data-en="The bigger the area, the &lt;b&gt;higher&lt;/b&gt; the target number. Attacking another realm&#x27;s land is harder than taking empty land.">Alan büyüdükçe hedef zar <b>yükselir</b>. Başka ülkenin toprağına saldırmak boş toprağa göre daha zordur.</li>
+      <li data-en="&lt;i data-ic=&quot;senaryo&quot; data-sz=&quot;16&quot;&gt;&lt;/i&gt; Every game has a different map. Terrain cost to capture: &lt;i data-ic=&quot;arCayir&quot; data-sz=&quot;16&quot;&gt;&lt;/i&gt; grassland 1, &lt;i data-ic=&quot;arOrman&quot; data-sz=&quot;16&quot;&gt;&lt;/i&gt; forest and &lt;i data-ic=&quot;arTepe&quot; data-sz=&quot;16&quot;&gt;&lt;/i&gt; hills 1.5, &lt;i data-ic=&quot;arAkarsu&quot; data-sz=&quot;16&quot;&gt;&lt;/i&gt; river and &lt;i data-ic=&quot;koy&quot; data-sz=&quot;16&quot;&gt;&lt;/i&gt; village 2, &lt;i data-ic=&quot;arDag&quot; data-sz=&quot;16&quot;&gt;&lt;/i&gt; mountains 3 squares. Crossing a river +2, attacking an enemy on a hill +1. &lt;i data-ic=&quot;arDeniz&quot; data-sz=&quot;16&quot;&gt;&lt;/i&gt; Sea cannot be taken; landing across the sea +3."><i data-ic="senaryo" data-sz="16"></i> Her oyunda harita farklıdır. Arazinin ele geçirme maliyeti: <i data-ic="arCayir" data-sz="16"></i> çayır 1, <i data-ic="arOrman" data-sz="16"></i> orman ve <i data-ic="arTepe" data-sz="16"></i> tepe 1,5, <i data-ic="arAkarsu" data-sz="16"></i> akarsu ve <i data-ic="koy" data-sz="16"></i> köy 2, <i data-ic="arDag" data-sz="16"></i> dağ 3 kare sayılır. Akarsuyu geçmek +2, tepedeki düşmana saldırmak +1 zorluk. <i data-ic="arDeniz" data-sz="16"></i> Deniz alınamaz; denizin karşısına çıkarma yapmak +3 zorluk.</li>
+      <li data-en="&lt;i data-ic=&quot;koy&quot; data-sz=&quot;16&quot;&gt;&lt;/i&gt; If you hold an entire village, it counts as &lt;b&gt;25 extra squares&lt;/b&gt; towards victory. The goal is to reach a set share of the land or (if chosen in Skirmish) to destroy every opponent."><i data-ic="koy" data-sz="16"></i> Bir köyün tamamı elindeyse kazanma hesabında <b>fazladan 25 kare</b> sayılır. Hedef, karaların belirli bir payına ulaşmak ya da (serbest oyunda seçilirse) bütün rakipleri yıkmaktır.</li>
+      <li data-en="A &lt;b&gt;20&lt;/b&gt; always wins (critical). A &lt;b&gt;1&lt;/b&gt; is a disaster: you lose some of your own land."><b>20</b> her zaman kazanır (kritik). <b>1</b> felakettir: kendi toprağından kaybedersin.</li>
+      <li data-en="&lt;i data-ic=&quot;mSancak&quot; data-sz=&quot;16&quot;&gt;&lt;/i&gt; Every realm has a &lt;b&gt;banner&lt;/b&gt; at its heart. Before you can attack a banner you must &lt;b&gt;besiege&lt;/b&gt; it: at least 40% of the land within 5 squares of it must be yours. An attack that includes the whole banner gets &lt;b&gt;+10&lt;/b&gt; to its target; the size discount (superior strength) does not apply, and if the target goes above 20 the banner cannot be taken. Every failed banner attack puts that banner on &lt;b&gt;alert&lt;/b&gt;: later attacks are +3 harder (dropping by 1 each turn). In the campaign&#x27;s boss battles, 25% of the surroundings is enough for the boss&#x27;s banner and the alert is only +1. If you succeed, that realm falls: the half nearest to you becomes yours and the rest is left unclaimed. If your banner falls you lose, so protect it!"><i data-ic="mSancak" data-sz="16"></i> Her ülkenin ortasında bir <b>sancak</b> var. Sancağa saldırmak için önce onu <b>kuşatmalısın</b>: sancağın 5 kare çevresinin en az %40'ı senin olmalı. Sancağın tamamını içeren saldırının hedef zarı <b>+10</b> artar; büyüklük indirimi (güç üstünlüğü) geçmez ve hedef 20'yi aşarsa sancak alınamaz. Başarısız her sancak saldırısı o sancağı <b>alarma</b> geçirir: sonraki saldırılar +3 zorlaşır (her tur 1 azalır). Seferin patron savaşlarında patronun sancağı için çevrenin %25'i yeter ve alarm yalnızca +1. Başarırsan o ülke yıkılır: sana yakın yarısı senin olur, kalanı sahipsiz kalır. Senin sancağın düşerse kaybedersin, onu koru!</li>
+      <li data-en="At the start of a game you choose &lt;b&gt;powers&lt;/b&gt; (never two from the same category). During the game, hover over a power to see what it does.">Oyun başında <b>güç</b> seçersin (aynı kategoriden iki tane olmaz). Oyun sırasında fareyi bir gücün üstüne getirince ne yaptığı yazar.</li>
+      <li data-en="During the game, &lt;b&gt;Esc&lt;/b&gt; opens the game menu: the game pauses, and you can change settings or return to the main menu.">Oyun sırasında <b>Esc</b> oyun menüsünü açar: oyun durur; ayarları değiştirebilir ya da ana menüye dönebilirsin.</li>
+      <li data-en="Zoom in and out with the mouse wheel; pan the map by dragging with the right or middle button, or while holding Space.">Fare tekerleği ile yakınlaş/uzaklaş; sağ tuş, orta tuş ya da Boşluk tuşu basılıyken sürükleyerek haritayı kaydır.</li>
+      <li data-en="The game is &lt;b&gt;saved automatically&lt;/b&gt; every turn; you can close it and continue later.">Oyun her turda <b>otomatik kaydedilir</b>; kapatıp sonra devam edebilirsin.</li>
     </ul></div>
-    <p><b><i data-ic="sefer" data-sz="18"></i> Sefer:</b> Krallığına bir ad ver ve dünyayı fethet. Dünya beş ülkeye, 26 bölgeye bölünmüş; kendi bölgelerine <b>komşu</b> bir bölgeye saldırırsın (haritayı sürükleyip tekerlekle yakınlaştırabilirsin). Her bölge, kendi haritası ve kazanma şartı olan bir senaryolu savaştır. Kazanınca bölge senin olur ve ne kadar hızlı kazandıysan o kadar çok <i data-ic="yildiz" data-sz="16"></i> alırsın. Her ülkenin başkentinde bir <i data-ic="durakPatron" data-sz="16"></i> hükümdar var: başkent çok güçlüdür, ama o ülkenin çevre bölgelerini aldıkça <b>kuşatma</b> sıkılaşır ve hükümdar zayıflar. Başkenti alınca yeni güçler kalıcı olarak açılır. Kaybedersen bölge düşmanda kalır; istediğin zaman tekrar saldırırsın. Taht Şehri'ni alınca sefer biter.</p>
-    <p><b><i data-ic="d20" data-sz="18"></i> Serbest Oyun:</b> Harita, rakip sayısı, zorluk gibi her şeyi sen ayarlarsın; tüm güçler açıktır. Aynı bilgisayarda arkadaşlarınla sırayla ya da co-op oynayabilirsin.</p>
-    <div class="btns"><button class="sec" id="howBack">◀ Ana Menü</button></div>
+    <p data-en="&lt;b&gt;&lt;i data-ic=&quot;sefer&quot; data-sz=&quot;18&quot;&gt;&lt;/i&gt; Campaign:&lt;/b&gt; Name your kingdom and conquer the world. The world is divided into five lands and 51 regions; you attack a region &lt;b&gt;bordering&lt;/b&gt; your own (drag the map and zoom with the wheel). Each region is a scenario battle with its own map and victory condition. When you win, the region is yours, and the faster you win, the more &lt;i data-ic=&quot;yildiz&quot; data-sz=&quot;16&quot;&gt;&lt;/i&gt; you earn. In the capital of each land sits a &lt;i data-ic=&quot;durakPatron&quot; data-sz=&quot;16&quot;&gt;&lt;/i&gt; ruler: the capital is very strong, but as you take the land&#x27;s surrounding regions the &lt;b&gt;siege&lt;/b&gt; tightens and the ruler weakens. Taking a capital permanently unlocks new powers. If you lose, the region stays in enemy hands; you can attack again whenever you like. The campaign ends when you take the Throne City."><b><i data-ic="sefer" data-sz="18"></i> Sefer:</b> Krallığına bir ad ver ve dünyayı fethet. Dünya beş ülkeye, 51 bölgeye bölünmüş; kendi bölgelerine <b>komşu</b> bir bölgeye saldırırsın (haritayı sürükleyip tekerlekle yakınlaştırabilirsin). Her bölge, kendi haritası ve kazanma şartı olan bir senaryolu savaştır. Kazanınca bölge senin olur ve ne kadar hızlı kazandıysan o kadar çok <i data-ic="yildiz" data-sz="16"></i> alırsın. Her ülkenin başkentinde bir <i data-ic="durakPatron" data-sz="16"></i> hükümdar var: başkent çok güçlüdür, ama o ülkenin çevre bölgelerini aldıkça <b>kuşatma</b> sıkılaşır ve hükümdar zayıflar. Başkenti alınca yeni güçler kalıcı olarak açılır. Kaybedersen bölge düşmanda kalır; istediğin zaman tekrar saldırırsın. Taht Şehri'ni alınca sefer biter.</p>
+    <p data-en="&lt;b&gt;&lt;i data-ic=&quot;d20&quot; data-sz=&quot;18&quot;&gt;&lt;/i&gt; Skirmish:&lt;/b&gt; You set everything: the map, the number of opponents, the difficulty and more; all powers are available. You can play with friends on the same computer, taking turns or in co-op."><b><i data-ic="d20" data-sz="18"></i> Serbest Oyun:</b> Harita, rakip sayısı, zorluk gibi her şeyi sen ayarlarsın; tüm güçler açıktır. Aynı bilgisayarda arkadaşlarınla sırayla ya da co-op oynayabilirsin.</p>
+    <div class="btns"><button data-en="◀ Main Menu" class="sec" id="howBack">◀ Ana Menü</button></div>
   </div>
 </div>
 
 <!-- Ayarlar -->
 <div class="modal hidden" id="settings">
   <div class="card paper">
-    <h2><i data-ic="ayar" data-sz="28"></i> Ayarlar</h2>
-    <div class="opt"><div class="lbl">Ses efektleri</div>
-      <div class="soundRow"><button class="sec" id="sSoundBtn"></button><input type="range" id="sSoundVol" min="0" max="100" title="Ses seviyesi"></div>
-      <div class="note">Kaydırıcıyı bırakınca örnek bir ses çalar.</div></div>
-    <div class="opt"><div class="lbl">Animasyonlar</div>
+    <h2 data-en="&lt;i data-ic=&quot;ayar&quot; data-sz=&quot;28&quot;&gt;&lt;/i&gt; Settings"><i data-ic="ayar" data-sz="28"></i> Ayarlar</h2>
+    <div class="opt"><div class="lbl">Dil · Language</div><div class="seg" id="sLangSeg"></div>
+      <div data-en="Changing the language reloads the game; your progress and saved game are kept." class="note">Dil değişince oyun yeniden yüklenir; ilerlemen ve kayıtlı oyunun korunur.</div></div>
+    <div class="opt"><div data-en="Sound effects" class="lbl">Ses efektleri</div>
+      <div class="soundRow"><button class="sec" id="sSoundBtn"></button><input data-en-title="Volume" type="range" id="sSoundVol" min="0" max="100" title="Ses seviyesi"></div>
+      <div data-en="Release the slider to hear a sample sound." class="note">Kaydırıcıyı bırakınca örnek bir ses çalar.</div></div>
+    <div class="opt"><div data-en="Animations" class="lbl">Animasyonlar</div>
       <div class="soundRow"><button class="sec" id="sAnimBtn"></button></div>
-      <div class="note">Alınan toprak ülkenin rengine dalga gibi boyanır, felakette toprak yanar. Kapalıyken kısa bir renk parlaması olur.</div></div>
-    <div class="opt"><div class="lbl">Ekran</div><div class="seg" id="sFullSeg"></div>
-      <div class="note">Tam ekranda pencere çerçevesi de kaybolur. F11 ile de açıp kapatabilirsin.</div></div>
-    <div class="opt"><div class="lbl">Arayüz boyutu</div><div class="seg" id="sUiSeg"></div>
-      <div class="note">Otomatik: yazılar ve paneller ekran çözünürlüğüne göre büyür (1080p'de %100, 1440p'de ~%133).</div></div>
-    <div class="opt"><div class="lbl">Yapay zekâ turları</div><div class="seg" id="sFastSeg"></div>
-      <div class="note">Hızlı seçilirse yapay zekâ rakipler zarı daha çabuk atar; oyun daha kısa sürer.</div></div>
-    <div class="opt"><div class="lbl"><i data-ic="sifirla" data-sz="20"></i> Verileri sıfırla</div>
-      <div class="seg"><button id="rstCamp">Seferi sıfırla</button><button id="rstAch">Başarımları sıfırla</button><button id="rstStats">İstatistikleri sıfırla</button><button id="rstAll">Hepsini sıfırla</button></div>
-      <div class="note">Her biri önce onay sorar. Geri alınamaz.</div></div>
-    <div class="btns"><button class="sec" id="setBack">◀ Ana Menü</button></div>
+      <div data-en="Captured land is painted in the realm&#x27;s colour like a wave, and land burns on a disaster. When off, there is a short flash of colour." class="note">Alınan toprak ülkenin rengine dalga gibi boyanır, felakette toprak yanar. Kapalıyken kısa bir renk parlaması olur.</div></div>
+    <div class="opt"><div data-en="Display" class="lbl">Ekran</div><div class="seg" id="sFullSeg"></div>
+      <div data-en="Fullscreen also hides the window frame. You can also toggle it with F11." class="note">Tam ekranda pencere çerçevesi de kaybolur. F11 ile de açıp kapatabilirsin.</div></div>
+    <div class="opt"><div data-en="Interface size" class="lbl">Arayüz boyutu</div><div class="seg" id="sUiSeg"></div>
+      <div data-en="Auto: text and panels scale with the screen resolution (100% at 1080p, ~133% at 1440p)." class="note">Otomatik: yazılar ve paneller ekran çözünürlüğüne göre büyür (1080p'de %100, 1440p'de ~%133).</div></div>
+    <div class="opt"><div data-en="AI turns" class="lbl">Yapay zekâ turları</div><div class="seg" id="sFastSeg"></div>
+      <div data-en="With Fast, AI opponents roll sooner and games go quicker." class="note">Hızlı seçilirse yapay zekâ rakipler zarı daha çabuk atar; oyun daha kısa sürer.</div></div>
+    <div class="opt"><div data-en="&lt;i data-ic=&quot;sifirla&quot; data-sz=&quot;20&quot;&gt;&lt;/i&gt; Reset data" class="lbl"><i data-ic="sifirla" data-sz="20"></i> Verileri sıfırla</div>
+      <div class="seg"><button data-en="Reset campaign" id="rstCamp">Seferi sıfırla</button><button data-en="Reset achievements" id="rstAch">Başarımları sıfırla</button><button data-en="Reset statistics" id="rstStats">İstatistikleri sıfırla</button><button data-en="Reset everything" id="rstAll">Hepsini sıfırla</button></div>
+      <div data-en="Each one asks for confirmation first. This cannot be undone." class="note">Her biri önce onay sorar. Geri alınamaz.</div></div>
+    <div class="btns"><button data-en="◀ Main Menu" class="sec" id="setBack">◀ Ana Menü</button></div>
   </div>
 </div>
 
 <!-- Serbest oyun: ayarlar -->
 <div class="modal hidden" id="setup">
   <div class="card paper">
-    <h1><i data-ic="d20" data-sz="36"></i> Serbest Oyun</h1>
-    <div id="contBox" class="hidden"><div id="contText" style="font-size:14px;margin-bottom:8px"></div><button id="contBtn">▶ Kayıtlı Oyuna Devam Et</button></div>
-    <div class="opt"><div class="lbl">Senaryo</div><div class="seg" id="optScen"></div><div class="note" id="scenNote"></div></div>
-    <div class="opt"><div class="lbl">İnsan oyuncu (aynı bilgisayarda sırayla)</div><div class="seg" id="optHumans"></div></div>
-    <div class="opt" id="coopRow"><div class="lbl">Oyun modu</div><div class="seg" id="optCoop"></div>
-      <div class="note">Co-op: insanlar takım olur, birbirine saldıramaz; toprakları toplanır.</div></div>
-    <div class="opt"><div class="lbl">Yapay zekâ rakip sayısı</div><div class="seg" id="optNpc"></div>
-      <div class="note">Toplam 3–5 ülke olabilir. En az 2 insan oyuncu varsa yapay zekâ rakip olmadan da oynanabilir.</div></div>
-    <div class="opt"><div class="lbl">Başlangıç toprağı (her ülke)</div><div class="seg" id="optStart"></div></div>
-    <div class="opt"><div class="lbl">Harita büyüklüğü</div><div class="seg" id="optMap"></div>
-      <div class="note">Gri seçeneklerde bu ayarlarla bütün ülkeler haritaya sığmıyor.</div></div>
-    <div class="opt"><div class="lbl">Kazanma koşulu</div><div class="seg" id="optWin"></div></div>
-    <div class="opt"><div class="lbl">Oyun hızı</div><div class="seg" id="optSpeed"></div>
-      <div class="note">Hızlı oyunda aynı zarla daha büyük alanlar alınır ve daha büyük alan seçilebilir.</div></div>
-    <div class="opt"><div class="lbl">Tur sınırı</div><div class="seg" id="optTurns"></div>
-      <div class="note">Süre dolunca en çok toprağı olan kazanır.</div></div>
-    <div class="opt"><div class="lbl">Zorluk</div><div class="seg" id="optDiff"></div></div>
-    <div class="opt"><div class="lbl">Yapay zekâ rakipler de güç seçsin</div><div class="seg" id="optNpcPowers"></div></div>
-    <div class="btns"><button class="sec" id="setupBack">◀ Ana Menü</button><button id="toPicks">İleri: Güç Seçimi ▶</button></div>
+    <h1 data-en="&lt;i data-ic=&quot;d20&quot; data-sz=&quot;36&quot;&gt;&lt;/i&gt; Skirmish"><i data-ic="d20" data-sz="36"></i> Serbest Oyun</h1>
+    <div id="contBox" class="hidden"><div id="contText" style="font-size:14px;margin-bottom:8px"></div><button data-en="▶ Continue Saved Game" id="contBtn">▶ Kayıtlı Oyuna Devam Et</button></div>
+    <div class="opt"><div data-en="Scenario" class="lbl">Senaryo</div><div class="seg" id="optScen"></div><div class="note" id="scenNote"></div></div>
+    <div class="opt"><div data-en="Human players (taking turns on one computer)" class="lbl">İnsan oyuncu (aynı bilgisayarda sırayla)</div><div class="seg" id="optHumans"></div></div>
+    <div class="opt" id="coopRow"><div data-en="Game mode" class="lbl">Oyun modu</div><div class="seg" id="optCoop"></div>
+      <div data-en="Co-op: the humans form a team and cannot attack each other; their land is added together." class="note">Co-op: insanlar takım olur, birbirine saldıramaz; toprakları toplanır.</div></div>
+    <div class="opt"><div data-en="AI opponents" class="lbl">Yapay zekâ rakip sayısı</div><div class="seg" id="optNpc"></div>
+      <div data-en="3–5 realms in total. With at least 2 human players you can also play without AI opponents." class="note">Toplam 3–5 ülke olabilir. En az 2 insan oyuncu varsa yapay zekâ rakip olmadan da oynanabilir.</div></div>
+    <div class="opt"><div data-en="Starting land (each realm)" class="lbl">Başlangıç toprağı (her ülke)</div><div class="seg" id="optStart"></div></div>
+    <div class="opt"><div data-en="Map size" class="lbl">Harita büyüklüğü</div><div class="seg" id="optMap"></div>
+      <div data-en="Greyed-out options: with these settings not every realm fits on the map." class="note">Gri seçeneklerde bu ayarlarla bütün ülkeler haritaya sığmıyor.</div></div>
+    <div class="opt"><div data-en="Victory condition" class="lbl">Kazanma koşulu</div><div class="seg" id="optWin"></div></div>
+    <div class="opt"><div data-en="Game speed" class="lbl">Oyun hızı</div><div class="seg" id="optSpeed"></div>
+      <div data-en="In a fast game, the same roll takes bigger areas, and you can select bigger areas." class="note">Hızlı oyunda aynı zarla daha büyük alanlar alınır ve daha büyük alan seçilebilir.</div></div>
+    <div class="opt"><div data-en="Turn limit" class="lbl">Tur sınırı</div><div class="seg" id="optTurns"></div>
+      <div data-en="When time runs out, the realm with the most land wins." class="note">Süre dolunca en çok toprağı olan kazanır.</div></div>
+    <div class="opt"><div data-en="Difficulty" class="lbl">Zorluk</div><div class="seg" id="optDiff"></div></div>
+    <div class="opt"><div data-en="AI opponents choose powers too" class="lbl">Yapay zekâ rakipler de güç seçsin</div><div class="seg" id="optNpcPowers"></div></div>
+    <div class="btns"><button data-en="◀ Main Menu" class="sec" id="setupBack">◀ Ana Menü</button><button data-en="Next: Choose Powers ▶" id="toPicks">İleri: Güç Seçimi ▶</button></div>
   </div>
 </div>
 
@@ -414,7 +416,7 @@
     <div class="pickHead"><span class="sw" id="pickSw"></span><h2 id="pickTitle"></h2></div>
     <p id="pickHelp"></p>
     <div id="pickList"></div>
-    <div class="pickBar btns"><button class="sec" id="pickBack">◀ Geri</button><button class="sec" id="pickNone">Güçsüz oyna</button><button id="pickOk" disabled></button></div>
+    <div class="pickBar btns"><button data-en="◀ Back" class="sec" id="pickBack">◀ Geri</button><button data-en="Play without powers" class="sec" id="pickNone">Güçsüz oyna</button><button id="pickOk" disabled></button></div>
   </div>
 </div>
 
@@ -422,8 +424,8 @@
 <div class="modal opaque hidden" id="handoff">
   <div class="card paper" style="text-align:center">
     <h1 id="handTitle"></h1>
-    <p>Diğer oyuncular ekrana bakmasın! Hazır olunca devam et.</p>
-    <div class="btns"><button id="handBtn">Hazırım ▶</button></div>
+    <p data-en="Other players, don&#x27;t look at the screen! Continue when you&#x27;re ready.">Diğer oyuncular ekrana bakmasın! Hazır olunca devam et.</p>
+    <div class="btns"><button data-en="Ready ▶" id="handBtn">Hazırım ▶</button></div>
   </div>
 </div>
 
@@ -433,8 +435,8 @@
     <p id="endText"></p>
     <div id="endStory" class="story hidden"></div>
     <div id="endStars" class="stars hidden"></div>
-    <div class="btns wrap"><button id="nextChBtn" class="hidden">Ödülünü seç ▶</button><button id="retryBtn" class="hidden">↻ Tekrar dene</button>
-      <button id="againBtn">Yeni Oyun</button><button class="sec hidden" id="campBackBtn"><i data-ic="sefer" data-sz="20"></i> Sefer</button><button class="sec" id="lookBtn">Haritaya Bak</button></div>
+    <div class="btns wrap"><button id="nextChBtn" class="hidden">Ödülünü seç ▶</button><button data-en="↻ Try again" id="retryBtn" class="hidden">↻ Tekrar dene</button>
+      <button data-en="New Game" id="againBtn">Yeni Oyun</button><button data-en="&lt;i data-ic=&quot;sefer&quot; data-sz=&quot;20&quot;&gt;&lt;/i&gt; Campaign" class="sec hidden" id="campBackBtn"><i data-ic="sefer" data-sz="20"></i> Sefer</button><button data-en="View Map" class="sec" id="lookBtn">Haritaya Bak</button></div>
   </div>
 </div>
 
@@ -443,29 +445,29 @@
 <div id="world" class="hidden">
   <div id="wMapWrap">
     <canvas id="worldMap"></canvas>
-    <div id="wHint"><i data-ic="fare" data-sz="16"></i> Tıkla: bölge seç · Sürükle: kaydır · Tekerlek: yakınlaştır</div>
+    <div data-en="&lt;i data-ic=&quot;fare&quot; data-sz=&quot;16&quot;&gt;&lt;/i&gt; Click: select region · Drag: pan · Wheel: zoom" id="wHint"><i data-ic="fare" data-sz="16"></i> Tıkla: bölge seç · Sürükle: kaydır · Tekerlek: yakınlaştır</div>
     <div id="wZoom">
-      <button id="wzIn" title="Yakınlaştır">＋</button>
-      <button id="wzOut" title="Uzaklaştır">－</button>
-      <button id="wzFit" title="Bütün dünyayı göster">⤢</button>
-      <button id="wzMe" title="Seçili bölgeye git"><i data-ic="baskent" data-sz="22"></i></button>
+      <button data-en-title="Zoom in" id="wzIn" title="Yakınlaştır">＋</button>
+      <button data-en-title="Zoom out" id="wzOut" title="Uzaklaştır">－</button>
+      <button data-en-title="Show the whole world" id="wzFit" title="Bütün dünyayı göster">⤢</button>
+      <button data-en-title="Go to the selected region" id="wzMe" title="Seçili bölgeye git"><i data-ic="baskent" data-sz="22"></i></button>
     </div>
   </div>
   <div id="wPanel">
     <div class="box paper"><h2 id="wTitle"></h2><div id="campInfo"></div></div>
     <div class="box paper" id="regPanel"></div>
-    <div class="box paper wBtns"><button class="sec" id="campBack">◀ Ana Menü</button><button class="sec" id="xferOpen"><i data-ic="aktar" data-sz="20"></i> İlerlemeyi aktar</button></div>
+    <div class="box paper wBtns"><button data-en="◀ Main Menu" class="sec" id="campBack">◀ Ana Menü</button><button data-en="&lt;i data-ic=&quot;aktar&quot; data-sz=&quot;20&quot;&gt;&lt;/i&gt; Transfer progress" class="sec" id="xferOpen"><i data-ic="aktar" data-sz="20"></i> İlerlemeyi aktar</button></div>
   </div>
 </div>
 
 <div class="modal hidden" id="camp">
   <div class="card paper wide">
-    <h1 id="campTitle">Sefer</h1>
+    <h1 data-en="Campaign" id="campTitle">Sefer</h1>
     <div id="campName">
-      <p>Her büyük imparatorluk küçük bir vadide başlar. Önünde beş ülkeye bölünmüş bir dünya var: komşu bölgelere saldırarak bölge bölge fethedersin. Her ülkenin başkentinde güçlü bir hükümdar seni bekler; çevresini aldıkça başkent zayıflar. Kaybettiğin bölgeye istediğin zaman tekrar saldırabilirsin.</p>
-      <p>Krallığına bir ad ver:</p>
-      <input id="realmInput" class="txt" maxlength="28" placeholder="Örn. Demir Beylik">
-      <div class="btns"><button class="sec" id="campNameBack">◀ Geri</button><button id="realmOk">Krallığı kur ▶</button></div>
+      <p data-en="Every great empire begins in a small valley. Before you lies a world divided into five lands: you conquer it region by region, attacking the regions next to yours. In the capital of each land a powerful ruler awaits you; the more of the surrounding regions you take, the weaker the capital becomes. You can attack a region you lost again at any time.">Her büyük imparatorluk küçük bir vadide başlar. Önünde beş ülkeye bölünmüş bir dünya var: komşu bölgelere saldırarak bölge bölge fethedersin. Her ülkenin başkentinde güçlü bir hükümdar seni bekler; çevresini aldıkça başkent zayıflar. Kaybettiğin bölgeye istediğin zaman tekrar saldırabilirsin.</p>
+      <p data-en="Name your kingdom:">Krallığına bir ad ver:</p>
+      <input data-en-ph="E.g. Iron March" id="realmInput" class="txt" maxlength="28" placeholder="Örn. Demir Beylik">
+      <div class="btns"><button data-en="◀ Back" class="sec" id="campNameBack">◀ Geri</button><button data-en="Found the kingdom ▶" id="realmOk">Krallığı kur ▶</button></div>
     </div>
   </div>
 </div>
@@ -473,26 +475,26 @@
 <!-- İlerlemeyi aktar -->
 <div class="modal hidden" id="xfer">
   <div class="card paper">
-    <h2><i data-ic="aktar" data-sz="28"></i> İlerlemeyi aktar</h2>
-    <p>Bu kodu kopyalayıp diğer bilgisayarda "Kod yapıştır" kutusuna yapıştır. Başarımlar ve açılan güçler birleştirilir; o bilgisayarda süren bir sefer yoksa seferin de taşınır. Hiçbir şey kaybolmaz.</p>
+    <h2 data-en="&lt;i data-ic=&quot;aktar&quot; data-sz=&quot;28&quot;&gt;&lt;/i&gt; Transfer progress"><i data-ic="aktar" data-sz="28"></i> İlerlemeyi aktar</h2>
+    <p data-en="Copy this code and paste it into the &quot;Paste code&quot; box on the other computer. Achievements and unlocked powers are merged; if no campaign is running on that computer, your campaign moves over too. Nothing is lost.">Bu kodu kopyalayıp diğer bilgisayarda "Kod yapıştır" kutusuna yapıştır. Başarımlar ve açılan güçler birleştirilir; o bilgisayarda süren bir sefer yoksa seferin de taşınır. Hiçbir şey kaybolmaz.</p>
     <textarea id="xferOut" class="txt" rows="3" readonly></textarea>
-    <div class="btns"><button id="xferCopy"><i data-ic="kopyala" data-sz="20"></i> Kopyala</button></div>
-    <p><b>Kod yapıştır:</b></p>
+    <div class="btns"><button data-en="&lt;i data-ic=&quot;kopyala&quot; data-sz=&quot;20&quot;&gt;&lt;/i&gt; Copy" id="xferCopy"><i data-ic="kopyala" data-sz="20"></i> Kopyala</button></div>
+    <p data-en="&lt;b&gt;Paste code:&lt;/b&gt;"><b>Kod yapıştır:</b></p>
     <textarea id="xferIn" class="txt" rows="3" placeholder="TS1:…"></textarea>
     <p id="xferMsg" class="note"></p>
-    <div class="btns"><button class="sec" id="xferBack">◀ Geri</button><button id="xferLoad"><i data-ic="yukle" data-sz="20"></i> Yükle</button></div>
+    <div class="btns"><button data-en="◀ Back" class="sec" id="xferBack">◀ Geri</button><button data-en="&lt;i data-ic=&quot;yukle&quot; data-sz=&quot;20&quot;&gt;&lt;/i&gt; Load" id="xferLoad"><i data-ic="yukle" data-sz="20"></i> Yükle</button></div>
   </div>
 </div>
 
 <!-- Başarımlar -->
 <div class="modal hidden" id="achv">
   <div class="card wide paper">
-    <h2 id="statsTitle">İstatistikler</h2>
+    <h2 data-en="Statistics" id="statsTitle">İstatistikler</h2>
     <div id="statsBox"></div>
-    <p class="note" style="font-size:14px">Bu bilgisayarda oynanan oyunlardan sayılır; aynı bilgisayarda birden çok insan oynarsa hepsinin hamleleri birlikte sayılır. Sıfırlamak için: Ayarlar › Verileri sıfırla.</p>
-    <h2 id="achTitle" style="margin-top:18px">Başarımlar</h2>
+    <p data-en="Counted from games played on this computer; if several people play on the same computer, all their moves are counted together. To reset: Settings › Reset data." class="note" style="font-size:14px">Bu bilgisayarda oynanan oyunlardan sayılır; aynı bilgisayarda birden çok insan oynarsa hepsinin hamleleri birlikte sayılır. Sıfırlamak için: Ayarlar › Verileri sıfırla.</p>
+    <h2 data-en="Achievements" id="achTitle" style="margin-top:18px">Başarımlar</h2>
     <div id="achList"></div>
-    <div class="pickBar btns"><button class="sec" id="achBack">◀ Geri</button></div>
+    <div class="pickBar btns"><button data-en="◀ Back" class="sec" id="achBack">◀ Geri</button></div>
   </div>
 </div>
 
@@ -500,14 +502,14 @@
 <!-- Oyun içi menü (Esc) -->
 <div class="modal hidden" id="pause">
   <div class="card menuCard">
-    <h1>Duraklatıldı</h1>
+    <h1 data-en="Paused">Duraklatıldı</h1>
     <div class="menuOrn"><span></span><i></i><span></span></div>
     <div class="menuBtns">
-      <button id="pResume"><i data-ic="devam"></i><span class="tx">Oyuna Dön<small>Esc</small></span></button>
+      <button id="pResume"><i data-ic="devam"></i><span data-en="Back to Game&lt;small&gt;Esc&lt;/small&gt;" class="tx">Oyuna Dön<small>Esc</small></span></button>
       <hr class="menuSep">
-      <button class="sec" id="pSet"><i data-ic="ayar"></i><span class="tx">Ayarlar</span></button>
-      <button class="sec" id="pHow"><i data-ic="tomar"></i><span class="tx">Nasıl Oynanır</span></button>
-      <button class="sec" id="pMenu"><i data-ic="cikis"></i><span class="tx">Ana Menü<small id="pMenuInfo"></small></span></button>
+      <button class="sec" id="pSet"><i data-ic="ayar"></i><span data-en="Settings" class="tx">Ayarlar</span></button>
+      <button class="sec" id="pHow"><i data-ic="tomar"></i><span data-en="How to Play" class="tx">Nasıl Oynanır</span></button>
+      <button class="sec" id="pMenu"><i data-ic="cikis"></i><span data-en="Main Menu&lt;small id=&quot;pMenuInfo&quot;&gt;&lt;/small&gt;" class="tx">Ana Menü<small id="pMenuInfo"></small></span></button>
     </div>
   </div>
 </div>
@@ -733,10 +735,26 @@
 </script>
 <script>
 const $ = id => document.getElementById(id);
+// ============ DİL (tasarim/INGILIZCE.md) ============
+// Türkçe ya da İngilizce (Ayarlar › Dil). Varsayılan İngilizce; seçim bu bilgisayarda hatırlanır.
+// Kodda metinler tx('Türkçe', 'English') ile yazılır. Sabit HTML'de öğenin İngilizcesi data-en (içerik), data-en-title
+// ve data-en-ph (yer tutucu) özniteliklerinde; açılışta, ikonlar dönüştürülmeden önce yerine konur.
+const LANG_KEY = 'zs-dil';
+const LANG = (() => { try { const v = localStorage.getItem(LANG_KEY); if (v === 'tr' || v === 'en') return v; } catch (e) {}
+  return 'en'; })();
+const EN = LANG === 'en';
+const tx = (tr, en) => EN ? en : tr;
+function setLang(v) { try { localStorage.setItem(LANG_KEY, v); } catch (e) {} location.reload(); }
+if (EN) {
+  document.documentElement.lang = 'en'; document.title = 'Dice & Banner';
+  document.querySelectorAll('[data-en]').forEach(el => { el.innerHTML = el.dataset.en; });
+  document.querySelectorAll('[data-en-title]').forEach(el => { el.title = el.dataset.enTitle; });
+  document.querySelectorAll('[data-en-ph]').forEach(el => { el.placeholder = el.dataset.enPh; });
+}
 // tükenmez / keçeli kalem renkleri
 const HUMAN_COLORS = ['#2a5bd7', '#1f9e4b', '#d63c8f'];
 const NPC_COLORS = ['#d6372e', '#e07b10', '#8a3fc4', '#138a8a'];
-const NPC_NAMES = ['Kızıl Krallık', 'Altın Hanlık', 'Mor İmparatorluk', 'Turkuaz Birliği'];
+const NPC_NAMES = tx(['Kızıl Krallık', 'Altın Hanlık', 'Mor İmparatorluk', 'Turkuaz Birliği'], ['Crimson Kingdom', 'Golden Khanate', 'Purple Empire', 'Turquoise League']);
 const HAND = '"Alegreya", Georgia, serif';
 const SAVE_KEY = 'toprak-savasi-kayit';
 let MAX_SIDE = 20, UNIT = 1;   // oyun başında haritaya ve hıza göre hesaplanır
@@ -897,24 +915,44 @@ const SFX = (() => {
 
 // ============ GÜÇLER ============
 const POWERS = [
-  {id: 'fatih',    cat: 'Saldırı', icon: '🗡️', name: 'Fatih',          desc: 'Tüm saldırılarında hedef zar 1 düşer.'},
-  {id: 'keskin',   cat: 'Saldırı', icon: '🎯', name: 'Keskin Zar',     desc: '16 veya üstü atıp kazanırsan alanın çevresindeki bir sıra kareyi de alırsın.'},
-  {id: 'akinci',   cat: 'Saldırı', icon: '🐺', name: 'Akıncı',         desc: 'Boş toprak %35 daha kolay alınır. Düşman toprağında bonus yok.'},
-  {id: 'genis',    cat: 'Saldırı', icon: '📐', name: 'Geniş Cephe',    desc: 'Seçebileceğin en büyük alan 10 kare daha geniş ve uzun; büyük alanlar biraz daha ucuz.'},
-  {id: 'kale',     cat: 'Savunma', icon: '🏰', name: 'Kale',           desc: 'Başkentinin 10 kare çevresine saldıranların hedef zarı 2 artar.'},
-  {id: 'sansli',   cat: 'Savunma', icon: '🍀', name: 'Şanslı',         desc: '1 atarsan felaket yok, zar yeniden atılır.'},
-  {id: 'karsi',    cat: 'Savunma', icon: '🔁', name: 'Karşı Saldırı',  desc: 'Sana yapılan saldırı başarısız olursa saldırgandan 5×5 toprak kaparsın.'},
-  {id: 'yedek',    cat: 'Savunma', icon: '🏳️', name: 'Yedek Sancak',   desc: 'Sancağın ilk düştüğünde yıkılmazsın: toprağının yarısını kaybedersin, sancağın kalan toprağına taşınır.'},
-  {id: 'ikinci',   cat: 'Zar',     icon: '🔄', name: 'İkinci Şans',    desc: 'Başarısız zar 5 turda bir otomatik olarak yeniden atılır.'},
-  {id: 'cift',     cat: 'Zar',     icon: '🎲', name: 'Çift Zar',       desc: '5 turda bir kullan: iki zar atılır, yüksek olan geçer.'},
-  {id: 'istikrar', cat: 'Zar',     icon: '⚖️', name: 'İstikrar',       desc: 'Zar hep 6–16 arası gelir. Felaket yok, ama 20 kritiği de yok.'},
-  {id: 'yildirim', cat: 'Tempo',   icon: '⚡', name: 'Yıldırım',       desc: '8 turda bir, o tur iki saldırı yaparsın.'},
-  {id: 'buyuk',    cat: 'Tempo',   icon: '🌱', name: 'Büyük Başlangıç', desc: 'Oyuna yaklaşık %35 daha büyük toprakla başlarsın.'},
-  {id: 'kumarbaz', cat: 'Riskli',  icon: '💀', name: 'Kumarbaz',       desc: '19 veya 20 atınca alanın yaklaşık iki katını alırsın; 1 atınca felaket de iki kat büyük.'},
-  {id: 'tiran',    cat: 'Saldırı', icon: '👑', name: 'Tiran',          desc: 'Tüm saldırılarında hedef zar 3 düşer, ama yapay zekâ rakipler sana daha çok saldırır.'},
-  {id: 'merkezi',  cat: 'Saldırı', icon: '🏘️', name: 'Merkezi Ordu',   desc: 'Tamamı sende olan her 3 köy için saldırılarında hedef zar 1 düşer (başkentin de bir köy sayılır).'},
-  {id: 'milis',    cat: 'Savunma', icon: '🔱', name: 'Milisler',       desc: 'Tamamı sende olan köylere (başkentin dahil) dokunan saldırıların hedef zarı 3 artar.'},
+  {id: 'fatih',    cat: 'Saldırı', icon: '🗡️', name: 'Fatih',          desc: 'Tüm saldırılarında hedef zar 1 düşer.',
+   en: ['Conqueror', 'All your attacks get −1 to the target number.']},
+  {id: 'keskin',   cat: 'Saldırı', icon: '🎯', name: 'Keskin Zar',     desc: '16 veya üstü atıp kazanırsan alanın çevresindeki bir sıra kareyi de alırsın.',
+   en: ['Keen Die', 'Win with a roll of 16 or more and you also take one row of squares around the area.']},
+  {id: 'akinci',   cat: 'Saldırı', icon: '🐺', name: 'Akıncı',         desc: 'Boş toprak %35 daha kolay alınır. Düşman toprağında bonus yok.',
+   en: ['Raider', 'Empty land is 35% easier to take. No bonus on enemy land.']},
+  {id: 'genis',    cat: 'Saldırı', icon: '📐', name: 'Geniş Cephe',    desc: 'Seçebileceğin en büyük alan 10 kare daha geniş ve uzun; büyük alanlar biraz daha ucuz.',
+   en: ['Wide Front', 'The largest area you can select is 10 squares wider and longer; big areas are a bit cheaper.']},
+  {id: 'kale',     cat: 'Savunma', icon: '🏰', name: 'Kale',           desc: 'Başkentinin 10 kare çevresine saldıranların hedef zarı 2 artar.',
+   en: ['Fortress', 'Attacks within 10 squares of your capital get +2 to their target number.']},
+  {id: 'sansli',   cat: 'Savunma', icon: '🍀', name: 'Şanslı',         desc: '1 atarsan felaket yok, zar yeniden atılır.',
+   en: ['Lucky', 'Rolling a 1 is no disaster: the die is rolled again.']},
+  {id: 'karsi',    cat: 'Savunma', icon: '🔁', name: 'Karşı Saldırı',  desc: 'Sana yapılan saldırı başarısız olursa saldırgandan 5×5 toprak kaparsın.',
+   en: ['Counterattack', 'When an attack on you fails, you seize 5×5 land from the attacker.']},
+  {id: 'yedek',    cat: 'Savunma', icon: '🏳️', name: 'Yedek Sancak',   desc: 'Sancağın ilk düştüğünde yıkılmazsın: toprağının yarısını kaybedersin, sancağın kalan toprağına taşınır.',
+   en: ['Spare Banner', 'The first time your banner falls you are not destroyed: you lose half your land and the banner moves to what is left.']},
+  {id: 'ikinci',   cat: 'Zar',     icon: '🔄', name: 'İkinci Şans',    desc: 'Başarısız zar 5 turda bir otomatik olarak yeniden atılır.',
+   en: ['Second Chance', 'Once every 5 turns, a failed roll is rerolled automatically.']},
+  {id: 'cift',     cat: 'Zar',     icon: '🎲', name: 'Çift Zar',       desc: '5 turda bir kullan: iki zar atılır, yüksek olan geçer.',
+   en: ['Double Die', 'Use once every 5 turns: two dice are rolled and the higher one counts.']},
+  {id: 'istikrar', cat: 'Zar',     icon: '⚖️', name: 'İstikrar',       desc: 'Zar hep 6–16 arası gelir. Felaket yok, ama 20 kritiği de yok.',
+   en: ['Steady Hand', 'The die always rolls 6–16. No disasters, but no critical 20s either.']},
+  {id: 'yildirim', cat: 'Tempo',   icon: '⚡', name: 'Yıldırım',       desc: '8 turda bir, o tur iki saldırı yaparsın.',
+   en: ['Blitz', 'Once every 8 turns, you attack twice that turn.']},
+  {id: 'buyuk',    cat: 'Tempo',   icon: '🌱', name: 'Büyük Başlangıç', desc: 'Oyuna yaklaşık %35 daha büyük toprakla başlarsın.',
+   en: ['Head Start', 'You start the game with about 35% more land.']},
+  {id: 'kumarbaz', cat: 'Riskli',  icon: '💀', name: 'Kumarbaz',       desc: '19 veya 20 atınca alanın yaklaşık iki katını alırsın; 1 atınca felaket de iki kat büyük.',
+   en: ['Gambler', 'Roll a 19 or 20 and you take about twice the area; roll a 1 and the disaster is twice as big too.']},
+  {id: 'tiran',    cat: 'Saldırı', icon: '👑', name: 'Tiran',          desc: 'Tüm saldırılarında hedef zar 3 düşer, ama yapay zekâ rakipler sana daha çok saldırır.',
+   en: ['Tyrant', 'All your attacks get −3 to the target number, but AI opponents attack you more.']},
+  {id: 'merkezi',  cat: 'Saldırı', icon: '🏘️', name: 'Merkezi Ordu',   desc: 'Tamamı sende olan her 3 köy için saldırılarında hedef zar 1 düşer (başkentin de bir köy sayılır).',
+   en: ['Standing Army', 'For every 3 villages you fully hold, your attacks get −1 to the target number (your capital counts as a village).']},
+  {id: 'milis',    cat: 'Savunma', icon: '🔱', name: 'Milisler',       desc: 'Tamamı sende olan köylere (başkentin dahil) dokunan saldırıların hedef zarı 3 artar.',
+   en: ['Militia', 'Attacks touching villages you fully hold (your capital included) get +3 to their target number.']},
 ];
+// İngilizce: ad ve açıklama en'den; kategori adları
+const CAT_EN = {Saldırı: 'Attack', Savunma: 'Defence', Zar: 'Dice', Tempo: 'Tempo', Riskli: 'Risky'};
+if (EN) for (const p of POWERS) { [p.name, p.desc] = p.en; p.cat = CAT_EN[p.cat]; }
 // güç simgeleri: Claude Design ikonları (icons.js, "tas" paleti); IC(isim, boyut) satır içi SVG döndürür
 const IC = (name, size = 18) => `<span class="zi">${ZS_ICONS.svg(name, ZS_ICONS.palettes.tas, size)}</span>`;
 for (const p of POWERS) p.icon = IC(p.id);
@@ -978,28 +1016,28 @@ const diffOf = () => DIFF[cfg.diff] || DIFF.normal;
 // kurallar: deniz (denizaşırı saldırı cezası), tepe (tepedeki düşmana saldırı cezası), ova (çayır karesi kaç sayılır), village (köy değeri çarpanı),
 //   npcRing (rakiplerin başlangıcına eklenen halka, başlangıç boyunun oranı), hunt (rakiplerin insanlara yönelme çarpanı)
 const SCEN = [
-  {id: 'klasik', name: 'Klasik', desc: 'Kazanma koşulunu ve tur sınırını sen seçersin.'},
-  {id: 'fetih', name: 'Hepsini Yık', desc: 'Bütün rakiplerin sancağını düşür. Toprak oranı sayılmaz.', win: 'fetih', turns: 0, lock: ['win', 'turns']},
-  {id: 'takimada', name: 'Takımada', desc: 'Harita denizle bölünmüş adalardan oluşur. Denizaşırı saldırının cezası yalnızca +1.',
+  {id: 'klasik', name: tx('Klasik', 'Classic'), desc: tx('Kazanma koşulunu ve tur sınırını sen seçersin.', 'You choose the victory condition and the turn limit.')},
+  {id: 'fetih', name: tx('Hepsini Yık', 'Total War'), desc: tx('Bütün rakiplerin sancağını düşür. Toprak oranı sayılmaz.', "Bring down every opponent's banner. Land share doesn't count."), win: 'fetih', turns: 0, lock: ['win', 'turns']},
+  {id: 'takimada', name: tx('Takımada', 'Archipelago'), desc: tx('Harita denizle bölünmüş adalardan oluşur. Denizaşırı saldırının cezası yalnızca +1.', 'The map is made of islands split by the sea. Attacking across the sea is only +1.'),
     win: 0.5, turns: 40, terrain: {sea: 0.44, sc: 5.2, startSea: .3}, deniz: 1},
-  {id: 'dag', name: 'Dağ Geçidi', desc: 'Dağlık, tepelik arazi; geçitler dar. Tepedeki düşmana saldırı +2 zorlaşır.',
+  {id: 'dag', name: tx('Dağ Geçidi', 'Mountain Pass'), desc: tx('Dağlık, tepelik arazi; geçitler dar. Tepedeki düşmana saldırı +2 zorlaşır.', 'Mountains and hills with narrow passes. Attacking an enemy on a hill is +2.'),
     win: 0.5, turns: 40, terrain: {hill: 0.45, mnt: 0.7}, tepe: 2},
-  {id: 'nehir', name: 'Büyük Nehir', desc: 'Geniş bir nehir haritayı ikiye böler. Nehri geçen her saldırı zorlaşır.',
+  {id: 'nehir', name: tx('Büyük Nehir', 'Great River'), desc: tx('Geniş bir nehir haritayı ikiye böler. Nehri geçen her saldırı zorlaşır.', 'A wide river splits the map in two. Every attack across it is harder.'),
     win: 0.5, turns: 40, terrain: {bigRiver: true}},
-  {id: 'orman', name: 'Yaban Ormanı', desc: 'Harita sık ormanla kaplı; ilerlemek yavaş ve pahalı.',
+  {id: 'orman', name: tx('Yaban Ormanı', 'Wildwood'), desc: tx('Harita sık ormanla kaplı; ilerlemek yavaş ve pahalı.', 'The map is covered in dense forest; advancing is slow and costly.'),
     win: 0.4, turns: 40, terrain: {wet: 0.15}},
-  {id: 'kale', name: 'Kaleyi Tut', goal: 'kale', desc: 'Haritanın ortasındaki kaleyi ele geçir ve 4 tur boyunca elinde tut. Boş kalede garnizon var (+8); ele geçirilmiş kalenin surları +3.',
+  {id: 'kale', name: tx('Kaleyi Tut', 'Hold the Fort'), goal: 'kale', desc: tx('Haritanın ortasındaki kaleyi ele geçir ve 4 tur boyunca elinde tut. Boş kalede garnizon var (+8); ele geçirilmiş kalenin surları +3.', 'Capture the fort in the middle of the map and hold it for 4 turns. An empty fort has a garrison (+8); a captured fort has walls (+3).'),
     win: 0.6, turns: 40, lock: ['win']},
-  {id: 'hayatta', name: 'Hayatta Kal', goal: 'hayatta', desc: 'Rakipler senden büyük başlar ve sana yüklenir. 25 tur boyunca ayakta kal.',
-    win: 0.6, turns: 25, lock: ['win', 'turns'], npcRing: 0.16, hunt: 2.4, needNpc: 1, stars: [.25, .12], star1: 'ayakta kalmak'},
-  {id: 'akin', name: 'Akın', desc: 'Kısa bir savaş: 15 tur sonunda en büyük ülke ol (ya da daha önce %50\'ye ulaş).',
+  {id: 'hayatta', name: tx('Hayatta Kal', 'Last Stand'), goal: 'hayatta', desc: tx('Rakipler senden büyük başlar ve sana yüklenir. 25 tur boyunca ayakta kal.', 'Your opponents start bigger than you and gang up on you. Survive for 25 turns.'),
+    win: 0.6, turns: 25, lock: ['win', 'turns'], npcRing: 0.16, hunt: 2.4, needNpc: 1, stars: [.25, .12], star1: tx('ayakta kalmak', 'surviving')},
+  {id: 'akin', name: tx('Akın', 'Raid'), desc: tx('Kısa bir savaş: 15 tur sonunda en büyük ülke ol (ya da daha önce %50\'ye ulaş).', 'A short war: be the largest realm after 15 turns (or reach 50% sooner).'),
     // yıldızlar 15. turdaki paya göre (tura göre olsaydı 3 yıldız için 8. turda %50 gerekirdi: neredeyse imkânsız)
-    win: 0.5, turns: 15, lock: ['turns'], stars: [.35, .28], star1: 'en büyük olmak'},
-  {id: 'bas', name: 'Baş Kesmek', goal: 'bas', desc: `İşaretli ${IC('avci', 16)} rakip büyük başlar. Onun sancağını sen düşür; başkası düşürürse kaybedersin.`,
+    win: 0.5, turns: 15, lock: ['turns'], stars: [.35, .28], star1: tx('en büyük olmak', 'being the largest')},
+  {id: 'bas', name: tx('Baş Kesmek', 'Decapitation'), goal: 'bas', desc: tx(`İşaretli ${IC('avci', 16)} rakip büyük başlar. Onun sancağını sen düşür; başkası düşürürse kaybedersin.`, `The marked ${IC('avci', 16)} opponent starts big. Bring down their banner yourself; if someone else does, you lose.`),
     win: 0.6, turns: 40, lock: ['win'], needNpc: 1},
-  {id: 'kardes', name: 'Kardeş Beylikler', desc: `İki rakip müttefik ${IC('muttefik', 16)}: birbirine saldırmaz, sancaklarını korur.`,
+  {id: 'kardes', name: tx('Kardeş Beylikler', 'Sister States'), desc: tx(`İki rakip müttefik ${IC('muttefik', 16)}: birbirine saldırmaz, sancaklarını korur.`, `Two opponents are allies ${IC('muttefik', 16)}: they never attack each other and guard each other's banners.`),
     win: 0.5, turns: 40, needNpc: 2},
-  {id: 'kitlik', name: 'Kıtlık', desc: 'Kıtlık yılı: her köy 3 kat değerli.', win: 0.4, turns: 40, village: 3},
+  {id: 'kitlik', name: tx('Kıtlık', 'Famine'), desc: tx('Kıtlık yılı: her köy 3 kat değerli.', 'A year of famine: every village is worth triple.'), win: 0.4, turns: 40, village: 3},
 ];
 const SCMAP = Object.fromEntries(SCEN.map(s => [s.id, s]));
 const scenOf = () => SCMAP[cfg.scen] || SCMAP.klasik;
@@ -1021,27 +1059,36 @@ function goalText() {
   const s = scenOf();
   if (s.goal === 'kale') {
     const h = SC.holder >= 0 && players[SC.holder] ? players[SC.holder] : null;
-    return `Hedef: ${IC('kale', 16)} kaleyi ele geçir ve ${KALE_HOLD} tur elinde tut` + (h ? ` · ${h.human && cfg.humans === 1 ? 'kale sende' : `kale <span style="color:${lite(h.color)}">${h.name}</span> elinde`} (${SC.held}/${KALE_HOLD})` : '');
+    const hn = h && `<span style="color:${lite(h.color)}">${h.name}</span>`;
+    return tx(`Hedef: ${IC('kale', 16)} kaleyi ele geçir ve ${KALE_HOLD} tur elinde tut` + (h ? ` · ${h.human && cfg.humans === 1 ? 'kale sende' : `kale ${hn} elinde`} (${SC.held}/${KALE_HOLD})` : ''),
+      `Goal: ${IC('kale', 16)} capture the fort and hold it for ${KALE_HOLD} turns` + (h ? ` · ${h.human && cfg.humans === 1 ? 'you hold the fort' : `${hn} holds the fort`} (${SC.held}/${KALE_HOLD})` : ''));
   }
-  if (s.goal === 'hayatta') return `Hedef: ${cfg.turns}. turun sonuna kadar ayakta kal`;
-  if (s.goal === 'bas' && players[SC.target]) return `Hedef: ${IC('avci', 16)} ${tag(players[SC.target])} sancağını düşür`;
-  if (s.goal === 'boss' && players[SC.boss]) return `Hedef: ${IC('durakPatron', 16)} ${tag(players[SC.boss])} sancağını düşür (kim düşürürse düşürsün)`;
-  if (cfg.win === 'fetih') return 'Hedef: bütün rakipleri yık';
-  return `Hedef: karaların ${yuzde(cfg.win * 100)} (${Math.ceil(LAND * cfg.win)} puan; her köy ${villageValue()}${s.ova ? `, her çayır ${s.ova}` : ''} sayılır)` +
-    (s.id === 'akin' ? ` ya da ${cfg.turns} tur sonunda en büyük ol` : '');
+  if (s.goal === 'hayatta') return tx(`Hedef: ${cfg.turns}. turun sonuna kadar ayakta kal`, `Goal: survive until the end of turn ${cfg.turns}`);
+  if (s.goal === 'bas' && players[SC.target]) return tx(`Hedef: ${IC('avci', 16)} ${tag(players[SC.target])} sancağını düşür`, `Goal: ${IC('avci', 16)} bring down ${tag(players[SC.target])}'s banner`);
+  if (s.goal === 'boss' && players[SC.boss]) return tx(`Hedef: ${IC('durakPatron', 16)} ${tag(players[SC.boss])} sancağını düşür (kim düşürürse düşürsün)`, `Goal: ${IC('durakPatron', 16)} bring down ${tag(players[SC.boss])}'s banner (no matter who does it)`);
+  if (cfg.win === 'fetih') return tx('Hedef: bütün rakipleri yık', 'Goal: destroy every opponent');
+  return tx(`Hedef: karaların ${yuzde(cfg.win * 100)} (${Math.ceil(LAND * cfg.win)} puan; her köy ${villageValue()}${s.ova ? `, her çayır ${s.ova}` : ''} sayılır)` +
+    (s.id === 'akin' ? ` ya da ${cfg.turns} tur sonunda en büyük ol` : ''),
+    `Goal: ${Math.round(cfg.win * 100)}% of the land (${Math.ceil(LAND * cfg.win)} points; each village counts ${villageValue()}${s.ova ? `, each grassland ${s.ova}` : ''})` +
+    (s.id === 'akin' ? ` or be the largest after ${cfg.turns} turns` : ''));
 }
+// İngilizce iyelik: "X's", oyuncunun kendisi için "your"
+const possEn = n => n === 'You' ? 'your' : `${n}'s`;
 const OPTS = {scen: SCEN.map(s => s.id), humans: [1, 2, 3], coop: [true, false], npc: [0, 1, 2, 3, 4], start: [10, 15, 20, 25, 30, 40],
   map: [50, 60, 75, 100, 125, 150, 200, 250], win: [0.4, 0.5, 0.6, 0.75, 'fetih'], speed: [1, 2, 4], turns: [0, 20, 30, 50],
   diff: ['kolay', 'normal', 'zor'], npcPowers: [true, false]};
-const LABEL = {scen: v => SCMAP[v].name, humans: v => v === 1 ? 'Tek kişi' : `${v} kişi`, coop: v => v ? IC('coop') + ' Co-op (takım)' : IC('herkesKendine') + ' Herkes kendine',
-  npc: v => v ? `${v} rakip` : IC('yzYok') + ' Yapay zekâ yok', start: v => `${v}×${v}`, map: v => `${v}×${v}`, win: v => v === 'fetih' ? IC('fetih') + ' Hepsini yık' : `%${v * 100}`,
-  speed: v => ({1: IC('hizNormal') + ' Normal', 2: IC('hizHizli') + ' Hızlı', 4: IC('hizCokHizli') + ' Çok hızlı'})[v], turns: v => v ? `${v} tur` : 'Sınırsız',
-  fog: v => v ? IC('sis') + ' Açık' : 'Kapalı', npcPowers: v => v ? 'Evet' : 'Hayır',
+const LABEL = {scen: v => SCMAP[v].name, humans: v => v === 1 ? tx('Tek kişi', 'Solo') : tx(`${v} kişi`, `${v} players`),
+  coop: v => v ? IC('coop') + tx(' Co-op (takım)', ' Co-op (team)') : IC('herkesKendine') + tx(' Herkes kendine', ' Free for all'),
+  npc: v => v ? tx(`${v} rakip`, `${v} ${v === 1 ? 'opponent' : 'opponents'}`) : IC('yzYok') + tx(' Yapay zekâ yok', ' No AI'), start: v => `${v}×${v}`, map: v => `${v}×${v}`,
+  win: v => v === 'fetih' ? IC('fetih') + tx(' Hepsini yık', ' Destroy all') : tx(`%${v * 100}`, `${v * 100}%`),
+  speed: v => ({1: IC('hizNormal') + ' Normal', 2: IC('hizHizli') + tx(' Hızlı', ' Fast'), 4: IC('hizCokHizli') + tx(' Çok hızlı', ' Very fast')})[v],
+  turns: v => v ? tx(`${v} tur`, `${v} turns`) : tx('Sınırsız', 'Unlimited'),
+  fog: v => v ? IC('sis') + tx(' Açık', ' On') : tx('Kapalı', 'Off'), npcPowers: v => v ? tx('Evet', 'Yes') : tx('Hayır', 'No'),
   diff: v => DIFF_LABEL[v]};
 const totalPlayers = () => cfg.humans + cfg.npc;
 const npcValid = v => v === 0 ? cfg.humans >= 2 : cfg.humans + v >= 3 && cfg.humans + v <= 5;
 // seferde oyuncunun ülkesi krallığının adını taşır
-const humanName = i => cfg.chapter != null ? (PROG.realm || 'Krallığım') : cfg.humans === 1 ? 'Sen' : `Oyuncu ${i + 1}`;
+const humanName = i => cfg.chapter != null ? (PROG.realm || tx('Krallığım', 'My Kingdom')) : cfg.humans === 1 ? tx('Sen', 'You') : tx(`Oyuncu ${i + 1}`, `Player ${i + 1}`);
 
 function placements(n, m, s) {
   const g = 5, a = g, b = m - g - s, c = Math.round((m - s) / 10) * 5;
@@ -1087,11 +1134,12 @@ function renderSetup() {
     }
   }
   $('coopRow').classList.toggle('hidden', cfg.humans === 1 || cfg.npc === 0);
-  $('scenNote').innerHTML = scenOf().desc + (scenOf().lock ? ' Kilitli ayarları senaryo belirler.' : '');
+  $('scenNote').innerHTML = scenOf().desc + (scenOf().lock ? tx(' Kilitli ayarları senaryo belirler.', ' Locked settings are set by the scenario.') : '');
   let s = loadSave(); if (s && s.cfg && s.cfg.chapter != null) s = null;   // sefer kaydı ana menüden devam ettirilir
   $('contBox').classList.toggle('hidden', !s);
-  if (s) $('contText').innerHTML = `${IC('kayit', 16)} Kayıtlı oyun: <b>Tur ${s.turn}</b> · ${s.M}×${s.M} harita · ${s.players.length} ülke · ` +
-    new Date(s.date).toLocaleString('tr-TR', {day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'});
+  if (s) $('contText').innerHTML = IC('kayit', 16) + tx(` Kayıtlı oyun: <b>Tur ${s.turn}</b> · ${s.M}×${s.M} harita · ${s.players.length} ülke · `,
+      ` Saved game: <b>Turn ${s.turn}</b> · ${s.M}×${s.M} map · ${s.players.length} realms · `) +
+    new Date(s.date).toLocaleString(tx('tr-TR', 'en-GB'), {day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'});
 }
 function showSetup() {
   hideAll(); cfg.chapter = null;
@@ -1110,12 +1158,14 @@ function openPicks() {
 }
 function renderPicks() {
   const camp = cfg.chapter != null, openN = POWERS.filter(p => powerOpen(p.id)).length;
-  $('pickTitle').textContent = `${humanName(pickIdx)}: ${camp ? 'en fazla 2 güç seç' : '2 güç seç'}`;
+  $('pickTitle').textContent = `${humanName(pickIdx)}: ${camp ? tx('en fazla 2 güç seç', 'choose up to 2 powers') : tx('2 güç seç', 'choose 2 powers')}`;
   $('pickSw').style.background = HUMAN_COLORS[pickIdx];
   $('pickHelp').innerHTML = camp
-    ? (openN ? `Seferde güçler başkentleri aldıkça, yıldız topladıkça ve başarım kazandıkça açılır (<b>${openN}/${POWERS.length}</b> açık). Farklı kategorilerden 1 ya da 2 güç seç.`
-             : 'Seferde güçler başkentleri aldıkça, yıldız topladıkça ve başarım kazandıkça açılır. Henüz açık gücün yok: <b>Güçsüz oyna</b> ile başla.')
-    : 'Tüm güçler aşağıda. <b>Farklı kategorilerden 2 tane</b> seç; oyun boyunca senin olacaklar.';
+    ? (openN ? tx(`Seferde güçler başkentleri aldıkça, yıldız topladıkça ve başarım kazandıkça açılır (<b>${openN}/${POWERS.length}</b> açık). Farklı kategorilerden 1 ya da 2 güç seç.`,
+                  `In the campaign, powers unlock as you take capitals, collect stars and earn achievements (<b>${openN}/${POWERS.length}</b> unlocked). Choose 1 or 2 powers from different categories.`)
+             : tx('Seferde güçler başkentleri aldıkça, yıldız topladıkça ve başarım kazandıkça açılır. Henüz açık gücün yok: <b>Güçsüz oyna</b> ile başla.',
+                  'In the campaign, powers unlock as you take capitals, collect stars and earn achievements. You have no powers yet: start with <b>Play without powers</b>.'))
+    : tx('Tüm güçler aşağıda. <b>Farklı kategorilerden 2 tane</b> seç; oyun boyunca senin olacaklar.', 'All powers are below. Choose <b>2 from different categories</b>; they are yours for the whole game.');
   let html = '';
   for (const cat of [...new Set(POWERS.map(p => p.cat))]) {
     html += `<div class="pcat">${cat}</div><div class="pgrid">` + POWERS.filter(p => p.cat === cat).map(p =>
@@ -1125,7 +1175,7 @@ function renderPicks() {
         const sameCat = !on && !locked && chosen.some(id => PW[id].cat === p.cat);
         // seçim yapınca kart boyu değişmesin: "aynı kategori" uyarısı kartın içine yazılmaz, sadece ipucu olarak çıkar
         return `<button class="pw ${on ? 'on' : ''} ${locked ? 'locked' : ''}" data-pw="${p.id}" ${locked || (!on && (chosen.length >= 2 || sameCat)) ? 'disabled' : ''}
-          ${sameCat ? 'title="Bu kategoriden zaten bir güç seçtin"' : ''}>
+          ${sameCat ? `title="${tx('Bu kategoriden zaten bir güç seçtin', 'You already chose a power from this category')}"` : ''}>
           <span class="t">${locked ? IC('kilit', 26) : IC(p.id, 26)} ${p.name}</span><span class="d">${p.desc}</span>
           ${locked ? `<span class="d" style="color:#8a5a00">${IC('kilitAcik', 16)} ${unlockHint(p.id)}</span>` : ''}</button>`;
       }).join('') + '</div>';
@@ -1133,8 +1183,9 @@ function renderPicks() {
   $('pickList').innerHTML = html;
   const last = pickIdx === cfg.humans - 1, need = camp ? 1 : 2;   // seferde 1 güçle de başlanabilir
   $('pickOk').disabled = chosen.length < need;
-  $('pickOk').innerHTML = chosen.length >= need ? (last ? IC('durakSavas', 20) + ' Oyunu Başlat' : 'Onayla ▶ Sıradaki oyuncu')
-    : camp ? (openN ? 'Güç seç' : 'Açık güç yok') : `${2 - chosen.length} güç daha seç`;
+  $('pickOk').innerHTML = chosen.length >= need ? (last ? IC('durakSavas', 20) + tx(' Oyunu Başlat', ' Start Game') : tx('Onayla ▶ Sıradaki oyuncu', 'Confirm ▶ Next player'))
+    : camp ? (openN ? tx('Güç seç', 'Choose powers') : tx('Açık güç yok', 'No powers unlocked'))
+    : tx(`${2 - chosen.length} güç daha seç`, `Choose ${2 - chosen.length} more ${2 - chosen.length === 1 ? 'power' : 'powers'}`);
 }
 $('pickList').addEventListener('click', e => {
   const b = e.target.closest('[data-pw]'); if (!b || b.disabled) return;
@@ -1168,6 +1219,8 @@ const view = {cs: 6, ox: 0, oy: 0, W: 0, H: 0};
 // koyu zeminde okunsun diye ülke renginin açık tonu
 const lite = c => { const n = parseInt(c.slice(1), 16), m = v => Math.round(v * .82); return `rgb(${m(n >> 16)},${m((n >> 8) & 255)},${m(n & 255)})`; };   // açık zeminde okunsun diye biraz koyu
 const tag = p => `<b style="color:${lite(p.color)}">${p.name}</b>`;
+// İngilizce iyelik: "X's"; oyuncunun kendisi (You) için "Your"
+const tagPoss = p => p.name === 'You' ? `<b style="color:${lite(p.color)}">Your</b>` : `${tag(p)}'s`;
 const ally = (a, b) => a >= 0 && b >= 0 && a !== b && ((cfg.coop && cfg.humans > 1 && players[a].human && players[b].human)
   || (!!SC.allies && SC.allies.includes(a) && SC.allies.includes(b)));
 const sideFor = pid => Math.min(70, MAX_SIDE + (has(players[pid], 'genis') ? TUNE.genis : 0));
@@ -1274,15 +1327,16 @@ function newGame(humanPicks) {
   $('overBar').classList.add('hidden');
   $('log').innerHTML = '';
   ['setup', 'picks', 'endModal'].forEach(id => $(id).classList.add('hidden'));
-  setDice('20', '', 'Zar bekleniyor…');
-  log(`Oyun başladı! ${n} ülke, ${M}×${M} harita${cfg.coop && cfg.humans > 1 ? ', co-op' : ''}${cfg.fog ? ', savaş sisi açık' : ''}.`);
-  if (sc0.id !== 'klasik') log(`${IC('senaryo', 16)} Senaryo: <b>${sc0.name}</b>. ${sc0.desc}`);
-  if (SC.allies) log(`${IC('muttefik', 16)} ${SC.allies.map(id => tag(players[id])).join(', ')} müttefik: birbirlerine saldırmazlar.`);
-  if (SC.boss != null) log(`${IC('durakPatron', 16)} Patron: ${tag(players[SC.boss])}. ${BOSSES[players[SC.boss].bossKind].desc}`);
-  for (const p of players) if (p.powers.length) log(`${tag(p)} güçleri: ${p.powers.map(id => PW[id].icon + ' ' + PW[id].name).join(', ')}`);
-  log(`${IC('kura', 16)} Kura: ilk sıra ${tag(players[firstP])}.`);
-  if (players[firstP].human && cfg.humans === 1) toast(`${IC('kura', 18)} Kura sende: <b>ilk sen başlıyorsun!</b>`);
-  else toast(`${IC('kura', 18)} Kura: ilk sıra <b>${esc(players[firstP].name)}</b>`);
+  setDice('20', '', tx('Zar bekleniyor…', 'Waiting for a roll…'));
+  log(tx(`Oyun başladı! ${n} ülke, ${M}×${M} harita${cfg.coop && cfg.humans > 1 ? ', co-op' : ''}${cfg.fog ? ', savaş sisi açık' : ''}.`,
+    `The game begins! ${n} realms, ${M}×${M} map${cfg.coop && cfg.humans > 1 ? ', co-op' : ''}${cfg.fog ? ', fog of war on' : ''}.`));
+  if (sc0.id !== 'klasik') log(`${IC('senaryo', 16)} ${tx('Senaryo', 'Scenario')}: <b>${sc0.name}</b>. ${sc0.desc}`);
+  if (SC.allies) log(`${IC('muttefik', 16)} ${SC.allies.map(id => tag(players[id])).join(', ')} ${tx('müttefik: birbirlerine saldırmazlar.', 'are allies: they never attack each other.')}`);
+  if (SC.boss != null) log(`${IC('durakPatron', 16)} ${tx('Patron', 'Boss')}: ${tag(players[SC.boss])}. ${BOSSES[players[SC.boss].bossKind].desc}`);
+  for (const p of players) if (p.powers.length) log(`${tag(p)} ${tx('güçleri', 'powers')}: ${p.powers.map(id => PW[id].icon + ' ' + PW[id].name).join(', ')}`);
+  log(`${IC('kura', 16)} ${tx('Kura: ilk sıra', 'Draw: first turn goes to')} ${tag(players[firstP])}.`);
+  if (players[firstP].human && cfg.humans === 1) toast(`${IC('kura', 18)} ${tx('Kura sende: <b>ilk sen başlıyorsun!</b>', 'You won the draw: <b>you go first!</b>')}`);
+  else toast(`${IC('kura', 18)} ${tx('Kura: ilk sıra', 'Draw: first turn goes to')} <b>${esc(players[firstP].name)}</b>`);
   resize(); fitView(); countCells(); glStart(); startTurn();
 }
 // ============ OYUN KAYDI (sonradan incelemek için) ============
@@ -1368,37 +1422,37 @@ function analyze(r, pid, noFlags = false) {
   const mods = [];
   // boyut: her kare arazisine göre sayılır (çayır 1, orman/tepe 1,5, akarsu/köy 2, dağ 3)
   const sizeBase = has(p, 'akinci') ? costN * TUNE.akinci + (cost - costN) : cost;
-  mods.push(['boyut', Math.ceil(sizeBase / (12 * UNIT * (has(p, 'genis') ? TUNE.genisCost : 1)))]);
+  mods.push([tx('boyut', 'size'), Math.ceil(sizeBase / (12 * UNIT * (has(p, 'genis') ? TUNE.genisCost : 1)))]);
   const enemyMod = Math.ceil(enemy / (50 * UNIT));
-  if (enemyMod) mods.push(['düşman toprağı', enemyMod]);
-  if (river) mods.push(['akarsu geçişi', TUNE.nehir, 'mAkarsu']);
+  if (enemyMod) mods.push([tx('düşman toprağı', 'enemy land'), enemyMod]);
+  if (river) mods.push([tx('akarsu geçişi', 'river crossing'), TUNE.nehir, 'mAkarsu']);
   const denizMod = scenOf().deniz != null ? scenOf().deniz : TUNE.deniz;
-  if (denizMod && seaIn && touches && overseas(r, pid, takenIdx)) mods.push(['denizaşırı', denizMod, 'mDenizAsiri']);
-  if (objN) mods.push(objFree ? ['kale garnizonu', KALE_GARRISON, 'kale'] : ['kale surları', KALE_DC, 'kale']);
-  if (hillE) mods.push(['tepedeki düşman', scenOf().tepe || TUNE.tepe, 'mTepe']);
+  if (denizMod && seaIn && touches && overseas(r, pid, takenIdx)) mods.push([tx('denizaşırı', 'overseas'), denizMod, 'mDenizAsiri']);
+  if (objN) mods.push(objFree ? [tx('kale garnizonu', 'fort garrison'), KALE_GARRISON, 'kale'] : [tx('kale surları', 'fort walls'), KALE_DC, 'kale']);
+  if (hillE) mods.push([tx('tepedeki düşman', 'enemy on a hill'), scenOf().tepe || TUNE.tepe, 'mTepe']);
   // güç farkı: büyük ülke küçük ülkeye saldırırken avantajlı
   let mainDef = -1;
   for (const k in by) if (mainDef < 0 || by[k] > by[mainDef]) mainDef = +k;
   if (mainDef >= 0 && by[mainDef] * 2 >= enemy) {
     const pm = Math.max(-TUNE.pmMin, Math.min(TUNE.pmMax, Math.round((p.cells - players[mainDef].cells) / LAND * 30)));
     // sancak saldırısında büyüklük indirimi geçmez (yoksa büyüyen ülke küçüklerin sancağını kolayca düşürür)
-    if (pm && !(pm > 0 && flags.length)) mods.push([pm > 0 ? 'güç üstünlüğü' : 'rakip daha güçlü', -pm]);
+    if (pm && !(pm > 0 && flags.length)) mods.push([pm > 0 ? tx('güç üstünlüğü', 'superior strength') : tx('rakip daha güçlü', 'stronger opponent'), -pm]);
     // Kale: başkentin (sancağın) çevresindeki topraklara saldırı zorlaşır
     const kf = players[mainDef].flag, KR = TUNE.kaleRange;
-    if (has(players[mainDef], 'kale') && (!KR || (kf && r.x1 >= kf.x0 - KR && r.x0 <= kf.x1 + KR && r.y1 >= kf.y0 - KR && r.y0 <= kf.y1 + KR))) mods.push(['Kale', TUNE.kale, 'kale']);
+    if (has(players[mainDef], 'kale') && (!KR || (kf && r.x1 >= kf.x0 - KR && r.x0 <= kf.x1 + KR && r.y1 >= kf.y0 - KR && r.y0 <= kf.y1 + KR))) mods.push([PW.kale.name, TUNE.kale, 'kale']);
   }
-  if (has(p, 'fatih') && TUNE.fatih) mods.push(['Fatih', -TUNE.fatih, 'fatih']);
-  if (has(p, 'tiran') && TUNE.tiran) mods.push(['Tiran', -TUNE.tiran, 'tiran']);
+  if (has(p, 'fatih') && TUNE.fatih) mods.push([PW.fatih.name, -TUNE.fatih, 'fatih']);
+  if (has(p, 'tiran') && TUNE.tiran) mods.push([PW.tiran.name, -TUNE.tiran, 'tiran']);
   const mk = has(p, 'merkezi') ? Math.floor((p.vill || 0) / TUNE.merkeziPer) : 0;
-  if (mk) mods.push([`Merkezi Ordu (${p.vill} köy)`, -mk, 'merkezi']);
+  if (mk) mods.push([`${PW.merkezi.name} (${p.vill} ${tx('köy', p.vill === 1 ? 'village' : 'villages')})`, -mk, 'merkezi']);
   // Milisler: alan, Milisler gücü olan bir rakibin tamamı elindeki bir köyüne dokunuyorsa
   if (villages.some(v => v.own >= 0 && v.own !== pid && !ally(pid, v.own) && has(players[v.own], 'milis') && r.x1 >= v.x0 && r.x0 <= v.x1 && r.y1 >= v.y0 && r.y0 <= v.y1))
-    mods.push(['Milisler', TUNE.milis, 'milis']);
-  for (const f of flags) mods.push([`${players[f].name} sancağı`, TUNE.sancak, 'mSancak']);
-  for (const f of flags) if (players[f].alarm) mods.push(['sancak alarmda', players[f].alarm, 'uyari']);
+    mods.push([PW.milis.name, TUNE.milis, 'milis']);
+  for (const f of flags) mods.push([tx(`${players[f].name} sancağı`, `${possEn(players[f].name)} banner`), TUNE.sancak, 'mSancak']);
+  for (const f of flags) if (players[f].alarm) mods.push([tx('sancak alarmda', 'banner on alert'), players[f].alarm, 'uyari']);
   // sefer: patron kuralları
-  if (bossRiver) mods.push(['Değirmenci Kral\'ın nehri', 2, 'patronNehri']);
-  if (!p.human && diffOf().dc) mods.push(['zorluk', diffOf().dc]);
+  if (bossRiver) mods.push([tx(`${BOSSES.degirmen.name}'ın nehri`, `${BOSSES.degirmen.name}'s river`), 2, 'patronNehri']);
+  if (!p.human && diffOf().dc) mods.push([tx('zorluk', 'difficulty'), diffOf().dc]);
   const dc = Math.max(2, 1 + mods.reduce((s, m) => s + m[1], 0));
   // hedef 20'yi aşan saldırıyla sancak alınamaz (kritik 20 sancak düşürmez): sancak kareleri korunur, gerisi normal saldırı
   if (flags.length && dc > 20) return {...analyze(r, pid, true), flagTooBig: flags};
@@ -1412,13 +1466,13 @@ function analyze(r, pid, noFlags = false) {
 // tepelerden denize akan akarsular; ova ve nehir kenarlarına köyler. Her arazinin ele geçirme maliyeti farklı.
 const T = {DENIZ: 0, CAYIR: 1, ORMAN: 2, TEPE: 3, DAG: 4, NEHIR: 5, KOY: 6};
 const TERRAIN = [
-  {name: 'deniz', icon: IC('arDeniz', 16), cost: 0},
-  {name: 'çayır', icon: IC('arCayir', 16), cost: 1},
-  {name: 'orman', icon: IC('arOrman', 16), cost: 1.5},
-  {name: 'tepe', icon: IC('arTepe', 16), cost: 1.5},
-  {name: 'dağ', icon: IC('arDag', 16), cost: 3},
-  {name: 'akarsu', icon: IC('arAkarsu', 16), cost: 2},
-  {name: 'köy', icon: IC('koy', 16), cost: 2},
+  {name: tx('deniz', 'sea'), icon: IC('arDeniz', 16), cost: 0},
+  {name: tx('çayır', 'grassland'), icon: IC('arCayir', 16), cost: 1},
+  {name: tx('orman', 'forest'), icon: IC('arOrman', 16), cost: 1.5},
+  {name: tx('tepe', 'hills'), icon: IC('arTepe', 16), cost: 1.5},
+  {name: tx('dağ', 'mountains'), icon: IC('arDag', 16), cost: 3},
+  {name: tx('akarsu', 'river'), icon: IC('arAkarsu', 16), cost: 2},
+  {name: tx('köy', 'village'), icon: IC('koy', 16), cost: 2},
 ];
 const VILLAGE_VALUE = 25;   // tamamı elindeki her köy, kazanma hesabında bu kadar kare sayılır
 let terr = null, height = null, villages = [], rivers = [], LAND = 1, tseed = 0, terrImg = null, PPC = 8;
@@ -2043,7 +2097,7 @@ function fellFlag(vid, pid) {
   if (v.bossKind === 'sazlik') {   // patron: sancağı düşünce bütün ordusu dağılır, toprakları sahipsiz kalır
     for (const i of [...near, ...far]) own[i] = -1;
     v.flag = null; v.alive = false; v.fallenBy = pid; rebuildFlags();
-    return ` ${IC('mSancak', 16)} <b>${tag(v)} sancağı düştü!</b> Ordusu dağıldı, bütün toprakları sahipsiz kaldı.`;
+    return ` ${IC('mSancak', 16)} ` + tx(`<b>${tag(v)} sancağı düştü!</b> Ordusu dağıldı, bütün toprakları sahipsiz kaldı.`, `<b>${tagPoss(v)} banner has fallen!</b> The army scattered and all its land is left unclaimed.`);
   }
   for (const i of near) own[i] = pid;
   v.flag = null; rebuildFlags();
@@ -2051,12 +2105,14 @@ function fellFlag(vid, pid) {
     v.flag = placeFlag(v);
     if (v.flag) {
       v.flagUsed = true; rebuildFlags();
-      return ` ${IC('mSancak', 16)} <b>${tag(v)} sancağı düştü!</b> ${half} kare ${tag(p)} tarafına geçti, ama ${IC('yedek', 16)} Yedek Sancak dikildi: ${tag(v)} ayakta!`;
+      return ` ${IC('mSancak', 16)} ` + tx(`<b>${tag(v)} sancağı düştü!</b> ${half} kare ${tag(p)} tarafına geçti, ama ${IC('yedek', 16)} Yedek Sancak dikildi: ${tag(v)} ayakta!`,
+        `<b>${tagPoss(v)} banner has fallen!</b> ${half} squares went to ${tag(p)}, but a ${IC('yedek', 16)} Spare Banner was raised: ${tag(v)} still stands!`);
     }
   }
   for (const i of far) own[i] = -1;
   v.alive = false; v.fallenBy = pid; rebuildFlags();
-  return ` ${IC('mSancak', 16)} <b>${tag(v)} sancağı düştü, ülke yıkıldı!</b> ${half} kare ${tag(p)} tarafına geçti, kalan topraklar sahipsiz kaldı.`;
+  return ` ${IC('mSancak', 16)} ` + tx(`<b>${tag(v)} sancağı düştü, ülke yıkıldı!</b> ${half} kare ${tag(p)} tarafına geçti, kalan topraklar sahipsiz kaldı.`,
+    `<b>${tagPoss(v)} banner has fallen and the realm is destroyed!</b> ${half} squares went to ${tag(p)}; the rest is left unclaimed.`);
 }
 
 // ============ SALDIRI ============
@@ -2089,15 +2145,15 @@ function takeBlock(from, to, r, size) {
 // Saldırının sonucu: zar, güçler, ele geçirme. Oyun ve denge simülasyonu aynı kuralı kullanır.
 function resolveAttack(pid, r, a, useDbl) {
   const p = players[pid], ist = has(p, 'istikrar'), pre = [];
-  if (useDbl) { p.ready.cift = turn + TUNE.ciftCd; pre.push(IC('cift', 16) + ' Çift Zar'); }
+  if (useDbl) { p.ready.cift = turn + TUNE.ciftCd; pre.push(IC('cift', 16) + ' ' + PW.cift.name); }
   let roll = rollDie(p, useDbl), ok = success(p, roll, a.dc);
   if (!ok && !ist && roll === 1 && has(p, 'sansli') && TUNE.sansliReroll) {
-    const r2 = rollDie(p, useDbl); pre.push(`${IC('sansli', 16)} Şanslı: ${roll} → ${r2}`);
+    const r2 = rollDie(p, useDbl); pre.push(`${IC('sansli', 16)} ${PW.sansli.name}: ${roll} → ${r2}`);
     roll = r2; ok = success(p, roll, a.dc);
   }
   if (!ok && ready(p, 'ikinci')) {
     p.ready.ikinci = turn + TUNE.ikinciCd;
-    const r2 = rollDie(p, useDbl); pre.push(`${IC('ikinci', 16)} İkinci Şans: ${roll} → ${r2}`);
+    const r2 = rollDie(p, useDbl); pre.push(`${IC('ikinci', 16)} ${PW.ikinci.name}: ${roll} → ${r2}`);
     roll = r2; ok = success(p, roll, a.dc);
   }
   const victims = Object.keys(a.by).map(k => players[k].name).join(', ');
@@ -2109,27 +2165,29 @@ function resolveAttack(pid, r, a, useDbl) {
     flash = {r, color: p.color};
     if (!ist && roll >= TUNE.kumarbazMin && has(p, 'kumarbaz')) {
       flash.r = expand(r, Math.max(1, Math.floor((r.x1 - r.x0 + 1) / 4)), Math.max(1, Math.floor((r.y1 - r.y0 + 1) / 4)));
-      got += capture(pid, flash.r); extra += ` ${IC('kumarbaz', 16)} Kumarbaz ikiye katladı!`; doubled = true;
+      got += capture(pid, flash.r); extra += ` ${IC('kumarbaz', 16)} ${tx('Kumarbaz ikiye katladı!', 'Gambler doubled it!')}`; doubled = true;
     }
-    if (!ist && roll >= TUNE.keskinMin && has(p, 'keskin')) { flash.r = expand(flash.r, TUNE.keskinRing, TUNE.keskinRing); got += capture(pid, flash.r); extra += ` ${IC('keskin', 16)} Keskin Zar!`; }
-    txt = `${!ist && roll === 20 ? IC('kritik', 16) + ' <b>KRİTİK 20!</b> ' : IC('basarili', 16) + ' '}${tag(p)} ${roll} attı (hedef ${a.dc}) → <b>${got}</b> kare aldı` +
-      (victims ? ` (${victims} topraklarından)` : '') + '.' + extra;
+    if (!ist && roll >= TUNE.keskinMin && has(p, 'keskin')) { flash.r = expand(flash.r, TUNE.keskinRing, TUNE.keskinRing); got += capture(pid, flash.r); extra += ` ${IC('keskin', 16)} ${PW.keskin.name}!`; }
+    txt = `${!ist && roll === 20 ? IC('kritik', 16) + tx(' <b>KRİTİK 20!</b> ', ' <b>CRITICAL 20!</b> ') : IC('basarili', 16) + ' '}` + tx(`${tag(p)} ${roll} attı (hedef ${a.dc}) → <b>${got}</b> kare aldı` +
+      (victims ? ` (${victims} topraklarından)` : '') + '.', `${tag(p)} rolled ${roll} (target ${a.dc}) → took <b>${got}</b> squares` + (victims ? ` (from ${victims})` : '') + '.') + extra;
     for (const f of a.flags) { txt += fellFlag(f, pid); fell.push(f); }
   } else if (!ist && roll === 1 && !has(p, 'sansli')) {
     const res = takeBlock(pid, a.mainDef, r, has(p, 'kumarbaz') ? 10 : 5);   // 🎲 Kırık Zar: felaket yarı yarıya
-    txt = `${IC('tutmayan', 16)} ${tag(p)} 1 attı! Felaket: ${res.lost} kare ${a.mainDef >= 0 ? players[a.mainDef].name + ' tarafına' : 'isyancılara'} geçti.`;
+    txt = `${IC('tutmayan', 16)} ` + tx(`${tag(p)} 1 attı! Felaket: ${res.lost} kare ${a.mainDef >= 0 ? players[a.mainDef].name + ' tarafına' : 'isyancılara'} geçti.`,
+      `${tag(p)} rolled a 1! Disaster: ${res.lost} squares went to ${a.mainDef >= 0 ? players[a.mainDef].name : 'rebels'}.`);
     if (res.rect) flash = {r: res.rect, color: '#d6372e'};
   } else {
-    txt = `${IC('basarisiz', 16)} ${tag(p)} ${roll} attı (hedef ${a.dc}) → saldırı başarısız.` + (!ist && roll === 1 ? ` ${IC('sansli', 16)} Şanslı: felaket yok!` : '');
+    txt = `${IC('basarisiz', 16)} ` + tx(`${tag(p)} ${roll} attı (hedef ${a.dc}) → saldırı başarısız.`, `${tag(p)} rolled ${roll} (target ${a.dc}) → the attack failed.`)
+      + (!ist && roll === 1 ? ` ${IC('sansli', 16)} ${PW.sansli.name}: ${tx('felaket yok!', 'no disaster!')}` : '');
     const d = players[a.mainDef];
     if (d && d.alive && has(d, 'karsi')) {
       const res = takeBlock(pid, d.id, r, TUNE.karsiSize);
-      if (res.lost) { txt += ` ${IC('karsi', 16)} ${tag(d)} karşı saldırıyla ${res.lost} kare kaptı!`; flash = {r: res.rect, color: d.color}; countered = d.id; }
+      if (res.lost) { txt += ` ${IC('karsi', 16)} ` + tx(`${tag(d)} karşı saldırıyla ${res.lost} kare kaptı!`, `${tag(d)} counterattacked and seized ${res.lost} squares!`); flash = {r: res.rect, color: d.color}; countered = d.id; }
     }
   }
   if (!ok) for (const f of a.flags) {   // sancak alarmda: sonraki saldırılar daha zor (her tur 1 söner)
     players[f].alarm = (players[f].alarm || 0) + (f === SC.boss ? TUNE.bossAlarm : TUNE.alarmUp);
-    txt += ` ${IC('uyari', 16)} ${tag(players[f])} sancağı alarmda (+${players[f].alarm}).`;
+    txt += ` ${IC('uyari', 16)} ` + tx(`${tag(players[f])} sancağı alarmda (+${players[f].alarm}).`, `${tagPoss(players[f])} banner is on alert (+${players[f].alarm}).`);
   }
   if (pre.length) txt = pre.join(' · ') + ' · ' + txt;
   countCells();
@@ -2147,7 +2205,7 @@ function attack(pid, r, a, useDbl) {
   SFX.play('roll', dur / 1000, p.human ? 1 : .55);
   let ticks = 0;
   const iv = setInterval(() => {
-    setDice(vals[Math.floor(Math.random() * vals.length)], '', `${tag(p)} zar atıyor… (hedef ${a.dc}+)${useDbl ? ' ' + IC('cift', 16) : ''}`);
+    setDice(vals[Math.floor(Math.random() * vals.length)], '', tx(`${tag(p)} zar atıyor… (hedef ${a.dc}+)`, `${tag(p)} ${p.name === 'You' ? 'are' : 'is'} rolling… (target ${a.dc}+)`) + (useDbl ? ' ' + IC('cift', 16) : ''));
     if (++ticks * 60 >= dur) { clearInterval(iv); finish(); }
   }, 60);
   function finish() {
@@ -2194,7 +2252,8 @@ function afterAttack(pid) {
   if (halted) return;
   const p = players[pid], ex = extraAttackReady(p);
   if (ex) {
-    log(ex === 'boss' ? `${IC('durakPatron', 16)} ${tag(p)} ${p.bossKind === 'ova' ? 'akına çıktı' : 'lejyonlarını sürüyor'}: bu tur bir saldırı daha!` : `${IC('yildirim', 16)} Yıldırım! ${tag(p)} bu tur bir saldırı daha yapıyor.`);
+    log(ex === 'boss' ? `${IC('durakPatron', 16)} ${tag(p)} ` + tx(`${p.bossKind === 'ova' ? 'akına çıktı' : 'lejyonlarını sürüyor'}: bu tur bir saldırı daha!`, `${p.bossKind === 'ova' ? 'rides out on a raid' : 'drives the legions on'}: one more attack this turn!`)
+      : `${IC('yildirim', 16)} ` + tx(`Yıldırım! ${tag(p)} bu tur bir saldırı daha yapıyor.`, `${PW.yildirim.name}! ${tag(p)} ${p.name === 'You' ? 'attack' : 'attacks'} once more this turn.`));
     startTurn(true);
   } else nextTurn();
 }
@@ -2212,15 +2271,16 @@ function countCells() {
   }
   for (const p of players) p.score = p.cells + p.vill * vv + (sc.ova ? p.ova * (sc.ova - 1) : 0);
   for (const p of players) if (p.alive && p.cells === 0) {
-    p.alive = false; log(`${IC('silindi', 16)} ${tag(p)} haritadan silindi!`);
+    p.alive = false; log(`${IC('silindi', 16)} ${tag(p)} ` + tx('haritadan silindi!', p.name === 'You' ? 'were wiped off the map!' : 'was wiped off the map!'));
   }
 }
 const pct = c => Math.round(c / LAND * 100);
+const ordEn = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th');
 // senaryo zaferi/yenilgisi için başlık + metin (w: kazanan ülke)
 function resultMsg(w, how) {
   const multi = players.filter(p => p.human).length > 1;
-  if (!w || !w.human) return [multi ? '😢 Kaybettiniz' : '😢 Kaybettin', how];
-  return [cfg.coop && multi ? '🏆 Takım Kazandı!' : multi ? `🏆 ${w.name} Kazandı!` : '🏆 Kazandın!', how];
+  if (!w || !w.human) return ['😢 ' + tx(multi ? 'Kaybettiniz' : 'Kaybettin', 'Defeat'), how];
+  return ['🏆 ' + (cfg.coop && multi ? tx('Takım Kazandı!', 'The Team Wins!') : multi ? tx(`${w.name} Kazandı!`, `${w.name} Wins!`) : tx('Kazandın!', 'Victory!')), how];
 }
 function checkEnd() {
   const humans = players.filter(p => p.human), aliveH = humans.filter(p => p.alive);
@@ -2233,31 +2293,36 @@ function checkEnd() {
   const tg = sc.goal === 'bas' ? players[SC.target] : null;
   if (tg && !tg.alive && aliveH.length) {
     const by = players[tg.fallenBy];
-    msg = by && by.human ? resultMsg(by, multi ? `${turn}. turda ${by.name}, ${tg.name} sancağını düşürdü!` : `${turn}. turda ${tg.name} sancağını düşürdün!`)
-      : resultMsg(null, `${tg.name} sancağını ${by ? by.name : 'başka biri'} düşürdü; hedef elinden kaçtı.`);
+    msg = by && by.human ? resultMsg(by, multi ? tx(`${turn}. turda ${by.name}, ${tg.name} sancağını düşürdü!`, `On turn ${turn}, ${by.name} brought down ${tg.name}'s banner!`)
+        : tx(`${turn}. turda ${tg.name} sancağını düşürdün!`, `On turn ${turn} you brought down ${tg.name}'s banner!`))
+      : resultMsg(null, tx(`${tg.name} sancağını ${by ? by.name : 'başka biri'} düşürdü; hedef elinden kaçtı.`, `${by ? by.name : 'Someone else'} brought down ${tg.name}'s banner; your target slipped away.`));
     endGame(msg); return true;
   }
   // sefer patronu: sancağı düşünce (kim düşürürse düşürsün) zafer
   const bs = sc.goal === 'boss' ? players[SC.boss] : null;
   if (bs && !bs.alive && aliveH.length) {
     const by = players[bs.fallenBy];
-    endGame(resultMsg(aliveH[0], `${turn}. turda ${bs.name} yıkıldı${by && !by.human ? ` (sancağını ${by.name} düşürdü)` : ''}!`)); return true;
+    endGame(resultMsg(aliveH[0], tx(`${turn}. turda ${bs.name} yıkıldı${by && !by.human ? ` (sancağını ${by.name} düşürdü)` : ''}!`,
+      `On turn ${turn}, ${bs.name} fell${by && !by.human ? ` (${by.name} brought down the banner)` : ''}!`))); return true;
   }
   const fallen = humans.find(p => p.fallenBy != null);
-  if (!aliveH.length) msg = [multi ? '😢 Yenildiniz' : '😢 Yenildin', !multi && fallen
-    ? `${turn}. turda sancağın düştü: ${players[fallen.fallenBy].name} ülkeni yıktı.`
-    : `${turn}. turda ${multi ? 'tüm oyuncular' : 'ülken'} haritadan silindi.`];
+  if (!aliveH.length) msg = ['😢 ' + tx(multi ? 'Yenildiniz' : 'Yenildin', 'Defeat'), !multi && fallen
+    ? tx(`${turn}. turda sancağın düştü: ${players[fallen.fallenBy].name} ülkeni yıktı.`, `On turn ${turn} your banner fell: ${players[fallen.fallenBy].name} destroyed your realm.`)
+    : tx(`${turn}. turda ${multi ? 'tüm oyuncular' : 'ülken'} haritadan silindi.`, `On turn ${turn} ${multi ? 'every player was' : 'your realm was'} wiped off the map.`)];
   else if (cfg.coop && multi) {
     const team = aliveH.reduce((s, p) => s + p.score, 0), lead = aliveN.find(p => p.score >= target);
-    if ((!sc.goal && team >= target) || !aliveN.length) msg = ['🏆 Takım Kazandı!', !aliveN.length ? `${turn}. turda bütün rakipleri yıktınız!` : `${turn}. turda takım olarak karaların ${yuzde(pct(team), 'n')} ele geçirdiniz!`];
-    else if (lead) msg = ['😢 Kaybettiniz', `${lead.name} karaların ${yuzde(pct(lead.score), 'n')} ele geçirdi.`];
+    if ((!sc.goal && team >= target) || !aliveN.length) msg = ['🏆 ' + tx('Takım Kazandı!', 'The Team Wins!'), !aliveN.length ? tx(`${turn}. turda bütün rakipleri yıktınız!`, `On turn ${turn} you destroyed every opponent!`)
+      : tx(`${turn}. turda takım olarak karaların ${yuzde(pct(team), 'n')} ele geçirdiniz!`, `On turn ${turn} your team took ${pct(team)}% of the land!`)];
+    else if (lead) msg = ['😢 ' + tx('Kaybettiniz', 'Defeat'), tx(`${lead.name} karaların ${yuzde(pct(lead.score), 'n')} ele geçirdi.`, `${lead.name} took ${pct(lead.score)}% of the land.`)];
   } else {
     const alive = players.filter(p => p.alive), lead = players.find(p => p.score >= tgtOf(p));
     if (lead || alive.length === 1) {
       const w = lead || alive[0];
-      const how = lead ? `karaların ${yuzde(pct(w.score), 'n')} ele geçirdi` : 'bütün rakiplerini yıktı';
-      msg = w.human ? [multi ? `🏆 ${w.name} Kazandı!` : '🏆 Kazandın!', lead ? `${turn}. turda karaların ${yuzde(pct(w.score))} ${multi ? w.name : 'senin'}!` : `${turn}. turda bütün rakipleri yıktın!`]
-        : [multi ? '😢 Kaybettiniz' : '😢 Kaybettin', `${w.name} ${how}.`];
+      const how = lead ? tx(`karaların ${yuzde(pct(w.score), 'n')} ele geçirdi`, `took ${pct(w.score)}% of the land`) : tx('bütün rakiplerini yıktı', 'destroyed all its opponents');
+      msg = w.human ? ['🏆 ' + (multi ? tx(`${w.name} Kazandı!`, `${w.name} Wins!`) : tx('Kazandın!', 'Victory!')),
+          lead ? tx(`${turn}. turda karaların ${yuzde(pct(w.score))} ${multi ? w.name : 'senin'}!`, `On turn ${turn}, ${pct(w.score)}% of the land is ${multi ? w.name + "'s" : 'yours'}!`)
+            : tx(`${turn}. turda bütün rakipleri yıktın!`, `On turn ${turn} you destroyed every opponent!`)]
+        : ['😢 ' + tx(multi ? 'Kaybettiniz' : 'Kaybettin', 'Defeat'), `${w.name} ${how}.`];
     }
   }
   if (!msg) return false;
@@ -2267,26 +2332,31 @@ function timeUp() {
   turn = cfg.turns;
   const humans = players.filter(p => p.human), multi = humans.length > 1;
   const ranked = players.filter(p => p.alive).sort((a, b) => b.score - a.score);
-  log(IC('sureDoldu', 16) + ' Süre doldu!');
+  log(IC('sureDoldu', 16) + tx(' Süre doldu!', ' Time is up!'));
   const goal = scenOf().goal;
   if (goal === 'hayatta') {
     const w = humans.find(p => p.alive);
-    endGame(resultMsg(w, w ? `${cfg.turns} tur boyunca ${multi ? 'ayakta kaldınız' : 'ayakta kaldın'}! Ülken karaların ${yuzde(pct(w.score))}.` : 'Ayakta kalamadın.'));
+    endGame(resultMsg(w, w ? tx(`${cfg.turns} tur boyunca ${multi ? 'ayakta kaldınız' : 'ayakta kaldın'}! Ülken karaların ${yuzde(pct(w.score))}.`, `You survived for ${cfg.turns} turns! Your realm holds ${pct(w.score)}% of the land.`)
+      : tx('Ayakta kalamadın.', "You didn't survive.")));
     return;
   }
   if (goal === 'kale' || goal === 'bas' || goal === 'boss') {
-    endGame(['⏰ Süre Doldu', goal === 'kale' ? `${cfg.turns} tur içinde kimse kaleyi ${KALE_HOLD} tur tutamadı.`
-      : `${cfg.turns} tur içinde ${players[goal === 'boss' ? SC.boss : SC.target].name} sancağı düşmedi.`]);
+    endGame(['⏰ ' + tx('Süre Doldu', "Time's Up"), goal === 'kale' ? tx(`${cfg.turns} tur içinde kimse kaleyi ${KALE_HOLD} tur tutamadı.`, `In ${cfg.turns} turns nobody held the fort for ${KALE_HOLD} turns.`)
+      : tx(`${cfg.turns} tur içinde ${players[goal === 'boss' ? SC.boss : SC.target].name} sancağı düşmedi.`, `In ${cfg.turns} turns, ${players[goal === 'boss' ? SC.boss : SC.target].name}'s banner did not fall.`)]);
     return;
   }
   if (cfg.coop && multi) {
     const team = humans.reduce((s, p) => s + p.score, 0), bestN = ranked.find(p => !p.human);
-    endGame(!bestN || team > bestN.score ? ['🏆 Takım Kazandı!', `${cfg.turns} tur sonunda takımınız karaların ${yuzde(pct(team), 'e')} sahip; en büyük rakip %${bestN ? pct(bestN.score) : 0}.`]
-      : ['⏰ Süre Doldu', `${cfg.turns} tur sonunda ${bestN.name} (%${pct(bestN.score)}) takımınızdan (%${pct(team)}) büyük.`]);
+    endGame(!bestN || team > bestN.score ? ['🏆 ' + tx('Takım Kazandı!', 'The Team Wins!'), tx(`${cfg.turns} tur sonunda takımınız karaların ${yuzde(pct(team), 'e')} sahip; en büyük rakip %${bestN ? pct(bestN.score) : 0}.`,
+        `After ${cfg.turns} turns your team holds ${pct(team)}% of the land; the largest opponent ${bestN ? pct(bestN.score) : 0}%.`)]
+      : ['⏰ ' + tx('Süre Doldu', "Time's Up"), tx(`${cfg.turns} tur sonunda ${bestN.name} (%${pct(bestN.score)}) takımınızdan (%${pct(team)}) büyük.`,
+        `After ${cfg.turns} turns, ${bestN.name} (${pct(bestN.score)}%) is bigger than your team (${pct(team)}%).`)]);
   } else {
     const w = ranked[0], me = humans[0];
-    endGame(w.human ? [multi ? `🏆 ${w.name} Kazandı!` : '🏆 Kazandın!', `${cfg.turns} tur sonunda en büyük ülke ${multi ? w.name : 'sensin'} (%${pct(w.score)}).`]
-      : ['⏰ Süre Doldu', `${cfg.turns} tur sonunda en büyük ülke ${w.name} (%${pct(w.score)}).` + (multi ? '' : ` Sen ${ranked.indexOf(me) + 1}. oldun (%${pct(me.score)}).`)]);
+    endGame(w.human ? ['🏆 ' + (multi ? tx(`${w.name} Kazandı!`, `${w.name} Wins!`) : tx('Kazandın!', 'Victory!')),
+        tx(`${cfg.turns} tur sonunda en büyük ülke ${multi ? w.name : 'sensin'} (%${pct(w.score)}).`, `After ${cfg.turns} turns the largest realm is ${multi ? w.name : 'yours'} (${pct(w.score)}%).`)]
+      : ['⏰ ' + tx('Süre Doldu', "Time's Up"), tx(`${cfg.turns} tur sonunda en büyük ülke ${w.name} (%${pct(w.score)}).`, `After ${cfg.turns} turns the largest realm is ${w.name} (${pct(w.score)}%).`)
+        + (multi ? '' : tx(` Sen ${ranked.indexOf(me) + 1}. oldun (%${pct(me.score)}).`, ` You came ${ordEn(ranked.indexOf(me) + 1)} (${pct(me.score)}%).`))]);
   }
 }
 function endGame([title, text]) {
@@ -2310,7 +2380,7 @@ function startTurn(extra) {
   dbl = false;
   if (p.human && !extra && needHandoff()) {
     handoffOn = true; refresh();
-    $('handTitle').innerHTML = `${IC('siraDevri', 32)} Sıra geldi: <span style="color:${lite(p.color)}">${p.name}</span>`;
+    $('handTitle').innerHTML = `${IC('siraDevri', 32)} ${tx('Sıra geldi', 'Your turn')}: <span style="color:${lite(p.color)}">${p.name}</span>`;
     $('handoff').classList.remove('hidden');
     return;
   }
@@ -2335,8 +2405,9 @@ function scenRound() {
   else { SC.holder = o; SC.held = o >= 0 ? 1 : 0; }
   if (o >= 0) {
     const p = players[o];
-    if (SC.held >= KALE_HOLD) { endGame(resultMsg(p, `${turn - 1}. turun sonunda ${p.human && cfg.humans === 1 ? 'kaleyi' : p.name + ' kaleyi'} ${KALE_HOLD} tur elinde ${p.human && cfg.humans === 1 ? 'tuttun' : 'tuttu'}!`)); return true; }
-    log(`${IC('kale', 16)} ${tag(p)} kaleyi tutuyor (${SC.held}/${KALE_HOLD}).`);
+    if (SC.held >= KALE_HOLD) { endGame(resultMsg(p, tx(`${turn - 1}. turun sonunda ${p.human && cfg.humans === 1 ? 'kaleyi' : p.name + ' kaleyi'} ${KALE_HOLD} tur elinde ${p.human && cfg.humans === 1 ? 'tuttun' : 'tuttu'}!`,
+      `At the end of turn ${turn - 1}, ${p.human && cfg.humans === 1 ? 'you have' : p.name + ' has'} held the fort for ${KALE_HOLD} turns!`))); return true; }
+    log(`${IC('kale', 16)} ${tag(p)} ` + tx(`kaleyi tutuyor (${SC.held}/${KALE_HOLD}).`, `${p.name === 'You' ? 'hold' : 'holds'} the fort (${SC.held}/${KALE_HOLD}).`));
   }
   return false;
 }
@@ -2452,7 +2523,7 @@ function npcMove() {
       if (!best || score > best.score) best = {r, a, score, useD};
     }
   }
-  if (!best) { log(`${tag(p)} pas geçti.`); glEvent({type: 'pas', p: pid}); nextTurn(); return; }
+  if (!best) { log(`${tag(p)} ${tx('pas geçti.', 'passed.')}`); glEvent({type: 'pas', p: pid}); nextTurn(); return; }
   attack(pid, best.r, best.a, best.useD);
 }
 
@@ -2498,8 +2569,8 @@ function saveGame() {
       own: Array.from(own, v => String.fromCharCode(98 + v)).join(''),
       tseed, terr: terrStr(), villages, SC,
       players, gs, log: $('log').innerHTML, date: Date.now()}));
-    $('saveNote').innerHTML = `${IC('kayit', 14)} Otomatik kaydedildi (Tur ${turn})`;
-  } catch (e) { $('saveNote').innerHTML = IC('uyari', 14) + ' Kayıt yapılamadı'; }
+    $('saveNote').innerHTML = `${IC('kayit', 14)} ${tx(`Otomatik kaydedildi (Tur ${turn})`, `Autosaved (turn ${turn})`)}`;
+  } catch (e) { $('saveNote').innerHTML = IC('uyari', 14) + tx(' Kayıt yapılamadı', ' Could not save'); }
 }
 function loadSave() { try { return JSON.parse(localStorage.getItem(SAVE_KEY)); } catch (e) { return null; } }
 function clearSave() { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} }
@@ -2527,8 +2598,8 @@ function continueGame() {
   npcSel = null; selFor = -1; lastHuman = players.findIndex(p => p.human && p.alive);
   $('log').innerHTML = s.log;
   hideAll();
-  setDice('20', '', 'Zar bekleniyor…'); renderSnap();
-  log(IC('kayit', 16) + ' Kayıtlı oyun yüklendi.');
+  setDice('20', '', tx('Zar bekleniyor…', 'Waiting for a roll…')); renderSnap();
+  log(IC('kayit', 16) + tx(' Kayıtlı oyun yüklendi.', ' Saved game loaded.'));
   resize(); fitView(); countCells(); glStart(true); startTurn();
 }
 $('contBtn').onclick = continueGame;
@@ -2918,19 +2989,20 @@ function renderPanel() {
   if (!players.length) return;
   const p = players[cur], multi = cfg.humans > 1;
   const chap = cfg.chapter != null && cfg.campLabel ? `<small class="chap1">${IC('sefer', 14)} ${esc(cfg.campLabel)}</small>` : '';
-  $('turnInfo').innerHTML = chap + `Tur ${turn}${cfg.turns ? '/' + cfg.turns : ''} · <span style="color:${lite(p.color)}">${
-    p.human ? (multi ? p.name + ' oynuyor' : 'Senin sıran!') : p.name + ' oynuyor…'}</span>${p.extraNow ? ' ' + IC('yildirim', 16) : ''}
-    <small>${scenOf().id !== 'klasik' ? `${IC('senaryo', 14)} ${scenOf().name} · ` : ''}${goalText()} · Harita ${M}×${M}</small>`;
+  $('turnInfo').innerHTML = chap + `${tx('Tur', 'Turn')} ${turn}${cfg.turns ? '/' + cfg.turns : ''} · <span style="color:${lite(p.color)}">${
+    p.human ? (multi ? p.name + tx(' oynuyor', ' to play') : tx('Senin sıran!', 'Your turn!')) : p.name + tx(' oynuyor…', ' is playing…')}</span>${p.extraNow ? ' ' + IC('yildirim', 16) : ''}
+    <small>${scenOf().id !== 'klasik' ? `${IC('senaryo', 14)} ${scenOf().name} · ` : ''}${goalText()} · ${tx('Harita', 'Map')} ${M}×${M}</small>`;
   const total = LAND;
   let html = [...players].sort((a, b) => b.score - a.score).map(q => `
     <div class="row ${q.id === cur ? 'cur' : ''} ${q.alive ? '' : 'dead'}">
       <span class="sw" style="background:${q.color}"></span><span class="nm">${q.id === cur ? '▶ ' : ''}${q.name}${q.id === SC.target ? ' ' + IC('avci', 16) : ''}${SC.allies && SC.allies.includes(q.id) ? ' ' + IC('muttefik', 16) : ''}</span>
       <span class="pi" data-tip="p:${q.id}">${powerIcons(q)}</span>
-      <span>${q.vill ? `${IC('koy', 16)}${q.vill} ` : ''}%${(q.score / total * 100).toFixed(1)}</span></div>
+      <span>${q.vill ? `${IC('koy', 16)}${q.vill} ` : ''}${tx('%' + (q.score / total * 100).toFixed(1), (q.score / total * 100).toFixed(1) + '%')}</span></div>
     <div class="bar"><div style="width:${Math.min(100, q.score / total / (cfg.win === 'fetih' ? 1 : cfg.win) * 100)}%;background:${q.color}"></div></div>`).join('');
   if (cfg.coop && multi) {
     const team = players.filter(q => q.human).reduce((s, q) => s + q.score, 0);
-    html += `<div class="team">${IC('coop', 16)} Takım toplamı: <b>%${(team / total * 100).toFixed(1)}</b>${cfg.win === 'fetih' ? '' : ` / %${cfg.win * 100}`}</div>`;
+    html += `<div class="team">${IC('coop', 16)} ` + tx(`Takım toplamı: <b>%${(team / total * 100).toFixed(1)}</b>${cfg.win === 'fetih' ? '' : ` / %${cfg.win * 100}`}`,
+      `Team total: <b>${(team / total * 100).toFixed(1)}%</b>${cfg.win === 'fetih' ? '' : ` / ${cfg.win * 100}%`}`) + '</div>';
   }
   $('scores').innerHTML = html;
   refreshTip();
@@ -2938,14 +3010,15 @@ function renderPanel() {
 function renderPowers() {
   const p = players[cur] && players[cur].human ? players[cur] : players[selOwner()];
   if (!p || !p.human) { $('powers').innerHTML = ''; $('dblBtn').classList.add('hidden'); refreshTip(); return; }
-  const cd = k => has(p, k) ? (ready(p, k) ? ' <span style="color:var(--ok)">hazır</span>' : ` (${p.ready[k] - turn} tur)`) : '';
-  $('powers').innerHTML = !p.powers.length ? '' : 'Güçlerin: ' + p.powers.map(id => `<b data-tip="g:${p.id}:${id}">${PW[id].icon} ${PW[id].name}</b>${['ikinci', 'cift', 'yildirim'].includes(id) ? cd(id) : ''}`).join(' · ');
+  const cd = k => has(p, k) ? (ready(p, k) ? ` <span style="color:var(--ok)">${tx('hazır', 'ready')}</span>` : ` (${p.ready[k] - turn} ${tx('tur', p.ready[k] - turn === 1 ? 'turn' : 'turns')})`) : '';
+  $('powers').innerHTML = !p.powers.length ? '' : tx('Güçlerin: ', 'Your powers: ') + p.powers.map(id => `<b data-tip="g:${p.id}:${id}">${PW[id].icon} ${PW[id].name}</b>${['ikinci', 'cift', 'yildirim'].includes(id) ? cd(id) : ''}`).join(' · ');
   refreshTip();
   const b = $('dblBtn');
   b.classList.toggle('hidden', !has(p, 'cift'));
   b.disabled = !ready(p, 'cift') || busy;
   b.classList.toggle('on', dbl);
-  b.innerHTML = IC('cift', 18) + ' ' + (ready(p, 'cift') ? (dbl ? 'Çift Zar AÇIK: bu saldırıda' : 'Çift Zar kullan') : `Çift Zar: ${p.ready.cift - turn} tur sonra`);
+  b.innerHTML = IC('cift', 18) + ' ' + (ready(p, 'cift') ? (dbl ? tx('Çift Zar AÇIK: bu saldırıda', 'Double Die ON: this attack') : tx('Çift Zar kullan', 'Use Double Die'))
+    : tx(`Çift Zar: ${p.ready.cift - turn} tur sonra`, `Double Die: in ${p.ready.cift - turn} ${p.ready.cift - turn === 1 ? 'turn' : 'turns'}`));
 }
 $('dblBtn').onclick = () => { dbl = !dbl; renderPowers(); updateSel(); };
 function renderSnap() {
@@ -2959,40 +3032,44 @@ $('snapSeg').addEventListener('click', e => {
 });
 renderSnap();
 // kuşatılmamış sancak için açıklama
-const siegeMsg = (v, pid) => `${IC('mSancak', 14)} ${players[v].name} sancağına saldırmak için önce çevresini kuşat: çevresinin `
-  + `${yuzde(siegeShare(v, pid) * 100)} senin, en az ${yuzde(siegeNeedOf(v) * 100)} gerekli.`;
+const siegeMsg = (v, pid) => `${IC('mSancak', 14)} ` + tx(`${players[v].name} sancağına saldırmak için önce çevresini kuşat: çevresinin `
+  + `${yuzde(siegeShare(v, pid) * 100)} senin, en az ${yuzde(siegeNeedOf(v) * 100)} gerekli.`,
+  `To attack ${possEn(players[v].name)} banner, besiege it first: you hold ${Math.round(siegeShare(v, pid) * 100)}% of its surroundings, at least ${Math.round(siegeNeedOf(v) * 100)}% is needed.`);
 function updateSel() {
   const el = $('selInfo'), owner = selOwner(), p = players[owner];
   if (!p || over || (busy && players[cur].human)) return;     // kendi zarın atılırken dokunma
   const waiting = !players[cur].human;
-  const wait = waiting ? `<span style="color:var(--muted)">${IC('bekle', 16)} Rakipler oynuyor. Seçimini şimdiden hazırlayabilirsin.</span><br>` : '';
+  const wait = waiting ? `<span style="color:var(--muted)">${IC('bekle', 16)} ${tx('Rakipler oynuyor. Seçimini şimdiden hazırlayabilirsin.', 'Opponents are playing. You can prepare your selection now.')}</span><br>` : '';
   const ms = Math.max(snap, Math.floor(sideFor(owner) / snap) * snap);
-  if (!sel) { el.innerHTML = wait + `Haritada <b>sürükleyerek</b> saldırmak istediğin alanı seç. Seçim ${snap}×${snap} karelik bloklara oturur (en fazla ${ms}×${ms}).`; updateButtons(); return; }
+  if (!sel) { el.innerHTML = wait + tx(`Haritada <b>sürükleyerek</b> saldırmak istediğin alanı seç. Seçim ${snap}×${snap} karelik bloklara oturur (en fazla ${ms}×${ms}).`,
+    `<b>Drag</b> on the map to select the area you want to attack. The selection snaps to ${snap}×${snap} blocks (up to ${ms}×${ms}).`); updateButtons(); return; }
   const a = analyze(sel, owner), w = sel.x1 - sel.x0 + 1, h = sel.y1 - sel.y0 + 1;
   if (!a.valid) {
     const why = a.noSiege && a.noSiege.length ? siegeMsg(a.noSiege[0], owner)
-      : a.taken === 0 && a.shielded ? IC('mSancak', 16) + ' Sancağı almak için sancağın tamamını seçmelisin.'
-      : a.taken === 0 ? 'Bu alan zaten senin' + (cfg.coop && cfg.humans > 1 ? ' ya da takım arkadaşının.' : '.')
-      : a.hidden ? IC('sis', 16) + ' Sisli alana saldıramazsın.' : 'Alan kendi toprağına değmeli!';
-    el.innerHTML = wait + `${w}×${h} alan · <span style="color:var(--bad)">${why}</span>`;
+      : a.taken === 0 && a.shielded ? IC('mSancak', 16) + tx(' Sancağı almak için sancağın tamamını seçmelisin.', ' To take a banner you must select all of it.')
+      : a.taken === 0 ? tx('Bu alan zaten senin' + (cfg.coop && cfg.humans > 1 ? ' ya da takım arkadaşının.' : '.'), 'This area is already yours' + (cfg.coop && cfg.humans > 1 ? " or your teammate's." : '.'))
+      : a.hidden ? IC('sis', 16) + tx(' Sisli alana saldıramazsın.', " You can't attack into the fog.") : tx('Alan kendi toprağına değmeli!', 'The area must touch your own land!');
+    el.innerHTML = wait + `${w}×${h} ${tx('alan', 'area')} · <span style="color:var(--bad)">${why}</span>`;
   } else {
     const ch = chanceOf(p, a.dc, dbl, true), col = ch >= .6 ? 'var(--ok)' : ch >= .3 ? '#e6b84f' : 'var(--bad)';
-    const parts = [`${a.neutral} boş`], terrParts = a.tc.map((n, t) => n ? `${TERRAIN[t].icon}${n}` : '').filter(Boolean).join(' ');
+    const parts = [`${a.neutral} ${tx('boş', 'empty')}`], terrParts = a.tc.map((n, t) => n ? `${TERRAIN[t].icon}${n}` : '').filter(Boolean).join(' ');
     for (const k in a.by) parts.push(`<span style="color:${lite(players[k].color)}">${a.by[k]} ${players[k].name}</span>`);
     const modTxt = a.mods.map(([n0, v, ic]) => { const n = ic ? `${IC(ic, 16)} ${n0}` : n0; return v < 0 ? `<span style="color:var(--ok)">− ${-v} (${n})</span>`
-      : n0 === 'boyut' || n0 === 'düşman toprağı' ? `+ ${v} (${n})` : `<span style="color:var(--bad)">+ ${v} (${n})</span>`; }).join(' ');
-    const flagTxt = a.flags.map(f => `<br><b style="color:${lite(players[f].color)}">${IC('mSancak', 16)} ${players[f].name} sancağı!</b> Başarırsan ülke ${has(players[f], 'yedek') && !players[f].flagUsed ? `yarısını kaybeder (${IC('yedek', 16)} Yedek Sancak)` : 'yıkılır'}.`).join('')
+      : n0 === tx('boyut', 'size') || n0 === tx('düşman toprağı', 'enemy land') ? `+ ${v} (${n})` : `<span style="color:var(--bad)">+ ${v} (${n})</span>`; }).join(' ');
+    const yed = f => has(players[f], 'yedek') && !players[f].flagUsed;
+    const flagTxt = a.flags.map(f => `<br><b style="color:${lite(players[f].color)}">${IC('mSancak', 16)} ${tx(`${players[f].name} sancağı!`, `${possEn(players[f].name)} banner!`)}</b> `
+        + tx(`Başarırsan ülke ${yed(f) ? `yarısını kaybeder (${IC('yedek', 16)} Yedek Sancak)` : 'yıkılır'}.`, `If you succeed, the realm ${yed(f) ? `loses half its land (${IC('yedek', 16)} ${PW.yedek.name})` : 'is destroyed'}.`)).join('')
       + (a.noSiege && a.noSiege.length ? '<br><small>' + siegeMsg(a.noSiege[0], owner) + '</small>'
-        : a.flagTooBig ? '<br><small>' + IC('mSancak', 14) + ' Bu kadar büyük bir saldırıyla sancak alınamaz (hedef 20\'yi aşıyor). Sancak için daha küçük bir alan seç.</small>'
-        : a.shielded ? '<br><small>' + IC('mSancak', 14) + ' Sancağın sadece bir kısmı seçili; o kareler alınamaz. Sancağı almak için tamamını seç.</small>' : '')
-      + (a.flags.length && a.mainDef >= 0 && p.cells > players[a.mainDef].cells ? '<br><small>Sancak saldırısında güç üstünlüğü indirimi geçmez.</small>' : '');
-    const rr = [has(p, 'sansli') && !has(p, 'istikrar') ? IC('sansli', 14) + ' Şanslı' : '', ready(p, 'ikinci') ? IC('ikinci', 14) + ' İkinci Şans' : ''].filter(Boolean);
-    const second = rr.length ? `<br><small>${rr.join(' ve ')} yeniden atışı dahil</small>` : '';
+        : a.flagTooBig ? '<br><small>' + IC('mSancak', 14) + tx(' Bu kadar büyük bir saldırıyla sancak alınamaz (hedef 20\'yi aşıyor). Sancak için daha küçük bir alan seç.', " A banner can't be taken with an attack this big (the target goes above 20). Select a smaller area for the banner.") + '</small>'
+        : a.shielded ? '<br><small>' + IC('mSancak', 14) + tx(' Sancağın sadece bir kısmı seçili; o kareler alınamaz. Sancağı almak için tamamını seç.', " Only part of the banner is selected; those squares can't be taken. Select all of it to take the banner.") + '</small>' : '')
+      + (a.flags.length && a.mainDef >= 0 && p.cells > players[a.mainDef].cells ? '<br><small>' + tx('Sancak saldırısında güç üstünlüğü indirimi geçmez.', "The superior strength discount doesn't apply to banner attacks.") + '</small>' : '');
+    const rr = [has(p, 'sansli') && !has(p, 'istikrar') ? IC('sansli', 14) + ' ' + PW.sansli.name : '', ready(p, 'ikinci') ? IC('ikinci', 14) + ' ' + PW.ikinci.name : ''].filter(Boolean);
+    const second = rr.length ? `<br><small>${tx(`${rr.join(' ve ')} yeniden atışı dahil`, `including the ${rr.join(' and ')} reroll`)}</small>` : '';
     // önce en önemlisi (şans, hedef zar, sancak); ayrıntılar altta küçük yazıyla: kutu sabit boyda, uzarsa içi kayar
-    el.innerHTML = wait + `<div class="selTop"><span class="chance" style="color:${col}">%${Math.round(ch * 100)}</span> başarı · hedef <b>${a.dc}+</b>${dbl ? ' · ' + IC('cift', 16) + ' çift zar' : ''}</div>`
+    el.innerHTML = wait + `<div class="selTop"><span class="chance" style="color:${col}">${tx('%' + Math.round(ch * 100), Math.round(ch * 100) + '%')}</span> ${tx('başarı · hedef', 'success · target')} <b>${a.dc}+</b>${dbl ? ' · ' + IC('cift', 16) + tx(' çift zar', ' double die') : ''}</div>`
       + (flagTxt ? `<div class="selFlag">${flagTxt.replace(/^<br>/, '')}</div>` : '')
-      + `<div class="selDet">${ch === 0 ? '<b style="color:var(--bad)">Bu alan alınamaz!</b><br>' : ''}${w}×${h} alan · alınacak <b>${a.taken}</b> kare (${parts.join(', ')}) ${terrParts}<br>
-      Hedef zar: 1 ${modTxt} = <b>${a.dc}+</b>${second}</div>`;
+      + `<div class="selDet">${ch === 0 ? `<b style="color:var(--bad)">${tx('Bu alan alınamaz!', "This area can't be taken!")}</b><br>` : ''}${w}×${h} ${tx('alan · alınacak', 'area · taking')} <b>${a.taken}</b> ${tx('kare', 'squares')} (${parts.join(', ')}) ${terrParts}<br>
+      ${tx('Hedef zar', 'Target number')}: 1 ${modTxt} = <b>${a.dc}+</b>${second}</div>`;
   }
   updateButtons();
 }
@@ -3101,7 +3178,7 @@ $('rollBtn').onclick = () => {
   const a = analyze(sel, cur);
   if (a.valid) attack(cur, sel, a, dbl && ready(players[cur], 'cift'));
 };
-$('passBtn').onclick = () => { if (!myTurn()) return; sel = null; log(`${tag(players[cur])} pas geçti.`); glEvent({type: 'pas', p: cur}); busy = true; nextTurn(); };
+$('passBtn').onclick = () => { if (!myTurn()) return; sel = null; log(`${tag(players[cur])} ${tx('pas geçti.', 'passed.')}`); glEvent({type: 'pas', p: cur}); busy = true; nextTurn(); };
 addEventListener('keydown', e => {
   if (e.code === 'Escape') { e.preventDefault(); escMenu(); return; }
   if (e.target.tagName === 'INPUT') return;
@@ -3117,7 +3194,7 @@ addEventListener('keyup', e => { if (e.code === 'Space') spaceDown = false; });
 // ses düğmesi ve seviyesi (Ayarlar sayfasında; ana menüden ya da oyunda Esc menüsünden açılır)
 function renderSound() {
   const st = SFX.settings();
-  $('sSoundBtn').innerHTML = st.on ? IC('sesAcik') + ' Ses açık' : IC('sesKapali') + ' Ses kapalı';
+  $('sSoundBtn').innerHTML = st.on ? IC('sesAcik') + tx(' Ses açık', ' Sound on') : IC('sesKapali') + tx(' Ses kapalı', ' Sound off');
   $('sSoundVol').value = st.vol; $('sSoundVol').disabled = !st.on;
 }
 $('sSoundBtn').onclick = () => { SFX.set({on: !SFX.settings().on}); renderSound(); SFX.play('success'); };
@@ -3125,7 +3202,7 @@ $('sSoundVol').oninput = e => { SFX.set({vol: +e.target.value}); renderSound(); 
 $('sSoundVol').onchange = () => SFX.play('success');      // bırakınca örnek ses
 renderSound();
 // animasyon düğmesi (kalemle boyama + yırtılma); kapalıyken eski kısa renk parlaması kullanılır
-const renderAnim = () => { $('sAnimBtn').innerHTML = IC('animasyon') + (FX.on ? ' Animasyon açık' : ' Animasyon kapalı'); document.body.classList.toggle('noFx', !FX.on); };
+const renderAnim = () => { $('sAnimBtn').innerHTML = IC('animasyon') + (FX.on ? tx(' Animasyon açık', ' Animations on') : tx(' Animasyon kapalı', ' Animations off')); document.body.classList.toggle('noFx', !FX.on); };
 $('sAnimBtn').onclick = () => {
   FX.on = !FX.on; penFill = tearAnim = null;
   try { localStorage.setItem('toprak-anim', FX.on ? 'acik' : 'kapali'); } catch (e) {}
@@ -3136,7 +3213,7 @@ renderAnim();
 try { $('fast').checked = localStorage.getItem('toprak-hizli') === '1'; } catch (e) {}
 function renderFast() {
   const seg = $('sFastSeg'); seg.innerHTML = '';
-  for (const [v, t] of [[false, IC('hizNormal') + ' Normal'], [true, IC('hizHizli') + ' Hızlı']]) {
+  for (const [v, t] of [[false, IC('hizNormal') + ' Normal'], [true, IC('hizHizli') + tx(' Hızlı', ' Fast')]]) {
     const b = document.createElement('button'); b.innerHTML = t;
     if ($('fast').checked === v) b.classList.add('on');
     b.onclick = () => { $('fast').checked = v; $('fast').onchange(); };
@@ -3287,11 +3364,24 @@ const BOSSES = {
     npc: 4, map: 100, diff: 'zor', ring: .15, powers: ['yedek', 'kale'], allies: true, unlock: ['genis'],
     intro: 'Son İmparator tahtında; üç vasal bey ona kalkan oluyor. Onu yıkarsan dünya artık {K} adıyla anılacak.'},
 };
+// İngilizce: açıklama ve giriş (patron adları sefer adlarıyla birlikte çevrilecek)
+if (EN) Object.entries({
+  sazlik: ['Starts twice as big. When its banner falls, its whole army scatters: all its land is left unclaimed.',
+    'Every reed bed on the border is in the hands of a single lord. His army is large but scattered: bring down his banner and they all flee.'],
+  degirmen: ['The whole river that splits the map is his. Attacking his river squares is +2.',
+    "Every mill and every bridge on the river belongs to the Miller King. Whoever sets foot in the water meets his archers."],
+  ova: ['Rides out on a raid every 3 turns: that turn he attacks one extra time.',
+    "The khan of the plains raids here and there with his riders. You never know when or where he'll strike."],
+  demir: ['Attacks twice every turn (permanent Blitz), but has no other powers.',
+    'The Iron Legion never rests. Its commander attacks twice every turn; you must not give him room to breathe.'],
+  imparator: ['3 vassal lords are his allies. He has two banners (Spare Banner) and his capital is walled (Fortress).',
+    'The Last Emperor sits on his throne, shielded by three vassal lords. Bring him down and the world will be known by the name {K}.'],
+}).forEach(([k, [d, i]]) => Object.assign(BOSSES[k], {desc: d, intro: i}));
 // patron savaşları da birer senaryo: Hedef = patronun sancağını düşür
 for (const [k, b] of Object.entries(BOSSES))
-  SCMAP['boss_' + k] = {id: 'boss_' + k, name: b.name, goal: 'boss', boss: k, desc: `Patron savaşı: ${b.name}. ${b.desc}`, win: 0.6, turns: 35, terrain: b.terrain};
+  SCMAP['boss_' + k] = {id: 'boss_' + k, name: b.name, goal: 'boss', boss: k, desc: `${tx('Patron savaşı', 'Boss battle')}: ${b.name}. ${b.desc}`, win: 0.6, turns: 35, terrain: b.terrain};
 
-const LOSE_TEXT = '{K} geri çekildi. Ordular toparlanıp yeniden denemeli.';
+const LOSE_TEXT = tx('{K} geri çekildi. Ordular toparlanıp yeniden denemeli.', '{K} has withdrawn. The armies must regroup and try again.');
 // yıldızlar: hızlı kazandıkça çok (savaşın tur sınırına göre). Hayatta Kal'da sona kalan topraklara göre.
 function battleStars() {
   const sc = scenOf();
@@ -3361,7 +3451,41 @@ const ACH = [
 ];
 // başarım simgeleri: Claude Design ikonları (icons.js); kendi ikonu henüz yoksa ic'deki geçici ikon
 for (const a of ACH) { a.ic = ZS_ICONS.names.includes(a.id) ? a.id : a.ic || 'nisan'; a.icon = IC(a.ic); }
-const ACH_GROUPS = [['sefer', 'Sefer'], ['senaryo', 'Senaryolar'], ['zafer', 'Zafer'], ['koy', 'Köyler'], ['zar', 'Zar'], ['guc', 'Güçler'], ['genel', 'Genel']];
+// İngilizce: başarım adları ve açıklamaları (senaryo ve patron adları kendi tablolarından)
+const scWin = id => `Win the ${SCMAP[id].name} scenario on Normal or Hard.`;
+const ACH_EN = {
+  seferIlk: ['First Steps', 'Conquer 3 regions in the campaign.'], seferYari: ['Halfway There', 'Conquer half the regions in the campaign.'],
+  seferSon: ['Ruler of the World', () => `Finish the campaign: take ${REGMAP.taht.name} and defeat ${BOSSES.imparator.name}.`],
+  kusursuz: ['Flawless Ruler', 'Earn three stars in every region of the campaign.'],
+  inatci: ['Stubborn', 'In the campaign, conquer a region after losing there 3 times.'],
+  ilkZafer: ['First Victory', 'Win any game.'], yildirimHarekat: ['Lightning War', 'Win a game on a map of at least 100×100 before turn 10.'],
+  sonKale: ['Last Bastion', 'Win after your land dropped below 5%.'], tekBasina: ['Lone Wolf', 'Win by wiping every opponent off the map.'],
+  gucsuz: ['Powerless Hero', 'Win without any powers against powered opponents on Normal or Hard.'], zorYoldan: ['The Hard Way', 'Win a game on Hard.'],
+  takim: ['Team Spirit', 'Win in co-op mode.'], kader: ['Fate Smiled', "Bring down an opponent's banner with a critical 20."],
+  ustuste: ['Back to Back', 'Roll a 20 on two attacks in a row.'], karaKedi: ['Black Cat', 'Roll a 1 three times in one game.'],
+  kumarSansi: ["Gambler's Luck", 'Win an attack with a 10% chance or less.'], tutmayan: ['Cursed Dice', 'Lose 5 attacks in a row.'],
+  buyukLokma: ['Big Bite', 'Take 400 or more squares in a single attack.'], yarisi: ['Three Quarters', 'Take 75% of the land.'],
+  avci: ['Hunter', "Bring down an opponent's banner and destroy their realm."], kartopu: ['Snowball', 'Win 5 attacks in a row in one game.'],
+  usta: ['Master', 'Win at least one game with every power.'], karsilik: ['Payback', () => `Seize land with ${PW.karsi.name}.`],
+  kumarbazKral: ['Gambler King', () => `Double an attack with the ${PW.kumarbaz.name} power.`],
+  durdurulamaz: ['Unstoppable', () => `Win both of your attacks in the same ${PW.yildirim.name} turn.`],
+  mudavim: ['Regular', 'Play 10 games.'], gazi: ['Veteran', 'Play 50 games.'], devHarita: ['Giant Map', 'Finish a game on a 250×250 map.'],
+  patronSazlik: ['The Reeds Fall', () => `Defeat ${BOSSES.sazlik.name} in the campaign.`], patronDegirmen: ['Lord of the River', () => `Defeat ${BOSSES.degirmen.name} in the campaign.`],
+  patronOva: ["The Khan's End", () => `Defeat ${BOSSES.ova.name} in the campaign.`], patronDemir: ['Iron Broken', () => `Defeat ${BOSSES.demir.name} in the campaign.`],
+  curetkar: ['Audacious', "In the campaign, conquer a capital without taking any of that land's surrounding regions."],
+  ulkeFatihi: ['Conqueror of Lands', 'Conquer every region of one land in the campaign.'],
+  scKlasik: ['Old School', () => scWin('klasik')], scFetih: ['Overwhelming Force', () => scWin('fetih')], scTakimada: ['Lord of the Isles', () => scWin('takimada')],
+  scDag: ['Mountain Goat', () => scWin('dag')], scNehir: ['Bridgehead', () => scWin('nehir')], scOrman: ['Forest Path', () => scWin('orman')],
+  scKale: ['Keeper of the Fort', () => scWin('kale')], scHayatta: ['Last Breath', () => scWin('hayatta')], scAkin: ['Like the Wind', () => scWin('akin')],
+  scBas: ['Headhunter', () => scWin('bas')], scKardes: ['Sibling Rivalry', () => scWin('kardes')], scKitlik: ['Abundance', () => scWin('kitlik')],
+  senaryoUstasi: ['Scenario Master', 'Win every scenario at least once on Normal or Hard.'],
+  koyAgasi: ['Village Chief', 'Hold 6 villages at the same time in one game (your capital included).'],
+  seferberlik: ['Mobilisation', () => `Lower an attack's target number by 2 with ${PW.merkezi.name}.`],
+  halkDirenisi: ["People's Resistance", () => `Repel an attack on one of your villages protected by ${PW.milis.name}.`],
+};
+if (EN) for (const a of ACH) { const e = ACH_EN[a.id]; if (e) { a.name = e[0]; a.desc = typeof e[1] === 'function' ? e[1]() : e[1]; } }
+const ACH_GROUPS = tx([['sefer', 'Sefer'], ['senaryo', 'Senaryolar'], ['zafer', 'Zafer'], ['koy', 'Köyler'], ['zar', 'Zar'], ['guc', 'Güçler'], ['genel', 'Genel']],
+  [['sefer', 'Campaign'], ['senaryo', 'Scenarios'], ['zafer', 'Victory'], ['koy', 'Villages'], ['zar', 'Dice'], ['guc', 'Powers'], ['genel', 'General']]);
 // senaryo → başarımı
 const SCEN_ACH = {klasik: 'scKlasik', fetih: 'scFetih', takimada: 'scTakimada', dag: 'scDag', nehir: 'scNehir', orman: 'scOrman', kale: 'scKale',
   hayatta: 'scHayatta', akin: 'scAkin', bas: 'scBas', kardes: 'scKardes', kitlik: 'scKitlik'};
@@ -3410,7 +3534,9 @@ function checkStarUnlocks() {
 }
 const powerEarned = id => { const u = POWER_UNLOCK[id]; return !u || !!PROG.powOpen[id] || (u.ach != null && !!PROG.ach[u.ach]); };
 const powerOpen = id => cfg.chapter == null || powerEarned(id);
-const unlockHint = id => { const u = POWER_UNLOCK[id]; return u.stars ? `Seferde toplam ${u.stars} yıldız topla` : u.boss != null ? `Seferde ${REGIONS.find(R => R.boss && R.land === u.boss).name} bölgesini al (${BOSSES[LANDS[u.boss].boss].name})` : `Başarım: ${ACHMAP[u.ach].icon} ${ACHMAP[u.ach].name}`; };
+const unlockHint = id => { const u = POWER_UNLOCK[id]; return u.stars ? tx(`Seferde toplam ${u.stars} yıldız topla`, `Collect ${u.stars} stars in total in the campaign`)
+  : u.boss != null ? tx(`Seferde ${REGIONS.find(R => R.boss && R.land === u.boss).name} bölgesini al (${BOSSES[LANDS[u.boss].boss].name})`, `Take the ${REGIONS.find(R => R.boss && R.land === u.boss).name} region in the campaign (${BOSSES[LANDS[u.boss].boss].name})`)
+  : `${tx('Başarım', 'Achievement')}: ${ACHMAP[u.ach].icon} ${ACHMAP[u.ach].name}`; };
 const earnedCount = () => POWERS.filter(p => powerEarned(p.id)).length;
 
 function toast(html) {
@@ -3419,13 +3545,13 @@ function toast(html) {
   $('toasts').appendChild(t); setTimeout(() => t.remove(), 3900);
 }
 // başarımla açılan güç seferde açılır (serbest oyunda bütün güçler zaten açık); bildirim bunu açıkça söyler
-const toastPower = id => toast(`${IC('kilitAcik', 18)} Seferde yeni güç açıldı: <b>${PW[id].icon} ${PW[id].name}</b>`);
+const toastPower = id => toast(`${IC('kilitAcik', 18)} ${tx('Seferde yeni güç açıldı', 'New campaign power unlocked')}: <b>${PW[id].icon} ${PW[id].name}</b>`);
 
 function unlock(id) {
   if (PROG.ach[id] || !ACHMAP[id]) return;
   PROG.ach[id] = Date.now(); saveProg();
   const a = ACHMAP[id];
-  toast(`${IC('nisan', 18)} Başarım: <b>${a.icon} ${a.name}</b>`);
+  toast(`${IC('nisan', 18)} ${tx('Başarım', 'Achievement')}: <b>${a.icon} ${a.name}</b>`);
   SFX.play('crit', 0, .5);
   for (const [pid, u] of Object.entries(POWER_UNLOCK)) if (u.ach === id) setTimeout(() => toastPower(pid), 500);
 }
@@ -3486,21 +3612,21 @@ function statGame(win) {
   saveStats();
 }
 function renderStats() {
-  const S = STATS, pc = (a, b) => b ? `%${Math.round(a / b * 100)}` : '–', row = (k, v) => `<div class="stRow"><span>${k}</span><b>${v}</b></div>`;
+  const S = STATS, pc = (a, b) => b ? tx(`%${Math.round(a / b * 100)}`, `${Math.round(a / b * 100)}%`) : '–', row = (k, v) => `<div class="stRow"><span>${k}</span><b>${v}</b></div>`;
   const wl = o => o.g ? `${o.w}/${o.g} (${pc(o.w, o.g)})` : '–';
   $('statsBox').innerHTML = `<div class="stGrid">
-    <div class="stCol"><h4>Genel</h4>
-      ${row('Oynanan oyun', S.games)}${row('Kazanılan', `${S.wins} (${pc(S.wins, S.games)})`)}
-      ${row('Sefer', wl(S.camp))}${row('Serbest oyun', wl(S.free))}
-      ${row('Kolay', wl(S.diff.kolay))}${row('Normal', wl(S.diff.normal))}${row('Zor', wl(S.diff.zor))}
-      ${row('Galibiyet serisi', `${S.streak} (en uzun ${S.bestStreak})`)}${row('En hızlı zafer', S.fastest ? `${S.fastest}. tur` : '–')}</div>
-    <div class="stCol"><h4>Savaş</h4>
-      ${row('Saldırı', S.attacks)}${row('Başarılı', `${S.attOk} (${pc(S.attOk, S.attacks)})`)}
-      ${row('Ele geçirilen kare', S.cells.toLocaleString('tr-TR'))}${row('Tek saldırıda en çok', S.biggest ? `${S.biggest} kare` : '–')}
-      ${row('Düşürdüğün sancak', S.flagsTaken)}${row('Kaybettiğin sancak', S.flagsLost)}</div>
-    <div class="stCol"><h4>Zar</h4>
-      ${row('Atılan zar', S.rolls)}${row('Ortalama zar', S.rolls ? (S.rollSum / S.rolls).toFixed(2) : '–')}
-      ${row('Kritik 20', `${S.crit} (${pc(S.crit, S.rolls)})`)}${row('1 (felaket)', `${S.ones} (${pc(S.ones, S.rolls)})`)}</div>
+    <div class="stCol"><h4>${tx('Genel', 'General')}</h4>
+      ${row(tx('Oynanan oyun', 'Games played'), S.games)}${row(tx('Kazanılan', 'Won'), `${S.wins} (${pc(S.wins, S.games)})`)}
+      ${row(tx('Sefer', 'Campaign'), wl(S.camp))}${row(tx('Serbest oyun', 'Skirmish'), wl(S.free))}
+      ${row(tx('Kolay', 'Easy'), wl(S.diff.kolay))}${row('Normal', wl(S.diff.normal))}${row(tx('Zor', 'Hard'), wl(S.diff.zor))}
+      ${row(tx('Galibiyet serisi', 'Win streak'), tx(`${S.streak} (en uzun ${S.bestStreak})`, `${S.streak} (best ${S.bestStreak})`))}${row(tx('En hızlı zafer', 'Fastest victory'), S.fastest ? tx(`${S.fastest}. tur`, `turn ${S.fastest}`) : '–')}</div>
+    <div class="stCol"><h4>${tx('Savaş', 'War')}</h4>
+      ${row(tx('Saldırı', 'Attacks'), S.attacks)}${row(tx('Başarılı', 'Successful'), `${S.attOk} (${pc(S.attOk, S.attacks)})`)}
+      ${row(tx('Ele geçirilen kare', 'Squares captured'), S.cells.toLocaleString(tx('tr-TR', 'en-GB')))}${row(tx('Tek saldırıda en çok', 'Most in one attack'), S.biggest ? tx(`${S.biggest} kare`, `${S.biggest} squares`) : '–')}
+      ${row(tx('Düşürdüğün sancak', 'Banners taken'), S.flagsTaken)}${row(tx('Kaybettiğin sancak', 'Banners lost'), S.flagsLost)}</div>
+    <div class="stCol"><h4>${tx('Zar', 'Dice')}</h4>
+      ${row(tx('Atılan zar', 'Dice rolled'), S.rolls)}${row(tx('Ortalama zar', 'Average roll'), S.rolls ? (S.rollSum / S.rolls).toFixed(2) : '–')}
+      ${row(tx('Kritik 20', 'Critical 20s'), `${S.crit} (${pc(S.crit, S.rolls)})`)}${row(tx('1 (felaket)', '1s (disaster)'), `${S.ones} (${pc(S.ones, S.rolls)})`)}</div>
   </div>`;
 }
 // ---- verileri sıfırla ----
@@ -3511,10 +3637,10 @@ function resetCamp() {
 function resetAch() { Object.assign(PROG, {ach: {}, powWins: {}, games: 0, scenWins: {}}); saveProg(); }
 function resetStats() { STATS = newStats(); saveStats(); }
 const afterReset = msg => { renderCampSummary(); toast(msg); };
-$('rstCamp').onclick = async () => { if (await ask('Seferi sıfırla', 'Fetih haritasındaki ilerlemen ve başkent alarak kalıcı açtığın güçler silinir. Başarımlar ve istatistikler kalır.', 'Seferi sıfırla', 'Vazgeç')) { resetCamp(); afterReset('Sefer sıfırlandı.'); } };
-$('rstAch').onclick = async () => { if (await ask('Başarımları sıfırla', 'Bütün başarımlar silinir. Seferde başarımla açılan güçler (ör. Büyük Başlangıç, Kumarbaz) yeniden kilitlenir.', 'Başarımları sıfırla', 'Vazgeç')) { resetAch(); afterReset('Başarımlar sıfırlandı.'); } };
-$('rstStats').onclick = async () => { if (await ask('İstatistikleri sıfırla', 'Oyun, saldırı ve zar istatistiklerinin hepsi sıfırlanır.', 'İstatistikleri sıfırla', 'Vazgeç')) { resetStats(); afterReset('İstatistikler sıfırlandı.'); } };
-$('rstAll').onclick = async () => { if (await ask('Hepsini sıfırla', 'Sefer, başarımlar ve istatistikler tamamen silinir; oyun ilk kurulduğu gibi olur. Ayarların (ses, ekran) kalır.', 'Hepsini sıfırla', 'Vazgeç')) { resetCamp(); resetAch(); resetStats(); afterReset('Bütün veriler sıfırlandı.'); } };
+$('rstCamp').onclick = async () => { if (await ask(tx('Seferi sıfırla', 'Reset campaign'), tx('Fetih haritasındaki ilerlemen ve başkent alarak kalıcı açtığın güçler silinir. Başarımlar ve istatistikler kalır.', 'Your progress on the conquest map and the powers you permanently unlocked by taking capitals are deleted. Achievements and statistics are kept.'), tx('Seferi sıfırla', 'Reset campaign'), tx('Vazgeç', 'Cancel'))) { resetCamp(); afterReset(tx('Sefer sıfırlandı.', 'Campaign reset.')); } };
+$('rstAch').onclick = async () => { if (await ask(tx('Başarımları sıfırla', 'Reset achievements'), tx('Bütün başarımlar silinir. Seferde başarımla açılan güçler (ör. Büyük Başlangıç, Kumarbaz) yeniden kilitlenir.', `All achievements are deleted. Powers unlocked by achievements in the campaign (e.g. ${PW.buyuk.name}, ${PW.kumarbaz.name}) are locked again.`), tx('Başarımları sıfırla', 'Reset achievements'), tx('Vazgeç', 'Cancel'))) { resetAch(); afterReset(tx('Başarımlar sıfırlandı.', 'Achievements reset.')); } };
+$('rstStats').onclick = async () => { if (await ask(tx('İstatistikleri sıfırla', 'Reset statistics'), tx('Oyun, saldırı ve zar istatistiklerinin hepsi sıfırlanır.', 'All game, attack and dice statistics are reset.'), tx('İstatistikleri sıfırla', 'Reset statistics'), tx('Vazgeç', 'Cancel'))) { resetStats(); afterReset(tx('İstatistikler sıfırlandı.', 'Statistics reset.')); } };
+$('rstAll').onclick = async () => { if (await ask(tx('Hepsini sıfırla', 'Reset everything'), tx('Sefer, başarımlar ve istatistikler tamamen silinir; oyun ilk kurulduğu gibi olur. Ayarların (ses, ekran) kalır.', 'The campaign, achievements and statistics are deleted completely; the game is as good as new. Your settings (sound, display) are kept.'), tx('Hepsini sıfırla', 'Reset everything'), tx('Vazgeç', 'Cancel'))) { resetCamp(); resetAch(); resetStats(); afterReset(tx('Bütün veriler sıfırlandı.', 'All data reset.')); } };
 
 // oyun bitti: sayaçlar, başarımlar, sefer ilerlemesi ve oyun sonu ekranı
 function onGameEnd(win) {
@@ -3565,14 +3691,14 @@ function onGameEnd(win) {
   // oyun sonu penceresi: seferde hikâye, yıldızlar ve sefer düğmeleri
   $('endStory').classList.toggle('hidden', !inCamp);
   $('endStars').classList.toggle('hidden', !(inCamp && win));
-  if (inCamp) $('endStory').innerHTML = kText(win ? `Zafer! ${R.name} artık {K} toprağı.`
-      + (R.id === 'taht' ? '<br><b>Dünya artık tek bir adla anılıyor: {K}. Sefer tamamlandı!</b>' : '')
-    : LOSE_TEXT + '<br><small>Bölge düşmanda kaldı. İstediğin zaman yeni bir haritada tekrar deneyebilirsin.</small>');
+  if (inCamp) $('endStory').innerHTML = kText(win ? tx(`Zafer! ${R.name} artık {K} toprağı.`, `Victory! ${R.name} now belongs to {K}.`)
+      + (R.id === 'taht' ? tx('<br><b>Dünya artık tek bir adla anılıyor: {K}. Sefer tamamlandı!</b>', '<br><b>The world now goes by a single name: {K}. The campaign is complete!</b>') : '')
+    : LOSE_TEXT + tx('<br><small>Bölge düşmanda kaldı. İstediğin zaman yeni bir haritada tekrar deneyebilirsin.</small>', '<br><small>The region stays in enemy hands. You can try again on a new map whenever you like.</small>'));
   if (inCamp && win) $('endStars').innerHTML = starStr(stars, 34);
   $('nextChBtn').classList.toggle('hidden', !(inCamp && win));
-  $('nextChBtn').innerHTML = IC('sefer', 20) + ' Fetih haritası ▶';
+  $('nextChBtn').innerHTML = IC('sefer', 20) + tx(' Fetih haritası ▶', ' Conquest map ▶');
   $('retryBtn').classList.toggle('hidden', !(inCamp && !win));
-  $('retryBtn').textContent = '↻ Tekrar dene';
+  $('retryBtn').textContent = tx('↻ Tekrar dene', '↻ Try again');
   $('campBackBtn').classList.toggle('hidden', !inCamp || win);
   $('againBtn').classList.toggle('hidden', inCamp);
 }
@@ -3580,11 +3706,11 @@ function onGameEnd(win) {
 // ---- sefer ekranları ----
 const hideAll = () => ['menu', 'howto', 'settings', 'setup', 'picks', 'handoff', 'endModal', 'camp', 'world', 'xfer', 'achv', 'pause'].forEach(id => $(id).classList.add('hidden'));
 function renderCampSummary() {
-  $('campSummary').textContent = `${achCount()}/${ACH.length} kazanıldı`;
+  $('campSummary').textContent = tx(`${achCount()}/${ACH.length} kazanıldı`, `${achCount()}/${ACH.length} earned`);
 }
-const DIFF_LABEL = {kolay: IC('zorKolay') + ' Kolay', normal: IC('zorNormal') + ' Normal', zor: IC('zorZor') + ' Zor'};
+const DIFF_LABEL = {kolay: IC('zorKolay') + tx(' Kolay', ' Easy'), normal: IC('zorNormal') + ' Normal', zor: IC('zorZor') + tx(' Zor', ' Hard')};
 const shuffled = arr => { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-const kText = s => s.replace(/\{K\}/g, `<b>${esc(PROG.realm || 'Krallığım')}</b>`);
+const kText = s => s.replace(/\{K\}/g, `<b>${esc(PROG.realm || tx('Krallığım', 'My Kingdom'))}</b>`);
 // senaryoların haritadaki simgesi
 const SCEN_IC = {klasik: 'durakSavas', fetih: 'fetih', takimada: 'arDeniz', dag: 'arDag', nehir: 'arAkarsu', orman: 'arOrman', kale: 'kale',
   hayatta: 'sonKale', akin: 'yildirimHarekat', bas: 'avci', kardes: 'muttefik', kitlik: 'koy'};
@@ -3972,12 +4098,13 @@ function setupRegion(id) {
 }
 function preGoal() {
   const s = scenOf();
-  if (s.goal === 'boss') return `${IC('durakPatron', 18)} ${BOSSES[s.boss].name} sancağını düşür`;
-  if (s.goal === 'bas') return IC('avci', 18) + ' İşaretli rakibin sancağını <b>sen</b> düşür';
-  if (s.goal === 'kale') return `${IC('kale', 18)} Kaleyi ele geçir ve ${KALE_HOLD} tur elinde tut`;
-  if (s.goal === 'hayatta') return `${cfg.turns} tur boyunca ayakta kal`;
-  if (cfg.win === 'fetih') return 'Bütün rakipleri yık';
-  return `Karaların ${yuzde(cfg.win * 100, 'n')} al` + (s.id === 'akin' ? ` ya da ${cfg.turns} tur sonunda en büyük ol` : '');
+  if (s.goal === 'boss') return `${IC('durakPatron', 18)} ` + tx(`${BOSSES[s.boss].name} sancağını düşür`, `Bring down ${BOSSES[s.boss].name}'s banner`);
+  if (s.goal === 'bas') return IC('avci', 18) + tx(' İşaretli rakibin sancağını <b>sen</b> düşür', " Bring down the marked opponent's banner <b>yourself</b>");
+  if (s.goal === 'kale') return `${IC('kale', 18)} ` + tx(`Kaleyi ele geçir ve ${KALE_HOLD} tur elinde tut`, `Capture the fort and hold it for ${KALE_HOLD} turns`);
+  if (s.goal === 'hayatta') return tx(`${cfg.turns} tur boyunca ayakta kal`, `Survive for ${cfg.turns} turns`);
+  if (cfg.win === 'fetih') return tx('Bütün rakipleri yık', 'Destroy every opponent');
+  return tx(`Karaların ${yuzde(cfg.win * 100, 'n')} al` + (s.id === 'akin' ? ` ya da ${cfg.turns} tur sonunda en büyük ol` : ''),
+    `Take ${Math.round(cfg.win * 100)}% of the land` + (s.id === 'akin' ? ` or be the largest after ${cfg.turns} turns` : ''));
 }
 // savaşa gir: açık güç varsa önce güç seçimi (en fazla 2), yoksa doğrudan savaş
 function startRegion(id) {
@@ -3987,33 +4114,38 @@ function startRegion(id) {
 }
 function renderRegPanel() {
   const r = PROG.run, R = REGMAP[wSel];
-  if (!R) { $('regPanel').innerHTML = '<p class="note">Haritada bir bölgeye tıkla.</p>'; return; }
+  if (!R) { $('regPanel').innerHTML = `<p class="note">${tx('Haritada bir bölgeye tıkla.', 'Click a region on the map.')}</p>`; return; }
   const L = LANDS[R.land], own = R.id in r.owned, can = !own && canAttack(r, R.id);
   let h = `<div class="rpLand">${L.name}</div><h3>${IC(regIc(R), 24)} ${R.name}</h3>`;
   if (R.home) {
-    $('regPanel').innerHTML = h + `<p class="story">${kText(R.intro)}</p><p class="note">Başlangıç bölgen. Kırmızı çerçeveli komşu bölgelere saldırabilirsin.</p>`;
+    $('regPanel').innerHTML = h + `<p class="story">${kText(R.intro)}</p><p class="note">${tx('Başlangıç bölgen. Kırmızı çerçeveli komşu bölgelere saldırabilirsin.', 'Your home region. You can attack the neighbouring regions outlined in red.')}</p>`;
     return;
   }
   setupRegion(R.id);   // hedef, rakip ve harita bilgileri bu bölgenin savaşından
   const sc = scenOf(), B = R.boss ? BOSSES[L.boss] : null, [s3, s2] = starLimits();
   h += `<p class="story">${kText(B ? B.intro : R.intro)}</p>`;
-  h += `<div class="goalBig">Hedef: ${preGoal()}</div>`;
-  h += `<p class="note">${B ? `${IC('durakPatron', 16)} Patron: <b>${B.name}</b>. ${B.desc}` : `${IC(regIc(R), 16)} Senaryo: <b>${sc.name}</b>. ${sc.desc}`}</p>`;
-  h += `<p class="note">${cfg.npc} rakip · ${cfg.map}×${cfg.map} harita · ${DIFF_LABEL[cfg.diff]} · ${cfg.turns} tur${cfg.npcPowers ? ' · rakipler güçlü' : ''}<br>`
-    + (sc.stars ? `${starStr(3, 14)} savaş sonunda karaların ${yuzde(sc.stars[0] * 100)} · ${starStr(2, 14)} ${yuzde(sc.stars[1] * 100)} · ${starStr(1, 14)} ${sc.star1}`
-      : `${starStr(3, 14)} ${s3}. tura kadar · ${starStr(2, 14)} ${s2}. tura kadar · ${starStr(1, 14)} sonrası`) + '</p>';
+  h += `<div class="goalBig">${tx('Hedef', 'Goal')}: ${preGoal()}</div>`;
+  h += `<p class="note">${B ? `${IC('durakPatron', 16)} ${tx('Patron', 'Boss')}: <b>${B.name}</b>. ${B.desc}` : `${IC(regIc(R), 16)} ${tx('Senaryo', 'Scenario')}: <b>${sc.name}</b>. ${sc.desc}`}</p>`;
+  h += `<p class="note">` + tx(`${cfg.npc} rakip · ${cfg.map}×${cfg.map} harita · ${DIFF_LABEL[cfg.diff]} · ${cfg.turns} tur${cfg.npcPowers ? ' · rakipler güçlü' : ''}`,
+      `${cfg.npc} ${cfg.npc === 1 ? 'opponent' : 'opponents'} · ${cfg.map}×${cfg.map} map · ${DIFF_LABEL[cfg.diff]} · ${cfg.turns} turns${cfg.npcPowers ? ' · opponents have powers' : ''}`) + '<br>'
+    + (sc.stars ? tx(`${starStr(3, 14)} savaş sonunda karaların ${yuzde(sc.stars[0] * 100)} · ${starStr(2, 14)} ${yuzde(sc.stars[1] * 100)} · ${starStr(1, 14)} ${sc.star1}`,
+        `${starStr(3, 14)} ${Math.round(sc.stars[0] * 100)}% of the land at the end · ${starStr(2, 14)} ${Math.round(sc.stars[1] * 100)}% · ${starStr(1, 14)} ${sc.star1}`)
+      : tx(`${starStr(3, 14)} ${s3}. tura kadar · ${starStr(2, 14)} ${s2}. tura kadar · ${starStr(1, 14)} sonrası`,
+        `${starStr(3, 14)} by turn ${s3} · ${starStr(2, 14)} by turn ${s2} · ${starStr(1, 14)} later`)) + '</p>';
   if (B) {
     const sg = siegeOf(R), free = 1 - sg.n / sg.of;
-    h += `<div class="siege"><b>${IC('kale', 18)} Kuşatma: ${sg.n}/${sg.of}</b> · ${L.name} ülkesinin çevre bölgelerinden ${sg.n} tanesi senin.<br>`
-      + (sg.n >= sg.of ? 'Başkent tamamen kuşatıldı: patron en zayıf hâlinde.'
-        : `Patron ${free > .5 ? 'çok büyük' : 'biraz büyük'} başlıyor${sg.n * 2 < sg.of ? ' ve zorluk bir kademe yüksek' : ''}. Çevre bölgeleri aldıkça zayıflar.`) + '</div>';
-    h += `<p class="note">${IC('kilitAcik', 16)} Yenince kalıcı olarak açılan güçler: <b>${B.unlock.map(id => PW[id].name).join(', ')}</b>.</p>`;
+    h += `<div class="siege"><b>${IC('kale', 18)} ${tx('Kuşatma', 'Siege')}: ${sg.n}/${sg.of}</b> · ` + tx(`${L.name} ülkesinin çevre bölgelerinden ${sg.n} tanesi senin.`, `You hold ${sg.n} of the surrounding regions of ${L.name}.`) + '<br>'
+      + (sg.n >= sg.of ? tx('Başkent tamamen kuşatıldı: patron en zayıf hâlinde.', 'The capital is fully besieged: the boss is at its weakest.')
+        : tx(`Patron ${free > .5 ? 'çok büyük' : 'biraz büyük'} başlıyor${sg.n * 2 < sg.of ? ' ve zorluk bir kademe yüksek' : ''}. Çevre bölgeleri aldıkça zayıflar.`,
+          `The boss starts ${free > .5 ? 'very big' : 'somewhat big'}${sg.n * 2 < sg.of ? ' and the difficulty is one level higher' : ''}. It weakens as you take the surrounding regions.`)) + '</div>';
+    h += `<p class="note">${IC('kilitAcik', 16)} ${tx('Yenince kalıcı olarak açılan güçler', 'Powers permanently unlocked by winning')}: <b>${B.unlock.map(id => PW[id].name).join(', ')}</b>.</p>`;
   }
-  if (own) h += `<p class="note">Fethedildi · en iyi sonuç ${starStr(r.owned[R.id], 16)}</p>`;
-  if (r.fails[R.id] && !own) h += `<p class="note">Bu bölgede ${r.fails[R.id]} kez yenildin. Her denemede savaş haritası yeniden ve farklı üretilir.</p>`;
-  h += `<div class="btns">` + (can ? `<button id="regGo">${IC('durakSavas', 20)} Saldır</button>`
-    : own ? `<button class="sec" id="regGo">↻ Tekrar oyna</button>`
-    : `<button disabled>${IC('kilit', 18)} Önce komşu bir bölgeyi al</button>`) + '</div>';
+  if (own) h += `<p class="note">${tx('Fethedildi · en iyi sonuç', 'Conquered · best result')} ${starStr(r.owned[R.id], 16)}</p>`;
+  if (r.fails[R.id] && !own) h += `<p class="note">${tx(`Bu bölgede ${r.fails[R.id]} kez yenildin. Her denemede savaş haritası yeniden ve farklı üretilir.`,
+    `You have lost here ${r.fails[R.id] === 1 ? 'once' : r.fails[R.id] + ' times'}. Every attempt generates a new, different battle map.`)}</p>`;
+  h += `<div class="btns">` + (can ? `<button id="regGo">${IC('durakSavas', 20)} ${tx('Saldır', 'Attack')}</button>`
+    : own ? `<button class="sec" id="regGo">${tx('↻ Tekrar oyna', '↻ Play again')}</button>`
+    : `<button disabled>${IC('kilit', 18)} ${tx('Önce komşu bir bölgeyi al', 'Take a neighbouring region first')}</button>`) + '</div>';
   $('regPanel').innerHTML = h;
   if ($('regGo')) $('regGo').onclick = () => { SFX.play('click'); startRegion(R.id); };
 }
@@ -4023,7 +4155,7 @@ function openCamp() {
   const r = PROG.run;
   if (!r) {   // yeni sefer: krallığa ad ver
     $('camp').classList.remove('hidden');
-    $('campTitle').innerHTML = IC('sefer', 34) + ' Yeni Sefer';
+    $('campTitle').innerHTML = IC('sefer', 34) + tx(' Yeni Sefer', ' New Campaign');
     $('realmInput').value = ''; setTimeout(() => $('realmInput').focus(), 50);
     return;
   }
@@ -4031,8 +4163,9 @@ function openCamp() {
   buildWorld();
   checkStarUnlocks();   // eşiği önceden geçmiş seferler için
   $('wTitle').innerHTML = `${IC('sefer', 30)} ${esc(PROG.realm)}`;
-  $('campInfo').innerHTML = `${ownedN(r)}/${BATTLES.length} bölge fethedildi · ${runStars(r)}/${BATTLES.length * 3} ${IC('yildiz', 16)}<br>${IC('kilitAcik', 16)} ${earnedCount()}/${POWERS.length} güç açık`
-    + (r.done ? `<br><b>${IC('zafer', 16)} Sefer tamamlandı!</b>` : '');
+  $('campInfo').innerHTML = tx(`${ownedN(r)}/${BATTLES.length} bölge fethedildi`, `${ownedN(r)}/${BATTLES.length} regions conquered`) + ` · ${runStars(r)}/${BATTLES.length * 3} ${IC('yildiz', 16)}<br>${IC('kilitAcik', 16)} `
+    + tx(`${earnedCount()}/${POWERS.length} güç açık`, `${earnedCount()}/${POWERS.length} powers unlocked`)
+    + (r.done ? `<br><b>${IC('zafer', 16)} ${tx('Sefer tamamlandı!', 'Campaign complete!')}</b>` : '');
   const first = !wSel || !REGMAP[wSel];
   if (first) wSel = (BATTLES.find(R => canAttack(r, R.id)) || REGIONS[0]).id;
   renderRegPanel();
@@ -4048,7 +4181,7 @@ $('pickBack').onclick = () => {
 };
 $('realmOk').onclick = () => {
   const name = $('realmInput').value.replace(/[<>&"']/g, '').trim();
-  if (!name) { $('realmInput').placeholder = 'Önce bir ad yaz!'; $('realmInput').focus(); return; }
+  if (!name) { $('realmInput').placeholder = tx('Önce bir ad yaz!', 'Type a name first!'); $('realmInput').focus(); return; }
   newRun(name); wSel = null; openCamp();
 };
 $('realmInput').addEventListener('keydown', e => { if (e.key === 'Enter') $('realmOk').click(); });
@@ -4062,7 +4195,7 @@ $('xferBack').onclick = openCamp;
 $('xferCopy').onclick = () => {
   const box = $('xferOut'); box.select();
   (navigator.clipboard ? navigator.clipboard.writeText(box.value) : Promise.reject()).catch(() => document.execCommand('copy'));
-  $('xferMsg').innerHTML = IC('kopyala', 16) + ' Kopyalandı. Diğer bilgisayarda bu kodu yapıştır.';
+  $('xferMsg').innerHTML = IC('kopyala', 16) + tx(' Kopyalandı. Diğer bilgisayarda bu kodu yapıştır.', ' Copied. Paste this code on the other computer.');
 };
 $('xferLoad').onclick = () => {
   try {
@@ -4071,7 +4204,7 @@ $('xferLoad').onclick = () => {
     const inc = JSON.parse(decodeURIComponent(escape(atob(raw.slice(4)))));
     // birleştir: hiçbir şey kaybolmaz, her alanda en iyisi alınır
     // süren sefer: bu bilgisayarda sefer yoksa gelen sefer alınır
-    if (!PROG.run && inc.run && inc.run.v === 2 && inc.run.owned) { PROG.run = inc.run; PROG.realm = String(inc.realm || 'Krallığım').replace(/[<>&"']/g, '').slice(0, 28); }
+    if (!PROG.run && inc.run && inc.run.v === 2 && inc.run.owned) { PROG.run = inc.run; PROG.realm = String(inc.realm || tx('Krallığım', 'My Kingdom')).replace(/[<>&"']/g, '').slice(0, 28); }
     // eski sürümün kodu: bitirilen bölümlerin açtığı güçler
     const OLD = ['fatih', 'kale', 'ikinci', 'akinci', 'yildirim', 'cift', 'karsi', 'keskin', 'genis'];
     for (const k of Object.keys(inc.stars || {})) if (OLD[+k]) PROG.powOpen[OLD[+k]] = 1;
@@ -4082,20 +4215,21 @@ $('xferLoad').onclick = () => {
     PROG.games = Math.max(PROG.games || 0, +inc.games || 0);
     PROG.runsDone = Math.max(PROG.runsDone || 0, +inc.runsDone || 0);
     saveProg();
-    $('xferMsg').innerHTML = `${IC('basarili', 16)} Birleştirildi: ${achCount()} başarım, ${earnedCount()}/${POWERS.length} açık güç` + (PROG.run ? `, sefer: ${ownedN(PROG.run)} bölge.` : '.');
-  } catch (e) { $('xferMsg').innerHTML = IC('uyari', 16) + ' Kod okunamadı. Tamamını kopyaladığından emin ol ("TS1:" ile başlamalı).'; }
+    $('xferMsg').innerHTML = `${IC('basarili', 16)} ` + tx(`Birleştirildi: ${achCount()} başarım, ${earnedCount()}/${POWERS.length} açık güç` + (PROG.run ? `, sefer: ${ownedN(PROG.run)} bölge.` : '.'),
+      `Merged: ${achCount()} achievements, ${earnedCount()}/${POWERS.length} powers unlocked` + (PROG.run ? `, campaign: ${ownedN(PROG.run)} regions.` : '.'));
+  } catch (e) { $('xferMsg').innerHTML = IC('uyari', 16) + tx(' Kod okunamadı. Tamamını kopyaladığından emin ol ("TS1:" ile başlamalı).', " Couldn't read the code. Make sure you copied all of it (it should start with \"TS1:\")."); }
 };
 
 // ---- başarımlar sayfası ----
 $('achOpen').onclick = () => {
   hideAll(); $('achv').classList.remove('hidden'); renderStats();
-  $('statsTitle').innerHTML = `${IC('istatistik', 30)} İstatistikler`;
-  $('achTitle').innerHTML = `${IC('basarimlar', 30)} Başarımlar · ${achCount()}/${ACH.length}`;
+  $('statsTitle').innerHTML = `${IC('istatistik', 30)} ${tx('İstatistikler', 'Statistics')}`;
+  $('achTitle').innerHTML = `${IC('basarimlar', 30)} ${tx('Başarımlar', 'Achievements')} · ${achCount()}/${ACH.length}`;
   const card = a => {
     const t = PROG.ach[a.id], rw = Object.entries(POWER_UNLOCK).find(([, u]) => u.ach === a.id);
     return `<div class="ach ${t ? 'on' : 'off'}"><div class="ic">${IC(a.ic, 34)}</div><div><div class="t">${a.name}</div><div class="d">${a.desc}</div>
-      ${rw ? `<div class="d">${IC('kilitAcik', 14)} Seferde ${PW[rw[0]].icon} ${PW[rw[0]].name} gücünü açar</div>` : ''}
-      ${t ? `<div class="dt">✔ ${new Date(t).toLocaleDateString('tr-TR')}</div>` : ''}</div></div>`;
+      ${rw ? `<div class="d">${IC('kilitAcik', 14)} ${tx(`Seferde ${PW[rw[0]].icon} ${PW[rw[0]].name} gücünü açar`, `Unlocks the ${PW[rw[0]].icon} ${PW[rw[0]].name} power in the campaign`)}</div>` : ''}
+      ${t ? `<div class="dt">✔ ${new Date(t).toLocaleDateString(tx('tr-TR', 'en-GB'))}</div>` : ''}</div></div>`;
   };
   $('achList').innerHTML = ACH_GROUPS.map(([g, name]) => {
     const list = ACH.filter(a => a.g === g), n = list.filter(a => PROG.ach[a.id]).length;
@@ -4128,14 +4262,15 @@ function showMenu(silent) {
   const s = loadSave(), campSave = s && s.cfg && s.cfg.chapter != null, freeSave = s && !campSave;
   const r = PROG.run;
   $('mCont').disabled = !r;
-  $('mContInfo').textContent = !r ? 'Henüz bir sefer yok'
-    : campSave && REGMAP[s.cfg.chapter] ? `${PROG.realm} · ${REGMAP[s.cfg.chapter].name} savaşı, ${s.turn}. turdan devam`
-    : `${PROG.realm} · ${ownedN(r)}/${BATTLES.length} bölge · ${runStars(r)} ★` + (r.done ? ' · tamamlandı' : '');
-  $('mFreeInfo').textContent = freeSave ? `Kayıtlı oyun var (tur ${s.turn})` : '';
+  $('mContInfo').textContent = !r ? tx('Henüz bir sefer yok', 'No campaign yet')
+    : campSave && REGMAP[s.cfg.chapter] ? tx(`${PROG.realm} · ${REGMAP[s.cfg.chapter].name} savaşı, ${s.turn}. turdan devam`, `${PROG.realm} · battle of ${REGMAP[s.cfg.chapter].name}, continue from turn ${s.turn}`)
+    : tx(`${PROG.realm} · ${ownedN(r)}/${BATTLES.length} bölge · ${runStars(r)} ★` + (r.done ? ' · tamamlandı' : ''), `${PROG.realm} · ${ownedN(r)}/${BATTLES.length} regions · ${runStars(r)} ★` + (r.done ? ' · complete' : ''));
+  $('mFreeInfo').textContent = freeSave ? tx(`Kayıtlı oyun var (tur ${s.turn})`, `Saved game (turn ${s.turn})`) : '';
   renderCampSummary();
 }
 $('mNew').onclick = async () => {
-  if (PROG.run && !PROG.run.done && !await ask(IC('sefer', 26) + ' Yeni sefer', `<b>${esc(PROG.realm)}</b> seferi silinir, yeni bir krallıkla baştan başlarsın. Başkent alarak kalıcı açtığın güçler ve başarımlar kalır.`, 'Yeni sefere başla', 'Vazgeç')) return;
+  if (PROG.run && !PROG.run.done && !await ask(IC('sefer', 26) + tx(' Yeni sefer', ' New campaign'), tx(`<b>${esc(PROG.realm)}</b> seferi silinir, yeni bir krallıkla baştan başlarsın. Başkent alarak kalıcı açtığın güçler ve başarımlar kalır.`,
+    `The <b>${esc(PROG.realm)}</b> campaign is deleted and you start over with a new kingdom. Powers you permanently unlocked by taking capitals, and your achievements, are kept.`), tx('Yeni sefere başla', 'Start a new campaign'), tx('Vazgeç', 'Cancel'))) return;
   const s = loadSave(); if (s && s.cfg && s.cfg.chapter != null) clearSave();   // yarım kalan sefer savaşı da gider
   PROG.run = null; PROG.realm = ''; saveProg(); wSel = null; openCamp();
 };
@@ -4151,10 +4286,10 @@ function openSub(id, ingame) {
   if (id === 'settings') {
     renderSound(); renderAnim(); renderFast(); renderFull(); renderUi();
     // oyun sırasında (Esc menüsünden) veriler sıfırlanamaz: devam eden oyunun ilerlemesi karışmasın
-    ['rstCamp', 'rstAch', 'rstStats', 'rstAll'].forEach(b => { $(b).disabled = ingame; $(b).title = ingame ? 'Oyun sırasında sıfırlanamaz; ana menüden aç.' : ''; });
+    ['rstCamp', 'rstAch', 'rstStats', 'rstAll'].forEach(b => { $(b).disabled = ingame; $(b).title = ingame ? tx('Oyun sırasında sıfırlanamaz; ana menüden aç.', "Can't reset during a game; open it from the main menu.") : ''; });
   }
   $(id).classList.toggle('ingame', ingame);
-  $(id === 'settings' ? 'setBack' : 'howBack').textContent = ingame ? '◀ Oyun Menüsü' : '◀ Ana Menü';
+  $(id === 'settings' ? 'setBack' : 'howBack').textContent = ingame ? tx('◀ Oyun Menüsü', '◀ Game Menu') : tx('◀ Ana Menü', '◀ Main Menu');
   $(id).classList.remove('hidden');
 }
 const subBack = id => () => { if ($(id).classList.contains('ingame')) { SFX.play('click'); openPause(); } else showMenu(); };
@@ -4165,16 +4300,16 @@ $('setBack').onclick = subBack('settings');
 $('setupBack').onclick = showMenu;
 document.fonts.ready.then(() => { try { requestDraw(); } catch (e) {} });
 $('mExit').onclick = async () => {
-  if (!await ask(IC('cikis', 26) + ' Çıkış', 'Oyundan çıkmak istiyor musun? İlerlemen kayıtlı.', 'Çık', 'Vazgeç')) return;
+  if (!await ask(IC('cikis', 26) + tx(' Çıkış', ' Quit'), tx('Oyundan çıkmak istiyor musun? İlerlemen kayıtlı.', 'Do you want to quit the game? Your progress is saved.'), tx('Çık', 'Quit'), tx('Vazgeç', 'Cancel'))) return;
   window.close();   // masaüstü sürümünde oyun kapanır; normal tarayıcı sekmesi izin vermezse uyarı çıkar
-  if (!DESK) setTimeout(() => toast('Pencereyi sağ üstteki <b>✕</b> ile kapatabilirsin. Oyunun kayıtlı.'), 300);
+  if (!DESK) setTimeout(() => toast(tx('Pencereyi sağ üstteki <b>✕</b> ile kapatabilirsin. Oyunun kayıtlı.', 'You can close the window with the <b>✕</b> at the top right. Your game is saved.')), 300);
 };
 
 $('toPicks').onclick = () => { cfg.chapter = null; openPicks(); };   // serbest oyun
 
 // ---- oyun içi onay penceresi: ask(başlık, metin, evet, hayır) → Promise<true/false> ----
 let askDone = null;
-function ask(title, html, yes = 'Tamam', no = 'Vazgeç') {
+function ask(title, html, yes = tx('Tamam', 'OK'), no = tx('Vazgeç', 'Cancel')) {
   if (askDone) askDone(false);
   $('askTitle').innerHTML = title; $('askText').innerHTML = html;
   $('askYes').textContent = yes; $('askNo').textContent = no;
@@ -4204,7 +4339,7 @@ function goFull() {
 }
 function renderFull() {
   const seg = $('sFullSeg'); seg.innerHTML = '';
-  for (const [v, t] of [[false, IC('pencere') + ' Pencere'], [true, IC('tamEkran') + ' Tam ekran']]) {
+  for (const [v, t] of [[false, IC('pencere') + tx(' Pencere', ' Window')], [true, IC('tamEkran') + tx(' Tam ekran', ' Fullscreen')]]) {
     const b = document.createElement('button'); b.innerHTML = t;
     if (wantFull === v) b.classList.add('on');
     b.onclick = () => { setFull(v); renderFull(); };
@@ -4223,7 +4358,7 @@ function applyUi() {
 }
 function renderUi() {
   const seg = $('sUiSeg'); seg.innerHTML = '';
-  for (const [v, t] of [['auto', IC('otomatik') + ' Otomatik'], ['1', '%100'], ['1.25', '%125'], ['1.5', '%150'], ['1.75', '%175']]) {
+  for (const [v, t] of [['auto', IC('otomatik') + tx(' Otomatik', ' Auto')], ...['1', '1.25', '1.5', '1.75'].map(k => [k, tx('%' + k * 100, k * 100 + '%')])]) {
     const b = document.createElement('button'); b.innerHTML = t;
     if (uiPref === v) b.classList.add('on');
     b.onclick = () => { uiPref = v; try { localStorage.setItem(UI_KEY, v); } catch (e) {} applyUi(); renderUi(); };
@@ -4232,6 +4367,14 @@ function renderUi() {
 }
 addEventListener('resize', applyUi);
 applyUi(); renderUi();
+// dil seçimi: değişince sayfa yeniden yüklenir (oyun her turda kayıtlı)
+{ const seg = $('sLangSeg');
+  for (const [v, t] of [['tr', 'Türkçe'], ['en', 'English']]) {
+    const b = document.createElement('button'); b.textContent = t;
+    if (LANG === v) b.classList.add('on');
+    b.onclick = () => { if (LANG !== v) setLang(v); };
+    seg.appendChild(b);
+  } }
 // tam ekran tercihi: tarayıcılar ancak bir tıklamayla izin verir, o yüzden ilk tıklamada geçilir
 if (!DESK) addEventListener('pointerdown', () => { if (wantFull && !isFull()) goFull(); }, true);
 // Esc ile tam ekrandan çıkılınca tercih de güncellensin
@@ -4258,7 +4401,7 @@ const inGame = () => players.length > 0 && !halted && $('menu').classList.contai
 function openPause() {
   hideTip();
   hideAll(); paused = true;
-  $('pMenuInfo').textContent = over ? '' : 'Oyun bu sıranın başından kayıtlı';
+  $('pMenuInfo').textContent = over ? '' : tx('Oyun bu sıranın başından kayıtlı', 'Saved from the start of this turn');
   $('pause').classList.remove('hidden');
 }
 function closePause() {
@@ -4280,7 +4423,8 @@ $('pResume').onclick = () => { SFX.play('click'); closePause(); };
 $('pSet').onclick = () => { SFX.play('click'); openSub('settings', true); };
 $('pHow').onclick = () => { SFX.play('click'); openSub('howto', true); };
 $('pMenu').onclick = async () => {
-  if (!over && !await ask(IC('baskent', 26) + ' Ana menü', 'Ana menüye dönülsün mü? Oyun bu sıranın başından kayıtlı, sonra devam edebilirsin.', 'Ana menüye dön', 'Oyuna devam')) return;
+  if (!over && !await ask(IC('baskent', 26) + tx(' Ana menü', ' Main menu'), tx('Ana menüye dönülsün mü? Oyun bu sıranın başından kayıtlı, sonra devam edebilirsin.', 'Return to the main menu? The game is saved from the start of this turn; you can continue later.'),
+    tx('Ana menüye dön', 'Main menu'), tx('Oyuna devam', 'Keep playing'))) return;
   paused = false; npcWaiting = false; showMenu();
 };
 document.querySelectorAll('#pause i[data-ic]').forEach(el => { el.innerHTML = ZS_ICONS.svg(el.dataset.ic, ZS_ICONS.palettes.tas, el.closest('.sec') ? 24 : 28); });
@@ -4293,13 +4437,13 @@ function tipHtml(spec) {
   const ids = kind === 'g' ? [one] : p.powers;
   const cdTxt = id => {
     if (!['ikinci', 'cift', 'yildirim'].includes(id) || !p.ready) return '';
-    return ready(p, id) ? '<div class="cd" style="color:var(--ok)">Hazır</div>' : `<div class="cd">${p.ready[id] - turn} tur sonra hazır</div>`;
+    return ready(p, id) ? `<div class="cd" style="color:var(--ok)">${tx('Hazır', 'Ready')}</div>` : `<div class="cd">${tx(`${p.ready[id] - turn} tur sonra hazır`, `Ready in ${p.ready[id] - turn} ${p.ready[id] - turn === 1 ? 'turn' : 'turns'}`)}</div>`;
   };
-  const head = kind === 'g' ? 'Gücün' : `<span class="sw" style="background:${p.color}"></span>${esc(p.name)}`;
+  const head = kind === 'g' ? tx('Gücün', 'Your power') : `<span class="sw" style="background:${p.color}"></span>${esc(p.name)}`;
   const body = ids.length ? ids.map(id => `<div class="tp"><span class="ic">${IC(id, 26)}</span><div>
       <b>${PW[id].name}<span class="cat">${PW[id].cat}</span></b><div class="d">${PW[id].desc}</div>${cdTxt(id)}</div></div>`).join('')
-    : '<div class="none">Bu ülkenin gücü yok.</div>';
-  const boss = kind === 'p' && p.bossKind ? `<div class="tp"><span class="ic">${IC('durakPatron', 26)}</span><div><b>Patron</b><div class="d">${BOSSES[p.bossKind].desc}</div></div></div>` : '';
+    : `<div class="none">${tx('Bu ülkenin gücü yok.', 'This realm has no powers.')}</div>`;
+  const boss = kind === 'p' && p.bossKind ? `<div class="tp"><span class="ic">${IC('durakPatron', 26)}</span><div><b>${tx('Patron', 'Boss')}</b><div class="d">${BOSSES[p.bossKind].desc}</div></div></div>` : '';
   return `<div class="th">${head}</div>${boss}${body}`;
 }
 function showTip(el) {
@@ -4338,7 +4482,7 @@ $('againBtn').onclick = showSetup;
 $('lookBtn').onclick = () => {
   $('endModal').classList.add('hidden');
   const camp = cfg.chapter != null && REGMAP[cfg.chapter];
-  $('ovNext').innerHTML = camp ? IC('sefer', 18) + ' Fetih haritası ▶' : IC('baskent', 18) + ' Ana Menü';
+  $('ovNext').innerHTML = camp ? IC('sefer', 18) + tx(' Fetih haritası ▶', ' Conquest map ▶') : IC('baskent', 18) + tx(' Ana Menü', ' Main Menu');
   $('overBar').classList.remove('hidden');
 };
 $('ovResult').onclick = () => { SFX.play('click'); $('overBar').classList.add('hidden'); $('endModal').classList.remove('hidden'); };
