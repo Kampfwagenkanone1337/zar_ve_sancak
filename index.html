@@ -3957,7 +3957,7 @@ function buildWorld() {
       const i = y * N + x; if (land[i]) continue;
       for (const k of [i - 1, i + 1, i - N, i + N, i - N - 1, i - N + 1, i + N - 1, i + N + 1]) if (land[k]) { terr[i] = terr0[k] === T.KOY ? T.CAYIR : terr0[k]; break; }
     }
-    buildTerrainImage(WORLD_PPC); drawRivers(terrImg.getContext('2d'), PPC, 0, 0);
+    if (!WORLD_ART) { buildTerrainImage(WORLD_PPC); drawRivers(terrImg.getContext('2d'), PPC, 0, 0); }   // eski görünümün resmi (parşömen açıkken gerekmez)
     terr = terr0;
     // bölgeler: her kara karesi bükülmüş haritada en yakın bölge merkezine (sınırlar kıvrık)
     const reg = new Int8Array(N * N).fill(-1);
@@ -3985,9 +3985,123 @@ function buildWorld() {
     // ülke adı için aday noktalar: her ülkenin kara kareleri (3 karede bir)
     const landCells = LANDS.map(() => []);
     for (let y = WORLD_Y0; y < WORLD_Y0 + WORLD_H; y += 3) for (let x = 0; x < N; x += 3) { const k = reg[y * N + x]; if (k >= 0) landCells[REGIONS[k].land].push(y * N + x); }
-    WD = {N, img: terrImg, ppc: PPC, reg, adj, paths: outlines, border, outlines, coast, water, landCells};
+    const art = WORLD_ART ? buildWorldArt(N, coast) : null;
+    WD = {N, img: terrImg, ppc: PPC, reg, adj, paths: outlines, border, outlines, coast, water, landCells, art};
   } finally { ({M, terr, height, villages, rivers, LAND, tseed, terrImg, PPC, riverBase} = keep); }
   return WD;
+}
+// ---- sefer haritası: "eski parşömen harita" çizimi ----
+// Kara ve deniz kare kare boyanmaz: arazi türleri yumuşatılmış lekelerle (suluboya), üstüne mürekkep simgeler (ağaç, zirve,
+// tepe, kale, kasaba; Claude Design çizimleri gelene kadar kodla), kıyıda iç içe dalga çizgileri, kâğıt dokusu.
+// Bir kez çizilir (WD.art); drawWorld yalnızca bu resmi ve bölge katmanlarını çizer. WORLD_ART false: eski görünüm.
+let WORLD_ART = true;
+const ART = {ink: '#3b2f22', seaDeep: '#7fa1a4', grass: '#bfc48c', forest: '#7e9a5e', forestDk: '#55703f',
+  hill: '#c2ad7c', mount: '#a8998a', mountDk: '#7d6f62', snow: '#f4f1e8', roof: '#b0583a', wall: '#d9cdb4'};
+function buildWorldArt(N, coast) {
+  const S = 6, H = WORLD_H, c = document.createElement('canvas'); c.width = N * S; c.height = H * S;
+  const g = c.getContext('2d'), R = rng(WORLD_SEED + 1234), Y0 = WORLD_Y0;
+  const inW = (x, y) => x >= 0 && y >= Y0 && x < N && y < Y0 + H;
+  g.setTransform(S, 0, 0, S, 0, -Y0 * S); g.lineJoin = 'round'; g.lineCap = 'round';
+  // deniz: açıkta koyu, kıyıya doğru açılan yumuşak sığlık
+  g.fillStyle = ART.seaDeep; g.fillRect(0, Y0, N, H);
+  for (let k = 0; k < 8; k++) { g.strokeStyle = `rgba(190,214,206,${k < 7 ? .09 : .25})`; g.lineWidth = 16 * Math.pow(.7, k); g.stroke(coast); }
+  // kıyıdan açığa iç içe dalga çizgileri (ayrı katmanda halka: kalın çizgiden ince çizgi silinir)
+  { const L = document.createElement('canvas'); L.width = c.width; L.height = c.height; const l = L.getContext('2d');
+    l.setTransform(S, 0, 0, S, 0, -Y0 * S); l.lineJoin = 'round';
+    for (const [d, a] of [[1.4, .55], [2.8, .38], [4.4, .24]]) {
+      l.globalCompositeOperation = 'source-over'; l.strokeStyle = `rgba(59,47,34,${a})`; l.lineWidth = 2 * d + .28; l.stroke(coast);
+      l.globalCompositeOperation = 'destination-out'; l.lineWidth = 2 * d - .28; l.strokeStyle = '#000'; l.stroke(coast);
+    }
+    g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.drawImage(L, 0, 0); g.restore(); }
+  // kara
+  g.save(); g.clip(coast, 'evenodd');
+  g.fillStyle = ART.grass; g.fillRect(0, Y0, N, H);
+  // kabartma: yükseklikten yumuşak gölge (kare başına bir piksel, büyütülürken yumuşar)
+  { let mn = Infinity, mx = -Infinity; for (let i = 0; i < height.length; i++) { mn = Math.min(mn, height[i]); mx = Math.max(mx, height[i]); }
+    const hc = document.createElement('canvas'); hc.width = N; hc.height = H; const hg = hc.getContext('2d'), im = hg.createImageData(N, H);
+    const e = (x, y) => { x = Math.max(0, Math.min(N - 1, x)); y = Math.max(Y0, Math.min(Y0 + H - 1, y)); return Math.pow((height[y * N + x] - mn) / (mx - mn || 1), 2); };
+    for (let y = 0; y < H; y++) for (let x = 0; x < N; x++) {
+      const sh = Math.max(-1, Math.min(1, ((e(x + 1, y + Y0) - e(x - 1, y + Y0)) + (e(x, y + Y0 + 1) - e(x, y + Y0 - 1))) * 14));
+      const o = (y * N + x) * 4, v = 128 - sh * 90; im.data[o] = im.data[o + 1] = im.data[o + 2] = v; im.data[o + 3] = 255;
+    }
+    hg.putImageData(im, 0, 0);
+    g.save(); g.globalCompositeOperation = 'soft-light'; g.globalAlpha = .9; g.imageSmoothingEnabled = true; g.drawImage(hc, 0, Y0, N, H); g.restore(); }
+  // arazi lekeleri: suluboya gibi (yumuşak kenar, kenarda koyu iz)
+  const blob = (type, fill, edge, a) => {
+    const p = smoothOutline(N, null, i => terr[i] === type);
+    g.save(); g.globalAlpha = a; g.filter = 'blur(1.5px)'; g.fillStyle = fill; g.fill(p, 'evenodd'); g.restore();
+    g.save(); g.globalAlpha = .35; g.strokeStyle = edge; g.lineWidth = .35; g.stroke(p); g.restore();
+  };
+  blob(T.TEPE, ART.hill, '#8c7a52', .55); blob(T.ORMAN, ART.forest, ART.forestDk, .7); blob(T.DAG, ART.mount, ART.mountDk, .65);
+  g.restore();
+  // akarsular (ölçeksiz bağlamda; kalınlık pikselde)
+  g.save(); g.setTransform(1, 0, 0, 1, 0, -Y0 * S); drawRivers(g, S, 0, 0); g.restore();
+  // simgeler: yerleşimlerin çevresi boş kalır; aşağıdakiler üstte görünsün diye y sırasıyla
+  const near = new Uint8Array(N * N);
+  for (const Rg of REGIONS) { const cx = Math.round(Rg.x * N), cy = Math.round(Y0 + Rg.y * H);
+    for (let y = cy - 5; y <= cy + 7; y++) for (let x = cx - 6; x <= cx + 6; x++) if (inW(x, y)) near[y * N + x] = 1; }
+  const marks = [];
+  const scatter = (type, step, fn) => {
+    for (let y = Y0; y < Y0 + H; y += step) for (let x = 0; x < N; x += step) {
+      const jx = x + R() * step, jy = y + R() * step, ix = Math.floor(jx), iy = Math.floor(jy), i = iy * N + ix;
+      if (!inW(ix, iy) || terr[i] !== type || near[i]) continue;
+      // lekenin kenarına taşmasın: dört yanı da aynı tür olsun
+      if (terr[i - 1] !== type || terr[i + 1] !== type || terr[i - N] !== type || terr[i + N] !== type) continue;
+      marks.push([jy, () => fn(jx, jy, i)]);
+    }
+  };
+  const tree = (x, y) => {
+    const north = (y - Y0) / H < .32, r = .75 + R() * .3;
+    g.lineWidth = .16; g.strokeStyle = ART.ink;
+    if (north) {   // iğne yapraklı
+      g.fillStyle = ART.forestDk; g.beginPath(); g.moveTo(x, y - r * 2.1); g.lineTo(x + r * .8, y); g.lineTo(x - r * .8, y); g.closePath(); g.fill(); g.stroke();
+    } else {
+      g.beginPath(); g.moveTo(x, y); g.lineTo(x, y + r * .5); g.stroke();
+      g.fillStyle = R() < .5 ? ART.forest : ART.forestDk; g.beginPath(); g.arc(x, y - r * .45, r * .78, 0, Math.PI * 2); g.fill(); g.stroke();
+    }
+  };
+  const peak = (x, y) => {
+    const w = 1.7 + R() * .9, h = 1.6 + R() * 1.1, snow = (y - Y0) / H < .45;
+    g.lineWidth = .18; g.strokeStyle = ART.ink;
+    g.fillStyle = ART.mount; g.beginPath(); g.moveTo(x - w, y); g.lineTo(x, y - h); g.lineTo(x + w, y); g.closePath(); g.fill();
+    g.fillStyle = ART.mountDk; g.beginPath(); g.moveTo(x, y - h); g.lineTo(x + w, y); g.lineTo(x + w * .15, y); g.closePath(); g.fill();
+    if (snow) { g.fillStyle = ART.snow; g.beginPath(); g.moveTo(x - w * .32, y - h * .68); g.lineTo(x, y - h); g.lineTo(x + w * .32, y - h * .68); g.lineTo(x, y - h * .78); g.closePath(); g.fill(); }
+    g.beginPath(); g.moveTo(x - w, y); g.lineTo(x, y - h); g.lineTo(x + w, y); g.stroke();
+  };
+  const hill = (x, y) => {
+    const w = 1.3 + R() * .6; g.lineWidth = .16; g.strokeStyle = ART.ink; g.fillStyle = 'rgba(194,173,124,.8)';
+    g.beginPath(); g.moveTo(x - w, y); g.quadraticCurveTo(x, y - w * 1.3, x + w, y); g.closePath(); g.fill();
+    g.beginPath(); g.moveTo(x - w, y); g.quadraticCurveTo(x, y - w * 1.3, x + w, y); g.stroke();
+  };
+  scatter(T.ORMAN, 2.1, tree); scatter(T.DAG, 3.4, peak); scatter(T.TEPE, 3.6, hill);
+  // yerleşimler: başkent ve başlangıç bölgesi kale, ötekiler kasaba
+  for (const Rg of REGIONS) {
+    const x = Rg.x * N, y = Y0 + Rg.y * H;
+    marks.push([y + .5, () => {
+      g.lineWidth = .18; g.strokeStyle = ART.ink;
+      if (Rg.boss || Rg.home) {
+        g.fillStyle = ART.wall; g.fillRect(x - 2.2, y - 1.6, 4.4, 2.4); g.strokeRect(x - 2.2, y - 1.6, 4.4, 2.4);
+        for (const tx of [-2.2, 1.2]) { g.fillRect(x + tx, y - 2.6, 1, 3.4); g.strokeRect(x + tx, y - 2.6, 1, 3.4); }
+        g.beginPath(); g.moveTo(x - .2, y - 1.6); g.lineTo(x - .2, y - 4.2); g.stroke();
+        g.fillStyle = Rg.home ? HUMAN_COLORS[0] : '#b9412f'; g.beginPath(); g.moveTo(x - .2, y - 4.2); g.lineTo(x + 1.4, y - 3.8); g.lineTo(x - .2, y - 3.3); g.closePath(); g.fill();
+      } else {
+        for (const [dx, dy] of [[-1.3, .1], [.9, -.5], [.2, .9]]) {
+          const hx = x + dx, hy = y + dy;
+          g.fillStyle = ART.wall; g.fillRect(hx - .7, hy - .5, 1.4, 1); g.strokeRect(hx - .7, hy - .5, 1.4, 1);
+          g.fillStyle = ART.roof; g.beginPath(); g.moveTo(hx - .85, hy - .5); g.lineTo(hx, hy - 1.3); g.lineTo(hx + .85, hy - .5); g.closePath(); g.fill(); g.stroke();
+        }
+      }
+    }]);
+  }
+  marks.sort((a, b) => a[0] - b[0]); for (const [, f] of marks) f();
+  // kıyı: mürekkep çizgisi
+  g.strokeStyle = ART.ink; g.lineWidth = .3; g.globalAlpha = .8; g.stroke(coast); g.globalAlpha = 1;
+  // kâğıt dokusu: bütün resmin üstüne hafif lekeler
+  { const pc = document.createElement('canvas'); pc.width = pc.height = 256; const pg = pc.getContext('2d'), pim = pg.createImageData(256, 256), nn = noise2(WORLD_SEED + 4321);
+    for (let y = 0; y < 256; y++) for (let x = 0; x < 256; x++) { const v = nn(x / 40, y / 40, 4) * 180 + (R() - .5) * 40, o = (y * 256 + x) * 4; pim.data[o] = 120 + v * .3; pim.data[o + 1] = 100 + v * .25; pim.data[o + 2] = 70 + v * .2; pim.data[o + 3] = 255; }
+    pg.putImageData(pim, 0, 0);
+    g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'soft-light'; g.globalAlpha = .5; g.fillStyle = g.createPattern(pc, 'repeat'); g.fillRect(0, 0, c.width, c.height); g.restore(); }
+  return c;
 }
 // bir kare kümesinin yumuşak dış çizgisi (inSet(i): kare kümede mi; yalnızca kullanılan şerit). Kare merkezlerinden
 // "yürüyen kareler" ile kenar ortalarından geçen halkalar çıkarılır (merdiven yerine eğik çizgiler), sonra Chaikin
@@ -4100,16 +4214,19 @@ function drawWorld() {
   if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
   const g = cv.getContext('2d'), N = WD.N, s = wv.s, idx = Object.fromEntries(REGIONS.map((R, k) => [R.id, k]));
   g.setTransform(dpr, 0, 0, dpr, 0, 0);
-  g.fillStyle = '#1c4268'; g.fillRect(0, 0, W, H);   // açık deniz (arazi resmindeki derin deniz rengi)
+  g.fillStyle = WD.art ? ART.seaDeep : '#1c4268'; g.fillRect(0, 0, W, H);   // açık deniz (arazi resmindeki derin deniz rengi)
   g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
   const img = () => g.drawImage(WD.img, 0, WORLD_Y0 * WD.ppc, N * WD.ppc, WORLD_H * WD.ppc, 0, WORLD_Y0, N, WORLD_H);
   g.save(); g.translate(wv.ox, wv.oy); g.scale(s, s); g.translate(0, -WORLD_Y0);
   // su resimden alınmaz (kare kare görünürdü): derin deniz zemini + kıyıdan açığa koyulaşan yumuşak sığlık katmanları;
   // kara (resimde bir kare taşkın) yumuşak kıyı çizgisiyle kırpılıp üstüne çizilir
   g.lineJoin = 'round'; g.lineCap = 'round';
-  g.drawImage(WD.water, 0, WORLD_Y0, N, WORLD_H);
-  g.save(); g.clip(WD.coast, 'evenodd'); img(); g.restore();
-  g.strokeStyle = 'rgba(232,240,228,.55)'; g.lineWidth = Math.max(.35, 1.2 / s); g.stroke(WD.coast);
+  if (WD.art) g.drawImage(WD.art, 0, WORLD_Y0, N, WORLD_H);
+  else {
+    g.drawImage(WD.water, 0, WORLD_Y0, N, WORLD_H);
+    g.save(); g.clip(WD.coast, 'evenodd'); img(); g.restore();
+    g.strokeStyle = 'rgba(232,240,228,.55)'; g.lineWidth = Math.max(.35, 1.2 / s); g.stroke(WD.coast);
+  }
   // fethedilenler krallığın renginde; saldırılamayanlar karartılır
   REGIONS.forEach((R, k) => {
     const own = R.id in r.owned, can = !own && canAttack(r, R.id);
@@ -4117,7 +4234,7 @@ function drawWorld() {
       g.globalAlpha = .18; g.fillStyle = HUMAN_COLORS[0]; g.fill(WD.paths[k], 'evenodd');
       g.globalAlpha = .55; g.fillStyle = ownHatch(g, s); g.fill(WD.paths[k], 'evenodd');
     }
-    else if (!can) { g.globalAlpha = .34; g.fillStyle = '#2b2118'; g.fill(WD.paths[k], 'evenodd'); }
+    else if (!can) { g.globalAlpha = WD.art ? .26 : .34; g.fillStyle = WD.art ? '#efe6cf' : '#2b2118'; g.fill(WD.paths[k], 'evenodd'); }   // parşömende: soluk sis
     if (R.id === wHover && (own || can)) { g.globalAlpha = .2; g.fillStyle = '#fffaf0'; g.fill(WD.paths[k], 'evenodd'); }
   });
   g.globalAlpha = 1; g.lineCap = 'round'; g.lineJoin = 'round';
