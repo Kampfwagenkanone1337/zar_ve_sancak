@@ -1264,7 +1264,7 @@ function newGame(humanPicks) {
     for (let k = 0; k < 4; k++) rivers = rivers.filter(rv => {
       const e = rv[rv.length - 1];
       if (rv.big || terr[e] === T.DENIZ || rivers.some(o => o !== rv && o.includes(e))) return true;
-      for (const i of rv) if (terr[i] === T.NEHIR) terr[i] = T.CAYIR;
+      for (const i of rv) if (terr[i] === T.NEHIR) terr[i] = riverBase ? riverBase[i] || T.CAYIR : T.CAYIR;
       return false;
     });
   }
@@ -1488,6 +1488,7 @@ const TERRAIN = [
 ];
 const VILLAGE_VALUE = 25;   // tamamı elindeki her köy, kazanma hesabında bu kadar kare sayılır
 let terr = null, height = null, villages = [], rivers = [], LAND = 1, tseed = 0, terrImg = null, PPC = 8;
+let riverBase = null;   // akarsu çizilmeden önceki arazi (silinen akarsunun yeri eski hâline döner, çayır şeridi kalmaz)
 
 // değer gürültüsü (fraktal): aynı tohumla hep aynı harita
 function noise2(seed) {
@@ -1620,6 +1621,7 @@ function cleanSmall() {
 // (harita kenarına akıp orada bitmez; hiç su yoksa akarsu da olmaz).
 function makeRivers(R) {
   rivers = [];
+  if (!riverBase || riverBase.length !== M * M) riverBase = new Uint8Array(M * M);
   const N = M * M, down = new Int32Array(N).fill(-1), done = new Uint8Array(N), fill = new Float32Array(N);
   const heap = [];   // ikili yığın: [yükseklik, kare]
   const push = (h, i) => { heap.push([h, i]); let k = heap.length - 1; while (k) { const p = (k - 1) >> 1; if (heap[p][0] <= heap[k][0]) break; [heap[p], heap[k]] = [heap[k], heap[p]]; k = p; } };
@@ -1650,7 +1652,7 @@ function makeRivers(R) {
     let i = s0;
     while (i >= 0 && terr[i] !== T.DENIZ && !isRiver[i]) { path.push(i); i = down[i]; }
     if (path.length < M / 6 || i < 0) continue;   // suya varmayan akarsu olmaz
-    for (const j of path) { terr[j] = T.NEHIR; isRiver[j] = 1; }
+    for (const j of path) { riverBase[j] = terr[j]; terr[j] = T.NEHIR; isRiver[j] = 1; }
     rivers.push(i >= 0 ? [...path, i] : path);   // son nokta: deniz ya da katıldığı akarsu
   }
 }
@@ -3859,7 +3861,7 @@ for (const G of GULFS) G.r *= 1 - 2 * WORLD_MY;
 let WD = null;
 function buildWorld() {
   if (WD) return WD;
-  const keep = {M, terr, height, villages, rivers, LAND, tseed, terrImg, PPC};
+  const keep = {M, terr, height, villages, rivers, LAND, tseed, terrImg, PPC, riverBase};
   try {
     const N = M = WORLD_N, S = TUNE.sancakSize;
     genTerrain(WORLD_SEED, {sea: .02});
@@ -3938,10 +3940,10 @@ function buildWorld() {
         else for (const j of comp) { const x = j % N, y = (j / N) | 0, t = tn(x / N * 30, y / N * 30, 2);
           terr[j] = t > .62 ? T.TEPE : t > .5 ? T.ORMAN : T.CAYIR; }
       } }
-    // akarsular denize vardığı yerde biter; kesilen parçalar karaya döner
-    rivers = rivers.map(rv => { const k = rv.findIndex(i => terr[i] === T.DENIZ); return k < 0 ? rv : rv.slice(0, k + 1); }).filter(rv => rv.length > 6);
-    const onRiver = new Uint8Array(N * N); for (const rv of rivers) for (const i of rv) onRiver[i] = 1;
-    for (let i = 0; i < N * N; i++) if (terr[i] === T.NEHIR && !onRiver[i]) terr[i] = T.CAYIR;
+    // akarsular kara ve deniz kesinleştikten sonra baştan çizilir: hepsi gerçek denize dökülür. Arazi üreticisinin
+    // eski akarsuları silinir, altlarındaki arazi (orman, tepe…) geri gelir; yoksa ormanda yol gibi çayır şeritleri kalıyordu
+    for (let i = 0; i < N * N; i++) if (terr[i] === T.NEHIR) terr[i] = riverBase[i] || T.CAYIR;
+    makeRivers(rng(WORLD_SEED + 9));
     // her bölgenin merkezinde bir yerleşim: başkentler ve başlangıç bölgesi surlu
     villages = [];
     for (const R of REGIONS) {
@@ -3984,7 +3986,7 @@ function buildWorld() {
     const landCells = LANDS.map(() => []);
     for (let y = WORLD_Y0; y < WORLD_Y0 + WORLD_H; y += 3) for (let x = 0; x < N; x += 3) { const k = reg[y * N + x]; if (k >= 0) landCells[REGIONS[k].land].push(y * N + x); }
     WD = {N, img: terrImg, ppc: PPC, reg, adj, paths: outlines, border, outlines, coast, water, landCells};
-  } finally { ({M, terr, height, villages, rivers, LAND, tseed, terrImg, PPC} = keep); }
+  } finally { ({M, terr, height, villages, rivers, LAND, tseed, terrImg, PPC, riverBase} = keep); }
   return WD;
 }
 // bir kare kümesinin yumuşak dış çizgisi (inSet(i): kare kümede mi; yalnızca kullanılan şerit). Kare merkezlerinden
