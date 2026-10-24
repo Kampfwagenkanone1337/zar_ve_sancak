@@ -3079,11 +3079,13 @@ function updateSel() {
     `<b>Drag</b> on the map to select the area you want to attack. The selection snaps to ${snap}×${snap} blocks (up to ${ms}×${ms}).`); updateButtons(); return; }
   const a = analyze(sel, owner), w = sel.x1 - sel.x0 + 1, h = sel.y1 - sel.y0 + 1;
   if (!a.valid) {
-    const why = a.noSiege && a.noSiege.length ? siegeMsg(a.noSiege[0], owner)
+    // asıl sebep önce: kuşatma uyarısı yalnızca alanda sancaktan başka alınacak kare yoksa sebep; değilse altta not olarak
+    const siege = a.noSiege && a.noSiege.length ? siegeMsg(a.noSiege[0], owner) : '';
+    const why = a.taken === 0 && siege ? siege
       : a.taken === 0 && a.shielded ? IC('mSancak', 16) + tx(' Sancağı almak için sancağın tamamını seçmelisin.', ' To take a banner you must select all of it.')
       : a.taken === 0 ? tx('Bu alan zaten senin' + (cfg.coop && cfg.humans > 1 ? ' ya da takım arkadaşının.' : '.'), 'This area is already yours' + (cfg.coop && cfg.humans > 1 ? " or your teammate's." : '.'))
       : a.hidden ? IC('sis', 16) + tx(' Sisli alana saldıramazsın.', " You can't attack into the fog.") : tx('Alan kendi toprağına değmeli!', 'The area must touch your own land!');
-    el.innerHTML = wait + `${w}×${h} ${tx('alan', 'area')} · <span style="color:var(--bad)">${why}</span>`;
+    el.innerHTML = wait + `${w}×${h} ${tx('alan', 'area')} · <span style="color:var(--bad)">${why}</span>` + (siege && why !== siege ? `<br><small>${siege}</small>` : '');
   } else {
     const ch = chanceOf(p, a.dc, dbl, true), col = ch >= .6 ? 'var(--ok)' : ch >= .3 ? '#e6b84f' : 'var(--bad)';
     const parts = [`${a.neutral} ${tx('boş', 'empty')}`], terrParts = a.tc.map((n, t) => n ? `${TERRAIN[t].icon}${n}` : '').filter(Boolean).join(' ');
