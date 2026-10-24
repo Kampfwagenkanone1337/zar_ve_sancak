@@ -971,7 +971,7 @@ const TUNE = {
   ikinciCd: 5, ciftCd: 5, yildirimCd: 8, buyuk: 0.08, istMin: 6, istMax: 16,
   terrainUnit: 1.3,
   deniz: 3,                   // alanın bir kısmına ancak denizden geçilerek ulaşılıyorsa
-  nehir: 2, tepe: 1,          // akarsu geçişi · tepedeki düşmana saldırı (hedef zara eklenen)
+  nehir: 2, nehirMin: 3, tepe: 1,          // akarsu geçişi · tepedeki düşmana saldırı (hedef zara eklenen)
   npcLead: 1.4, npcLeadFar: 1.8, npcLeadGap: 1.3, npcOld: false,   // NPC hedef ağırlığı: lider · lider çok öndeyse (ikinciden 1,3 kat büyük)
   pmMax: 1, pmMin: 1,          // güç farkı: büyük küçüğe saldırırken en fazla −1, küçük büyüğe saldırırken en fazla +1
                                // (eskiden −6/+3, sonra −3/+3: öne geçen kartopu gibi büyüyor, geride kalan toparlanamıyordu)
@@ -1405,7 +1405,7 @@ function snapRect(a, b) {
 }
 function analyze(r, pid, noFlags = false) {
   const p = players[pid];
-  let taken = 0, enemy = 0, hidden = 0, touches = false, shielded = 0, cost = 0, costN = 0, river = false, hillE = false;
+  let taken = 0, enemy = 0, hidden = 0, touches = false, shielded = 0, cost = 0, costN = 0, riverN = 0, hillE = false;
   const tc = new Array(TERRAIN.length).fill(0), takenIdx = [];
   let seaIn = false, objN = 0, objFree = false, bossRiver = false, seaN = 0, ownN = 0;
   const by = {}, fogCheck = vis && p.human, flags = noFlags ? [] : flagsIn(r, pid), ob = SC.obj;
@@ -1420,7 +1420,7 @@ function analyze(r, pid, noFlags = false) {
     taken++; tc[t]++; takenIdx.push(i);
     if (ob && x >= ob.x0 && x <= ob.x1 && y >= ob.y0 && y <= ob.y1) { objN++; if (o < 0) objFree = true; }
     const c = TERRAIN[t].cost; cost += c; if (o < 0) costN += c;
-    if (t === T.NEHIR) { river = true; if (o >= 0 && o === SC.boss && players[o].bossKind === 'degirmen') bossRiver = true; }
+    if (t === T.NEHIR) { riverN++; if (o >= 0 && o === SC.boss && players[o].bossKind === 'degirmen') bossRiver = true; }
     if (t === T.TEPE && o >= 0) hillE = true;
     if (fogCheck && !vis[i]) hidden++;
     if (o >= 0) { enemy++; by[o] = (by[o] || 0) + 1; }
@@ -1433,7 +1433,8 @@ function analyze(r, pid, noFlags = false) {
   mods.push([tx('boyut', 'size'), Math.ceil(sizeBase / (12 * UNIT * (has(p, 'genis') ? TUNE.genisCost : 1)))]);
   const enemyMod = Math.ceil(enemy / (50 * UNIT));
   if (enemyMod) mods.push([tx('düşman toprağı', 'enemy land'), enemyMod]);
-  if (river) mods.push([tx('akarsu geçişi', 'river crossing'), TUNE.nehir, 'mAkarsu']);
+  // akarsu geçişi: akarsu alanın içinden gerçekten geçiyorsa (kaynağın ya da ucun bir iki karesi sayılmaz)
+  if (riverN >= TUNE.nehirMin) mods.push([tx('akarsu geçişi', 'river crossing'), TUNE.nehir, 'mAkarsu']);
   const denizMod = scenOf().deniz != null ? scenOf().deniz : TUNE.deniz;
   if (denizMod && seaIn && touches && overseas(r, pid, takenIdx)) mods.push([tx('denizaşırı', 'overseas'), denizMod, 'mDenizAsiri']);
   if (objN) mods.push(objFree ? [tx('kale garnizonu', 'fort garrison'), KALE_GARRISON, 'kale'] : [tx('kale surları', 'fort walls'), KALE_DC, 'kale']);
