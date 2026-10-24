@@ -3427,6 +3427,71 @@ if (EN) Object.entries({
   imparator: ['3 vassal lords are his allies. He has two banners (Spare Banner) and his capital is walled (Fortress).',
     'The Last Emperor sits on his throne, shielded by three vassal lords. Bring him down and the world will be known by the name {K}.'],
 }).forEach(([k, [d, i]]) => Object.assign(BOSSES[k], {desc: d, intro: i}));
+// İngilizce sefer adları: ülkeler, rakipler, patronlar, bölgeler ve bölge hikâyeleri (kimlikler aynı kalır; kayıtlar bozulmaz)
+if (EN) {
+  [['The Border Marches', ['Mountain Tribe', 'Forest Tribe', 'Stone Camp', 'Wolf Tribe', 'Reed Villages', 'Hillside Lordship']],
+   ['The Riverlands', ['Reed Lordship', 'Mill Villages', 'Coast Khanate', "Fishers' League", 'Water Keep', 'Paddy Lordship']],
+   ['The Plains', ['Plains Khanate', 'Dusty Road Lordship', 'Golden Wheat Kingdom', 'Horse Herd Camp', 'Caravan League', 'Steppe Khanate']],
+   ['The North', ['Icefang Keep', 'White Mane Khanate', 'Snow Wolf Clan', 'Steel Guard', 'Rusty Sword Host', 'Iron Mountain Lordship']],
+   ['The Empire', ['Crimson Banner', 'Shadow Council', 'Seven Hills League', 'Eternal Throne', 'Doom Host', 'Golden Crown League']],
+  ].forEach(([n, e], i) => Object.assign(LANDS[i], {name: n, enemies: e}));
+  Object.entries({sazlik: 'Reed Lord', degirmen: 'Miller King', ova: 'Plains Khan', demir: 'Iron Legion Commander', imparator: 'Last Emperor'})
+    .forEach(([k, n]) => { BOSSES[k].name = n; });
+  const RG = {
+    vadi: ['Valley Village', '{K} was born in this valley. The conquest starts here.'],
+    kurt: ['Wolf Highland', 'A highland covered in thick forest. The tribes lie in ambush among the trees.'],
+    yamac: ['Hillside Villages', 'Villages built on steep slopes. Whoever holds the heights rules those below.'],
+    tas: ['Stone Camp', 'A rocky plain. The camps have joined forces to guard their borders.'],
+    sazlik: ['Reedmarsh'],
+    kayalik: ['Rocky Cape', 'A rocky cape reaching into the sea. Whoever holds the crags holds the cape.'],
+    sinirKule: ['Border Tower', 'An old watchtower overlooks two valleys at once. Whoever holds it holds the border.'],
+    coban: ["Shepherds' Range", 'A dry summer: every village on the plateau means pasture for the flocks.'],
+    yabanGecit: ['Wild Pass', 'The only road through the forest. Advancing among the trees is slow.'],
+    tasKopru: ['Stone Bridge', 'An old stone bridge joins the two banks of the river. Whoever holds the bridge holds the crossing.'],
+    degirmen: ['Mill Villages', 'Drought has struck; every village along the river is worth its weight in gold.'],
+    celtik: ['Paddy Fields', "A wide river splits the fields in two. Crossing to the far bank won't be easy."],
+    nehirKale: ['River Keep'],
+    balikci: ["Fishers' Cove", 'The fishing villages on the shore will defend their borders to the end.'],
+    kiyi: ['Coastal Isles', "Islands large and small lie off the coast. You'll need boats to cross from one to the next."],
+    sogutlu: ['Willowmere', "Villages in the shade of the willows. If you don't move fast, your neighbours will."],
+    kamisli: ['Rushwater Plain', 'A plain cut up by reed beds. Every step on the wet ground is costly.'],
+    sazliGol: ['Sedge Lake', 'The lake is ringed with tall reeds. Advancing through them is slow and costly.'],
+    nehirAgzi: ['River Mouth', "Where the river meets the sea, a harbour lord holds sway. The port won't surrender until his banner falls."],
+    comlekci: ["Potters' Village", 'Villages built around the clay pits. Each will defend its border to the end.'],
+    tozluYol: ['Dusty Road', 'The caravan road that cuts the plain in two. Here, whoever moves fast wins.'],
+    kervan: ['Caravanserais', 'Whoever holds the caravanserais of the plain becomes the master of its trade.'],
+    altinBasak: ['Golden Wheat', 'An old fort rises among the wheat fields. Whoever holds it rules the plain.'],
+    bozkir: ['The Steppe', 'Two steppe khans are brothers: they never attack each other and stand together against you.'],
+    hanOrdugah: ["Khan's Camp"],
+    yelDegirmen: ['Windmills', "Wind-turned mills grind the plain's bread. Every village is precious."],
+    atliOba: ["Horsemen's Camp", 'The horse camps strike fast and flee fast. A short war awaits you.'],
+    bugdayHani: ['Grain Inn', 'Two grain merchants are brothers; they guard their granaries together.'],
+    kurakTepe: ['Barren Hill', 'Bare hills rise in the middle of the plain. Dislodging an enemy from the heights is hard.'],
+    ruzgarli: ['Windswept Flats', 'Three lords rule the flats where the wind never stops. None will surrender: destroy them all.'],
+    buzdis: ['Icefang Pass', 'Narrow passes between snowy mountains. Whoever holds the heights prevails.'],
+    karKurdu: ['Snow Wolf Forest', 'The Snow Wolf Clan comes at you from every side. Here, winning means staying alive.'],
+    akYele: ['White Mane Camp', "The camps won't surrender until the White Mane Khan's banner falls."],
+    demirDag: ['Iron Mountain', 'Midwinter, and supplies are short: every mountain village means life.'],
+    demirSinir: ['Iron Frontier'],
+    ayazli: ['Frostbite Village', 'In the northern frost, the villages attack the first stranger together. Just surviving is enough.'],
+    buzGolu: ['Ice Lake', 'While the lake is frozen, walking to the far shore is easy. Move fast before the ice melts.'],
+    kartal: ["Eagle's Nest", 'A fort built atop the crags. Even eagles struggle to reach it.'],
+    demirOcak: ['Iron Forges', "The forges where the Legion's weapons are cast. Whoever holds the forges holds the iron."],
+    sogukVadi: ['Cold Valley', 'A cold valley covered in pine forest. Advancing is slow and costly.'],
+    yediTepe: ['Seven Hills', 'The two lords of Seven Hills are brothers; they never attack each other.'],
+    kizilKale: ['Red Fort', "The Empire's most loyal lords are here. None will surrender: you must destroy them all."],
+    liman: ['Imperial Harbour', 'Naval bases scattered over the islands off the harbour.'],
+    golge: ['Shadow Valley', "The leader of the Shadow Council hides in this valley. The valley won't surrender until their banner falls."],
+    ebedi: ['Eternal Fort', "The Empire's oldest fortress. Whoever holds it holds the gate to the capital."],
+    taht: ['Throne City'],
+    mermer: ['Marble Palace', "The Emperor's vizier sits in this palace. You must bring down the vizier's banner yourself."],
+    altinKapi: ['Golden Gate', 'The gilded gate of the capital. Whoever holds the gate holds the road to the city.'],
+    kuleSehri: ['City of Towers', 'Arrows rain from the towers in every direction. In this siege, whoever stays standing wins.'],
+    gumusLiman: ['Silver Harbour', "The Imperial fleet's northern harbour; its bases are scattered across the islands."],
+    sarayBahce: ['Palace Gardens', 'Two princes share the gardens; they are bound to each other like brothers.'],
+  };
+  for (const [id, [n, i]] of Object.entries(RG)) { REGMAP[id].name = n; if (i) REGMAP[id].intro = i; }
+}
 // patron savaşları da birer senaryo: Hedef = patronun sancağını düşür
 for (const [k, b] of Object.entries(BOSSES))
   SCMAP['boss_' + k] = {id: 'boss_' + k, name: b.name, goal: 'boss', boss: k, desc: `${tx('Patron savaşı', 'Boss battle')}: ${b.name}. ${b.desc}`, win: 0.6, turns: 35, terrain: b.terrain};
@@ -4094,7 +4159,8 @@ function drawWorld() {
     g.font = `700 ${lf}px Alegreya, Georgia, serif`; g.textBaseline = 'middle';
     g.globalAlpha = Math.min(1, Math.max(0, 1 - (zoomK - 1.4) * 1.25));
     LANDS.forEach((L, li) => {
-      const x = wv.ox + pos[li].x, y = wv.oy + pos[li].y;
+      const hw = g.measureText(pos[li].t).width / 2 + 6;   // yazı pencereden taşmasın
+      const x = Math.max(hw, Math.min(W - hw, wv.ox + pos[li].x)), y = wv.oy + pos[li].y;
       g.lineWidth = 5; g.strokeStyle = 'rgba(43,33,24,.85)'; g.strokeText(pos[li].t, x, y); g.fillStyle = '#f2e9d4'; g.fillText(pos[li].t, x, y);
     });
     g.globalAlpha = 1;
@@ -4114,7 +4180,7 @@ function landLabels(g, s, ui, fs, isz, lf) {
   }
   g.font = `700 ${lf}px Alegreya, Georgia, serif`;
   landLabelPos = LANDS.map((L, li) => {
-    const t = L.name.toLocaleUpperCase('tr-TR').split('').join(String.fromCharCode(8202));
+    const t = L.name.toLocaleUpperCase(tx('tr-TR', 'en-GB')).split('').join(String.fromCharCode(8202));
     const hw = g.measureText(t).width / 2 + 4, hh = lf * .6;
     const rs = REGIONS.filter(R => R.land === li);
     const cx = rs.reduce((a, R) => a + R.x, 0) / rs.length * N * s, cy = rs.reduce((a, R) => a + R.y, 0) / rs.length * WORLD_H * s;
