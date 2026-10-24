@@ -450,7 +450,7 @@
       <button data-en-title="Zoom in" id="wzIn" title="Yakınlaştır">＋</button>
       <button data-en-title="Zoom out" id="wzOut" title="Uzaklaştır">－</button>
       <button data-en-title="Show the whole world" id="wzFit" title="Bütün dünyayı göster">⤢</button>
-      <button data-en-title="Go to the selected region" id="wzMe" title="Seçili bölgeye git"><i data-ic="baskent" data-sz="22"></i></button>
+      <button data-en-title="Go to my kingdom" id="wzMe" title="Krallığıma git"><i data-ic="baskent" data-sz="22"></i></button>
     </div>
   </div>
   <div id="wPanel">
@@ -3992,6 +3992,23 @@ function wFocus(id, zoom) {
   if (zoom) wv.s = Math.max(wv.s, wFit() * zoom);
   wv.ox = wv.W / 2 - R.x * WORLD_N * wv.s; wv.oy = wv.H / 2 - R.y * WORLD_H * wv.s; wClamp(); drawWorld();
 }
+// krallığa git: fethedilen bölgelerin (ve başlangıç bölgesinin) tamamı ekrana sığar
+function wFocusRealm() {
+  const r = PROG.run; if (!WD || !r) return;
+  const N = WD.N, mine = new Uint8Array(REGIONS.length);
+  REGIONS.forEach((R, k) => { if (R.id in r.owned) mine[k] = 1; });
+  let x0 = Infinity, y0 = Infinity, x1 = -1, y1 = -1;
+  for (let y = WORLD_Y0; y < WORLD_Y0 + WORLD_H; y++) for (let x = 0; x < N; x++) {
+    const k = WD.reg[y * N + x]; if (k < 0 || !mine[k]) continue;
+    if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+  }
+  if (x1 < 0) return wFocus('vadi', 2.2);
+  const pad = 14, w = x1 - x0 + 1 + pad * 2, h = y1 - y0 + 1 + pad * 2;
+  const bar = 70;   // sağdaki yakınlaştırma düğmeleri bölgelerin üstüne binmesin
+  wv.s = Math.max(wFit(), Math.min(wFit() * 3, Math.min((wv.W - bar) / w, wv.H / h)));
+  wv.ox = (wv.W - bar) / 2 - (x0 + x1 + 1) / 2 * wv.s; wv.oy = wv.H / 2 - ((y0 + y1 + 1) / 2 - WORLD_Y0) * wv.s;
+  wClamp(); drawWorld();
+}
 let wDrawQueued = false;
 const wDraw = () => { if (!wDrawQueued) { wDrawQueued = true; requestAnimationFrame(() => { wDrawQueued = false; drawWorld(); }); } };
 function drawWorld() {
@@ -4144,7 +4161,7 @@ const wZoomBy = f => { const s0 = wv.s; wv.s *= f; wClamp(); const k = wv.s / s0
 $('wzIn').onclick = () => wZoomBy(1.4);
 $('wzOut').onclick = () => wZoomBy(1 / 1.4);
 $('wzFit').onclick = () => { wv.s = wFit(); wClamp(); wDraw(); };
-$('wzMe').onclick = () => wFocus(wSel || 'vadi', 2.2);
+$('wzMe').onclick = wFocusRealm;
 window.addEventListener('resize', () => { if (!$('world').classList.contains('hidden') && wResize()) wDraw(); });
 
 // ---- bölgenin savaşı ----
