@@ -743,6 +743,9 @@
 //   const [w, h] = ZS_MAP.size.agac1, s = hedefYukseklik / h;
 //   ctx.drawImage(img, x - w * s / 2, y - h * s, w * s, h * s);
 // Kalenin bayrak direği boş; bayrak ZS_MAP.pole.kale noktasından (direk tepesi) sağa doğru çizilir.
+// Çerçeve: cerceveKenar 48 birimde bir dikişsiz tekrar eder. Ayrı ayrı drawImage ile dizilen parçalar arasında
+// yumuşatma çizgisi kalabilir; ctx.createPattern ile döşeyin ya da parçaları 1 px üst üste bindirin.
+// cerceveKose sol üst köşedir; öteki köşeler için döndürün (kenar şeridi köşenin içinde de devam eder).
 // Çizgilerdeki titreme sabit tohumla üretilir: her simge her seferinde aynı çıkar.
 (function () {
   const K = '#3b2f22';
@@ -944,14 +947,6 @@
       ink(posts.join('') + 'M.6 19.2h24.8M.6 20.8h24.8', .5)];
   }
 
-  // KERVANSARAY: avlulu, kemerli taçkapılı, köşe burçlu
-  D.kervansaray = [26, 20, `<rect x="3.2" y="9.8" width="19.6" height="2.4" fill="${C.duvarK}"/>` + ink('M3.2 12V9.8h19.6V12', .4) +
-    `<rect x="1.6" y="12" width="22.8" height="7.6" fill="${C.duvar}"/><rect x="17" y="12" width="7.4" height="7.6" fill="${C.duvarK}"/>` + ink('M1.6 19.6V12h22.8v7.6', .5) +
-    ink('M2.4 12v-.9h1.4v.9M6 12v-.9h1.4v.9M18.6 12v-.9H20v.9M22 12v-.9h1.4v.9', .4) +
-    `<rect x=".8" y="9.6" width="3.4" height="10.2" fill="${C.duvar}"/><rect x="21.8" y="9.6" width="3.4" height="10.2" fill="${C.duvarK}"/>` + ink('M.8 19.8V9.6h3.4v10.2M21.8 19.8V9.6h3.4v10.2', .45) +
-    `<rect x="9.4" y="6.4" width="7.2" height="13.4" fill="${C.duvar}"/><rect x="14" y="6.4" width="2.6" height="13.4" fill="${C.duvarK}"/>` + ink('M9.4 19.8V6.4h7.2v13.4M9.4 7.8h7.2', .5) +
-    `<path d="M11.2 19.8v-4.6c0-1.8 1.8-3.4 1.8-3.4s1.8 1.6 1.8 3.4v4.6z" fill="${K}" opacity=".85"/>` + ink('M10.4 10.6h5.2', .35)];
-
   // PUSULA GÜLÜ: dört ana yön (kuzey kırmızı), harf yok
   {
     const c = 50, pt = (a, r) => [c + Math.cos(a) * r, c + Math.sin(a) * r];
@@ -1005,22 +1000,29 @@
       `<path d="M8.4 14.4l1.6-2.6.4 2.4 1.6-.6-1.8 2z" fill="${C.cati}"/>` + ink('M8.4 14.4l1.6-2.6.4 2.4 1.6-.6-1.8 2z', .4)];
   }
 
-  // ÇERÇEVE: kenar (yatay, 48 birimde bir tekrar eder) ve köşe
-  const kenarMotif = (x0) => {
-    let d = '';
-    [12, 36].forEach(dx => { const x = x0 + dx; d += `<path d="M${x} 6.4L${x + 5.6} 12L${x} 17.6L${x - 5.6} 12Z" fill="${C.cati}" stroke="${K}" stroke-width=".7" stroke-linejoin="round"/><path d="M${x} 9.4L${x + 2.6} 12L${x} 14.6L${x - 2.6} 12Z" fill="${C.duvar}"/>`; });
-    [0, 24, 48].forEach(dx => { d += `<circle cx="${x0 + dx}" cy="12" r="2.4" fill="${C.tepe}" stroke="${K}" stroke-width=".6"/>`; });
-    d += ink(`M${x0 + 2.4} 12h4M${x0 + 17.6} 12h4M${x0 + 26.4} 12h4M${x0 + 41.6} 12h4`, .6);
-    return d;
+  // ÇERÇEVE: kenar (yatay, 48 birimde bir dikişsiz tekrar eder) ve köşe
+  // kenar: ince çift çizgi arasında kıvrılan sarmaşık; yapraklar sıfır noktalarında, sırayla yukarı ve aşağı
+  const yaprak = (x, y, u) => `M${x} ${y}C${f(x + .3)} ${f(y - 1.8 * u)} ${f(x + 1.2)} ${f(y - 2.9 * u)} ${f(x + 2.7)} ${f(y - 3.2 * u)}C${f(x + 2.6)} ${f(y - 1.8 * u)} ${f(x + 1.8)} ${f(y - .7 * u)} ${x} ${y}Z`;
+  const kenarMotif = x0 => {
+    let vine = `M${x0 - 1} ${f(12 - 2.4 * Math.sin(Math.PI / 12))}`;
+    for (let i = 0; i <= 49; i++) { const x = x0 + i; vine += `L${x} ${f(12 + 2.4 * Math.sin(i / 24 * Math.PI * 2))}`; }
+    let leaves = '';
+    [0, 12, 24, 36, 48].forEach((dx, k) => { leaves += yaprak(x0 + dx, 12, k % 2 ? -1 : 1); });
+    const berry = [18, 42].map(dx => `<circle cx="${x0 + dx}" cy="${f(12 - 2.4 - 1.5)}" r=".95" fill="${C.cati}" stroke="${K}" stroke-width=".35"/>`).join('');
+    return ink(vine, .6) + wash(leaves, C.tepe) + ink(leaves, .45) + berry;
   };
-  const kenarSerit = (x0, w) => `<rect x="${x0}" y="2" width="${w}" height="20" fill="${C.duvar}"/>` + `<path d="M${x0} 2.8h${w}M${x0} 21.2h${w}" stroke="${K}" stroke-width="1.6"/><path d="M${x0} 4.8h${w}M${x0} 19.2h${w}" stroke="${K}" stroke-width=".5"/>`;
+  // kenar pikselleri dolu kalsın diye şerit parça sınırının 1 birim dışına taşar (viewBox keser)
+  const kenarSerit = (x0, w) => `<rect x="${x0 - 1}" y="2" width="${w + 2}" height="20" fill="${C.duvar}"/>` + `<path d="M${x0 - 1} 2.8h${w + 2}M${x0 - 1} 21.2h${w + 2}" stroke="${K}" stroke-width="1.6"/><path d="M${x0 - 1} 5h${w + 2}M${x0 - 1} 19h${w + 2}" stroke="${K}" stroke-width=".5"/>`;
   D.cerceveKenar = [48, 24, kenarSerit(0, 48) + kenarMotif(0)];
   {
     const band = kenarSerit(24, 48) + kenarMotif(24);
-    const blok = `<rect x="2" y="2" width="20" height="20" fill="${C.cati}"/>` + ink('M2.8 21.2V2.8h18.4V21.2H2.8', 1.6) +
-      `<path d="M12 4.6L14.2 9.8L19.4 12L14.2 14.2L12 19.4L9.8 14.2L4.6 12L9.8 9.8Z" fill="${C.duvar}" stroke="${K}" stroke-width=".6" stroke-linejoin="round"/><circle cx="12" cy="12" r="1.6" fill="${C.tepe}" stroke="${K}" stroke-width=".5"/>`;
-    const lale = `<g transform="translate(23 23) rotate(45)" stroke="${K}" stroke-width=".6" stroke-linejoin="round"><path d="M1 0C3 -4.6 7 -6.4 10 -5.6C8.2 -2.6 5 -.6 1 0Z" fill="${C.orman}"/><path d="M1 0C3 4.6 7 6.4 10 5.6C8.2 2.6 5 .6 1 0Z" fill="${C.orman}"/><path d="M1 0C4 -3 9 -2.6 12.4 0C9 2.6 4 3 1 0Z" fill="${C.cati}"/><circle cx="1.4" cy="0" r="1.3" fill="${C.tepe}"/></g>`;
-    D.cerceveKose = [72, 72, band + `<g transform="matrix(0 1 1 0 0 0)">${band}</g>` + `<rect x="2" y="2" width="20" height="20" fill="${C.duvar}"/>` + blok + lale];
+    // köşe: kare çerçeve içinde dört köşeli pusula yıldızı (sol ve üst yarılar açık, sağ ve alt yarılar koyu)
+    const kol = (tx, ty, lx, ly, rx, ry) => wash(P([[12, 12], [lx, ly], [tx, ty]], true), C.kar) + wash(P([[12, 12], [tx, ty], [rx, ry]], true), C.tepeK) + ink(P([[lx, ly], [tx, ty], [rx, ry], [12, 12]], true), .5);
+    const blok = `<rect x="2" y="2" width="20" height="20" fill="${C.duvar}"/>` + ink('M2.8 21.2V2.8h18.4V21.2H2.8', 1.6) + ink('M5 19V5h14v14H5', .5) +
+      ink('M12 12L7.4 7.4M12 12l4.6-4.6M12 12l4.6 4.6M12 12l-4.6 4.6', .5) +
+      kol(12, 5.6, 10.6, 10.6, 13.4, 10.6) + kol(18.4, 12, 13.4, 10.6, 13.4, 13.4) + kol(12, 18.4, 13.4, 13.4, 10.6, 13.4) + kol(5.6, 12, 10.6, 13.4, 10.6, 10.6) +
+      `<circle cx="12" cy="12" r="1.3" fill="${C.cati}" stroke="${K}" stroke-width=".4"/>`;
+    D.cerceveKose = [72, 72, band + `<g transform="matrix(0 1 1 0 0 0)">${band}</g>` + blok];
   }
 
   const names = Object.keys(D), size = {};
@@ -4441,6 +4443,17 @@ function buildWorldArt(N, coast) {
   marks.sort((a, b) => a[0] - b[0]); for (const [, f] of marks) f();
   // kıyı: mürekkep çizgisi
   g.strokeStyle = ART.ink; g.lineWidth = .3; g.globalAlpha = .8; g.stroke(coast); g.globalAlpha = 1;
+  // çerçeve: kenar şeridi döşenerek (dikişsiz), köşelerde köşe süsü
+  if (IMG && ZS_MAP.size.cerceveKenar && ZS_MAP.size.cerceveKose) {
+    const bh = 9 * S, [kw, kh] = ZS_MAP.size.cerceveKenar, tile = document.createElement('canvas');
+    tile.width = Math.round(bh * kw / kh); tile.height = bh; tile.getContext('2d').drawImage(MAPIMG.cerceveKenar, 0, 0, tile.width, tile.height);
+    const pat = g.createPattern(tile, 'repeat-x'), Wp = c.width, Hp = c.height, cs = bh * ZS_MAP.size.cerceveKose[0] / kh;
+    const band = (x, y, len, ang) => { g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.translate(x, y); g.rotate(ang); g.fillStyle = pat; g.fillRect(0, 0, len, bh); g.restore(); };
+    band(0, 0, Wp, 0); band(Wp, Hp, Wp, Math.PI); band(Wp, 0, Hp, Math.PI / 2); band(0, Hp, Hp, -Math.PI / 2);
+    for (const [x, y, a] of [[0, 0, 0], [Wp, 0, Math.PI / 2], [Wp, Hp, Math.PI], [0, Hp, -Math.PI / 2]]) {
+      g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.translate(x, y); g.rotate(a); g.drawImage(MAPIMG.cerceveKose, 0, 0, cs, cs); g.restore();
+    }
+  }
   // kâğıt dokusu: bütün resmin üstüne hafif lekeler
   { const pc = document.createElement('canvas'); pc.width = pc.height = 256; const pg = pc.getContext('2d'), pim = pg.createImageData(256, 256), nn = noise2(WORLD_SEED + 4321);
     for (let y = 0; y < 256; y++) for (let x = 0; x < 256; x++) { const v = nn(x / 40, y / 40, 4) * 180 + (R() - .5) * 40, o = (y * 256 + x) * 4; pim.data[o] = 120 + v * .3; pim.data[o + 1] = 100 + v * .25; pim.data[o + 2] = 70 + v * .2; pim.data[o + 3] = 255; }
@@ -4559,7 +4572,7 @@ function drawWorld() {
   if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
   const g = cv.getContext('2d'), N = WD.N, s = wv.s, idx = Object.fromEntries(REGIONS.map((R, k) => [R.id, k]));
   g.setTransform(dpr, 0, 0, dpr, 0, 0);
-  g.fillStyle = WD.art ? ART.seaDeep : '#1c4268'; g.fillRect(0, 0, W, H);   // açık deniz (arazi resmindeki derin deniz rengi)
+  g.fillStyle = WD.art ? '#4a3b2a' : '#1c4268'; g.fillRect(0, 0, W, H);   // parşömen haritanın dışı: koyu masa   // açık deniz (arazi resmindeki derin deniz rengi)
   g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
   const img = () => g.drawImage(WD.img, 0, WORLD_Y0 * WD.ppc, N * WD.ppc, WORLD_H * WD.ppc, 0, WORLD_Y0, N, WORLD_H);
   g.save(); g.translate(wv.ox, wv.oy); g.scale(s, s); g.translate(0, -WORLD_Y0);
@@ -4624,7 +4637,8 @@ function drawWorld() {
     g.globalAlpha = Math.min(1, Math.max(0, 1 - (zoomK - 1.4) * 1.25));
     LANDS.forEach((L, li) => {
       const hw = g.measureText(pos[li].t).width / 2 + 6;   // yazı pencereden taşmasın
-      const x = Math.max(hw, Math.min(W - hw, wv.ox + pos[li].x)), y = wv.oy + pos[li].y;
+      const fr = WD.art ? 9 * s : 0;   // parşömen çerçevesinin içinde kalsın
+      const x = Math.max(hw, wv.ox + fr + hw, Math.min(W - hw, wv.ox + N * s - fr - hw, wv.ox + pos[li].x)), y = wv.oy + pos[li].y;
       g.lineWidth = 5; g.strokeStyle = 'rgba(43,33,24,.85)'; g.strokeText(pos[li].t, x, y); g.fillStyle = '#f2e9d4'; g.fillText(pos[li].t, x, y);
     });
     g.globalAlpha = 1;
