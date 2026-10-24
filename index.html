@@ -3285,8 +3285,8 @@ const REGIONS = [
   {id: 'tas', name: 'Taş Obası', land: 0, x: .12, y: .77, scen: 'klasik',
    intro: 'Kayalık bir düzlük. Obalar sınırlarını korumak için birleşmiş.'},
   {id: 'sazlik', name: 'Sazlık', land: 0, x: .2, y: .55, boss: true},
-  {id: 'kayalik', name: 'Kayalık Burun', land: 0, x: .05, y: .44, scen: 'takimada',
-   intro: 'Denize uzanan kayalık bir burun. Koylar arasında kayıkla dolaşmak gerekecek.'},
+  {id: 'kayalik', name: 'Kayalık Burun', land: 0, x: .05, y: .44, scen: 'dag',
+   intro: 'Denize uzanan kayalık bir burun. Sarp kayaların tepesini tutan, burnu tutar.'},
   {id: 'sinirKule', name: 'Sınır Kulesi', land: 0, x: .16, y: .46, scen: 'kale',
    intro: 'Eski bir gözcü kulesi iki vadiye birden bakıyor. Onu tutan, sınırı tutar.'},
   {id: 'coban', name: 'Çoban Yurdu', land: 0, x: .07, y: .68, scen: 'kitlik',
@@ -3309,8 +3309,8 @@ const REGIONS = [
    intro: 'Söğütlerin gölgesindeki köyler. Çabuk davranmazsan komşular önce davranır.'},
   {id: 'kamisli', name: 'Kamışlı Ova', land: 1, x: .42, y: .7, scen: 'nehir',
    intro: 'Kamışlıklarla bölünmüş bir ova. Sulak toprakta her adım pahalı.'},
-  {id: 'sazliGol', name: 'Sazlı Göl', land: 1, x: .49, y: .77, scen: 'takimada',
-   intro: 'Gölün ortasındaki adacıklar, kıyıdaki köyleri birbirinden ayırıyor.'},
+  {id: 'sazliGol', name: 'Sazlı Göl', land: 1, x: .49, y: .77, scen: 'orman',
+   intro: 'Gölün çevresi boy boy sazlıklarla kaplı. Sazların arasında ilerlemek yavaş ve pahalı.'},
   {id: 'nehirAgzi', name: 'Nehir Ağzı', land: 1, x: .61, y: .78, scen: 'bas',
    intro: 'Nehrin denize döküldüğü yerde bir liman beyi hüküm sürüyor. Onun sancağı düşmeden liman teslim olmaz.'},
   {id: 'comlekci', name: 'Çömlekçi Köyü', land: 1, x: .23, y: .67, scen: 'klasik',
@@ -3347,8 +3347,8 @@ const REGIONS = [
   {id: 'demirSinir', name: 'Demir Sınır', land: 3, x: .65, y: .27, boss: true},
   {id: 'ayazli', name: 'Ayazlı Köy', land: 3, x: .2, y: .1, scen: 'hayatta',
    intro: 'Kuzeyin ayazında köyler ilk yabancıya hep birlikte saldırır. Ayakta kalman yeter.'},
-  {id: 'buzGolu', name: 'Buz Gölü', land: 3, x: .34, y: .07, scen: 'takimada',
-   intro: 'Donmuş gölün ortasındaki adalar, ancak buz tutan yerlerden geçilerek alınır.'},
+  {id: 'buzGolu', name: 'Buz Gölü', land: 3, x: .34, y: .07, scen: 'akin',
+   intro: 'Göl donmuşken karşı kıyıya yürümek kolay. Buz çözülmeden çabuk davranmalısın.'},
   {id: 'kartal', name: 'Kartal Yuvası', land: 3, x: .47, y: .07, scen: 'dag',
    intro: 'Kayalıkların tepesine kurulmuş bir kale. Kartallar bile güçlükle ulaşır.'},
   {id: 'demirOcak', name: 'Demir Ocakları', land: 3, x: .7, y: .08, scen: 'kale',
@@ -3766,7 +3766,9 @@ const canAttack = (r, id) => !(id in r.owned) && buildWorld().adj[id].some(n => 
 // Arazi resmi kare başına 8 px (dev resim belleği şişirmesin)
 const WORLD_N = 396, WORLD_Y0 = 57, WORLD_H = 282, WORLD_SEED = 20261019, WORLD_AR = WORLD_N / WORLD_H, WORLD_PPC = 8;
 // WK: kıyı gürültüsünün büyük/orta/küçük ölçekleri, bölge sınırının kıvrılması, açıklarda ada ve burun eşikleri
-let WORLD_BLOB = .105, WORLD_WARP = .32, WK = [1.4, .55, .18, .09, .6, .62];   // yerleşimin çevresindeki kara yarıçapı ve haritanın bükülme gücü (şerit yüksekliği cinsinden)
+let WORLD_BLOB = .105, WORLD_WARP = .32, WK = [1.4, .55, .18, .09, .6, .62];
+// takımada ada kümesi (kare): kıyıdan en az uzaklık · kümenin yayılması · ada sayısı · ada yarıçapı
+let WORLD_ISLE = [9, 14, 6, 4];   // yerleşimin çevresindeki kara yarıçapı ve haritanın bükülme gücü (şerit yüksekliği cinsinden)
 // körfezler ve iç denizler: x, y, yarıçap (şerit yüksekliği cinsinden); kıyıları gürültüyle bozulur
 const GULFS = [{x: .06, y: .14, r: .12}, {x: .63, y: .9, r: .1}, {x: .4, y: .27, r: .045}, {x: .97, y: .88, r: .14}, {x: .2, y: .97, r: .07}];
 // dış deniz: bölgelerin ve körfezlerin 0–1 konumları şeridin iç çerçevesine taşınır (yatay pay, dikeyle aynı kare sayısı)
@@ -3810,16 +3812,50 @@ function buildWorld() {
       const isle = edge > .08 && s > -WK[4] && gn(u * 34 + 7, v * 24 - 2, 3) > WK[5];
       if (s < .1 && !isle) terr[i] = T.DENIZ;
     }
-    // takımadalar: Kıyı Adaları ve İmparatorluk Limanı çevresi
-    for (const A of [REGMAP.kiyi, REGMAP.liman]) for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
-      const [u, v] = uv(x, y), d = dist(u, v, A);
-      if (d < .096 && cn(u * 40 + 9, v * 27 - 4, 2) < .54 - d * 4) terr[y * N + x] = T.DENIZ;
-    }
     // yerleşimler karada: merkezin hemen çevresi kara (arazi üreticisinin gölü de)
     for (const R of REGIONS) { const cx = R.x * N, cy = WORLD_Y0 + R.y * WORLD_H;
       for (let y = Math.floor(cy - S0); y <= cy + S0; y++) for (let x = Math.floor(cx - S0); x <= cx + S0; x++)
         if (Math.hypot(x + .5 - cx, y + .5 - cy) <= S0 && terr[y * N + x] === T.DENIZ) terr[y * N + x] = T.CAYIR; }
     cleanSmall();
+    // takımadalar: Takımada senaryolu kıyı bölgelerinin açığında bir ada kümesi (adalar o bölgenin toprağı sayılır).
+    // Bölgeye en yakın açık deniz noktası (karaya en az ISLE_OFF kare) bulunur, çevresine birkaç küçük ada serpilir;
+    // adalar ana karaya ve birbirine değmez, çok küçük parçalar atılır.
+    const isleOf = new Int8Array(N * N).fill(-1), inN = noise2(WORLD_SEED + 577), tn = noise2(WORLD_SEED + 677);
+    const dLand = new Int16Array(N * N).fill(-1), q0 = [];
+    for (let i = 0; i < N * N; i++) if (terr[i] !== T.DENIZ) { dLand[i] = 0; q0.push(i); }
+    for (let h = 0; h < q0.length; h++) { const i = q0[h], x = i % N, y = (i / N) | 0;
+      for (const [dx, dy] of NB4) { const nx = x + dx, ny = y + dy, j = ny * N + nx; if (nx >= 0 && ny >= 0 && nx < N && ny < N && dLand[j] < 0) { dLand[j] = dLand[i] + 1; q0.push(j); } } }
+    const [ISLE_OFF, ISLE_SPREAD, ISLE_N, ISLE_R] = WORLD_ISLE;
+    REGIONS.forEach((R, k) => {
+      if (R.scen !== 'takimada') return;
+      const cx = R.x * N, cy = WORLD_Y0 + R.y * WORLD_H;
+      let ax = -1, ay = -1, bd = Infinity;
+      for (let y = WORLD_Y0 + 8; y < WORLD_Y0 + WORLD_H - 8; y++) for (let x = 8; x < N - 8; x++) {
+        const i = y * N + x; if (dLand[i] < ISLE_OFF) continue;
+        const d = Math.hypot(x - cx, y - cy); if (d < bd) { bd = d; ax = x; ay = y; }
+      }
+      if (ax < 0) return;
+      const rr = rng(WORLD_SEED + 31 * k);
+      for (let b = 0; b < ISLE_N; b++) {
+        const ang = rr() * Math.PI * 2, dd = b ? ISLE_SPREAD * (.35 + .65 * rr()) : 0;
+        const bx = ax + Math.cos(ang) * dd, by = ay + Math.sin(ang) * dd, br = ISLE_R * (.55 + .7 * rr());
+        for (let y = Math.floor(by - br * 1.6); y <= by + br * 1.6; y++) for (let x = Math.floor(bx - br * 1.6); x <= bx + br * 1.6; x++) {
+          if (x < 4 || y < WORLD_Y0 + 4 || x >= N - 4 || y >= WORLD_Y0 + WORLD_H - 4) continue;
+          const i = y * N + x; if (terr[i] !== T.DENIZ || dLand[i] < 3) continue;
+          const w = 1 + (inN(x / N * 40 + k, y / N * 40, 3) - .5) * 1.3;   // kıyısı yuvarlak olmasın
+          if (Math.hypot(x - bx, y - by) <= br * w) isleOf[i] = k;
+        }
+      }
+    });
+    { const seen = new Uint8Array(N * N);
+      for (let i = 0; i < N * N; i++) if (isleOf[i] >= 0 && !seen[i]) {
+        const comp = [i], st = [i]; seen[i] = 1;
+        while (st.length) { const j = st.pop(), x = j % N, y = (j / N) | 0;
+          for (const [dx, dy] of NB4) { const nx = x + dx, ny = y + dy, q = ny * N + nx; if (nx >= 0 && ny >= 0 && nx < N && ny < N && !seen[q] && isleOf[q] >= 0) { seen[q] = 1; st.push(q); comp.push(q); } } }
+        if (comp.length < 14) for (const j of comp) isleOf[j] = -1;
+        else for (const j of comp) { const x = j % N, y = (j / N) | 0, t = tn(x / N * 30, y / N * 30, 2);
+          terr[j] = t > .62 ? T.TEPE : t > .5 ? T.ORMAN : T.CAYIR; }
+      } }
     // akarsular denize vardığı yerde biter; kesilen parçalar karaya döner
     rivers = rivers.map(rv => { const k = rv.findIndex(i => terr[i] === T.DENIZ); return k < 0 ? rv : rv.slice(0, k + 1); }).filter(rv => rv.length > 6);
     const onRiver = new Uint8Array(N * N); for (const rv of rivers) for (const i of rv) onRiver[i] = 1;
@@ -3842,7 +3878,7 @@ function buildWorld() {
     // bölgeler: her kara karesi bükülmüş haritada en yakın bölge merkezine (sınırlar kıvrık)
     const reg = new Int8Array(N * N).fill(-1);
     for (let y = WORLD_Y0; y < WORLD_Y0 + WORLD_H; y++) for (let x = 0; x < N; x++) {
-      const i = y * N + x; if (terr[i] !== T.DENIZ) reg[i] = nearR[i];
+      const i = y * N + x; if (terr[i] !== T.DENIZ) reg[i] = isleOf[i] >= 0 ? isleOf[i] : nearR[i];
     }
     // komşuluk: en az 3 karelik ortak sınır (köşeden değmek sayılmaz)
     const shared = new Map(), border = new Path2D();
