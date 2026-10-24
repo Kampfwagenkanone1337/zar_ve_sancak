@@ -509,6 +509,7 @@
       <hr class="menuSep">
       <button class="sec" id="pSet"><i data-ic="ayar"></i><span data-en="Settings" class="tx">Ayarlar</span></button>
       <button class="sec" id="pHow"><i data-ic="tomar"></i><span data-en="How to Play" class="tx">Nasıl Oynanır</span></button>
+      <button class="sec" id="pRetreat"><i data-ic="vazgec"></i><span data-en="Retreat from Battle&lt;small id=&quot;pRetreatInfo&quot;&gt;&lt;/small&gt;" class="tx">Savaştan Çekil<small id="pRetreatInfo"></small></span></button>
       <button class="sec" id="pMenu"><i data-ic="cikis"></i><span data-en="Main Menu&lt;small id=&quot;pMenuInfo&quot;&gt;&lt;/small&gt;" class="tx">Ana Menü<small id="pMenuInfo"></small></span></button>
     </div>
   </div>
@@ -4505,6 +4506,9 @@ function openPause() {
   hideTip();
   hideAll(); paused = true;
   $('pMenuInfo').textContent = over ? '' : tx('Oyun bu sıranın başından kayıtlı', 'Saved from the start of this turn');
+  // savaştan çekilme: oyun bitmişse gerekmez
+  $('pRetreat').classList.toggle('hidden', over);
+  $('pRetreatInfo').textContent = cfg.chapter != null && REGMAP[cfg.chapter] ? tx('Yenilgi sayılır, bölge düşmanda kalır', 'Counts as a defeat, the region stays with the enemy') : tx('Yenilgi sayılır', 'Counts as a defeat');
   $('pause').classList.remove('hidden');
 }
 function closePause() {
@@ -4525,6 +4529,21 @@ function escMenu() {
 $('pResume').onclick = () => { SFX.play('click'); closePause(); };
 $('pSet').onclick = () => { SFX.play('click'); openSub('settings', true); };
 $('pHow').onclick = () => { SFX.play('click'); openSub('howto', true); };
+// savaştan tamamen çekil: yenilgi sayılır (istatistikler, seferde bölgedeki yenilgi sayısı); kayıt silinir;
+// sonuç penceresi açılmadan seferde fetih haritasına, serbest oyunda ana menüye dönülür
+$('pRetreat').onclick = async () => {
+  const camp = cfg.chapter != null && REGMAP[cfg.chapter];
+  if (!await ask(IC('vazgec', 26) + tx(' Savaştan çekil', ' Retreat from battle'),
+    camp ? tx(`Savaştan çekilirsen bu savaş yenilgi sayılır ve kaydı silinir; <b>${REGMAP[cfg.chapter].name}</b> düşmanda kalır. İstediğin zaman yeniden saldırabilirsin.`,
+        `If you retreat, this battle counts as a defeat and its save is deleted; <b>${REGMAP[cfg.chapter].name}</b> stays in enemy hands. You can attack again whenever you like.`)
+      : tx('Savaştan çekilirsen bu oyun yenilgi sayılır ve kaydı silinir.', 'If you retreat, this game counts as a defeat and its save is deleted.'),
+    tx('Çekil', 'Retreat'), tx('Oyuna devam', 'Keep playing'))) return;
+  glEvent({type: 'cekilme'}); glSnap(); glSave({title: 'cekilme', turn});
+  over = true; halted = true; paused = false; npcWaiting = false; clearSave();
+  onGameEnd(false);
+  SFX.play('click');
+  if (camp) openCamp(); else showMenu();
+};
 $('pMenu').onclick = async () => {
   if (!over && !await ask(IC('baskent', 26) + tx(' Ana menü', ' Main menu'), tx('Ana menüye dönülsün mü? Oyun bu sıranın başından kayıtlı, sonra devam edebilirsin.', 'Return to the main menu? The game is saved from the start of this turn; you can continue later.'),
     tx('Ana menüye dön', 'Main menu'), tx('Oyuna devam', 'Keep playing'))) return;
