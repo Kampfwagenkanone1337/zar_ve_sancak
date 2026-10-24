@@ -4333,9 +4333,20 @@ function buildWorldArt(N, coast) {
     }
     hg.putImageData(im, 0, 0);
     g.save(); g.globalCompositeOperation = 'soft-light'; g.globalAlpha = .9; g.imageSmoothingEnabled = true; g.drawImage(hc, 0, Y0, N, H); g.restore(); }
+  // köy kareleri (bölge merkezindeki 5×5 blok) çevresindeki en yaygın arazi sayılır: ormanda kare açıklık kalmasın
+  const ter = terr.slice();
+  for (const v of villages) {
+    const cnt = {};
+    for (let y = v.y0 - 1; y <= v.y1 + 1; y++) for (let x = v.x0 - 1; x <= v.x1 + 1; x++) {
+      if (x >= v.x0 && x <= v.x1 && y >= v.y0 && y <= v.y1) continue;
+      const t = terr[y * N + x]; if (t !== T.DENIZ && t !== T.KOY) cnt[t] = (cnt[t] || 0) + 1;
+    }
+    let best = T.CAYIR, bn = 0; for (const t in cnt) if (cnt[t] > bn) { bn = cnt[t]; best = +t; }
+    for (let y = v.y0; y <= v.y1; y++) for (let x = v.x0; x <= v.x1; x++) ter[y * N + x] = best;
+  }
   // arazi lekeleri: suluboya gibi (yumuşak kenar, kenarda koyu iz)
   const blob = (type, fill, edge, a) => {
-    const p = smoothOutline(N, null, i => terr[i] === type);
+    const p = smoothOutline(N, null, i => ter[i] === type);
     g.save(); g.globalAlpha = a; g.filter = 'blur(1.5px)'; g.fillStyle = fill; g.fill(p, 'evenodd'); g.restore();
     g.save(); g.globalAlpha = .35; g.strokeStyle = edge; g.lineWidth = .35; g.stroke(p); g.restore();
   };
@@ -4351,9 +4362,9 @@ function buildWorldArt(N, coast) {
   const scatter = (type, step, fn) => {
     for (let y = Y0; y < Y0 + H; y += step) for (let x = 0; x < N; x += step) {
       const jx = x + R() * step, jy = y + R() * step, ix = Math.floor(jx), iy = Math.floor(jy), i = iy * N + ix;
-      if (!inW(ix, iy) || terr[i] !== type || near[i]) continue;
+      if (!inW(ix, iy) || ter[i] !== type || near[i]) continue;
       // lekenin kenarına taşmasın: dört yanı da aynı tür olsun
-      if (terr[i - 1] !== type || terr[i + 1] !== type || terr[i - N] !== type || terr[i + N] !== type) continue;
+      if (ter[i - 1] !== type || ter[i + 1] !== type || ter[i - N] !== type || ter[i + N] !== type) continue;
       marks.push([jy, () => fn(jx, jy, i)]);
     }
   };
@@ -4434,11 +4445,24 @@ function buildWorldArt(N, coast) {
       marks.push([y, () => sym(pick('sazlik', 2), x + .5, y + .9, 1.5)]);
     }
     // açık deniz süsleri: karaya uzak, harita kenarına yakın olmayan yerler
-    const spot = (minD, maxD, avoid) => { for (let t = 0; t < 4000; t++) { const x = 6 + Math.floor(R() * (N - 12)), y = Y0 + 6 + Math.floor(R() * (H - 12)), d = dl[y * N + x];
-      if (d >= minD && d <= maxD && avoid.every(([ax, ay]) => Math.hypot(ax - x, ay - y) > 40)) { avoid.push([x, y]); return [x, y]; } } return null; };
-    const used = [];
-    const deco = [['pusula', 22, 14, 60], ['denizCanavari', 6, 9, 30], ['gemi1', 4, 6, 14], ['gemi2', 3.6, 5, 12]];
-    for (const [n, h, a, b] of deco) { const p = spot(a, b, used); if (p) marks.push([p[1], () => sym(n, p[0], p[1], h)]); }
+    // süs, merkezi (cx, cy) ve yarıçapı r: tamamı denizde (karaya en az r kadar uzak) ve çerçevenin içinde olmalı
+    const FR = 10, used = [];
+    const fits = (cx, cy, r) => cx - r > FR && cx + r < N - FR && cy - r > Y0 + FR && cy + r < Y0 + H - FR
+      && dl[Math.round(cy) * N + Math.round(cx)] >= Math.ceil(r * 1.42) + 2 && used.every(([ax, ay]) => Math.hypot(ax - cx, ay - cy) > 35);
+    const put = (n, h, cx, cy) => { used.push([cx, cy]); marks.push([cy + h / 2, () => sym(n, cx, cy + h / 2, h)]); };
+    { // pusula: haritanın bir köşesine en yakın boş deniz
+      const h = 22, r = h / 2 + 1; let best = null, bd = Infinity;
+      for (let cy = Y0; cy < Y0 + H; cy += 2) for (let cx = 0; cx < N; cx += 2) {
+        if (!fits(cx, cy, r)) continue;
+        const d = Math.min(Math.hypot(cx, cy - Y0 - H), Math.hypot(N - cx, cy - Y0 - H), Math.hypot(cx, cy - Y0), Math.hypot(N - cx, cy - Y0));
+        if (d < bd) { bd = d; best = [cx, cy]; }
+      }
+      if (best) put('pusula', h, best[0], best[1]);
+    }
+    for (const [n, h] of [['denizCanavari', 6], ['gemi1', 4], ['gemi2', 3.6]]) {
+      const [w0, h0] = ZS_MAP.size[n], r = Math.max(h, h * w0 / h0) / 2 + 1;
+      for (let t = 0; t < 4000; t++) { const cx = Math.floor(R() * N), cy = Y0 + Math.floor(R() * H); if (fits(cx, cy, r)) { put(n, h, cx, cy); break; } }
+    }
   }
   marks.sort((a, b) => a[0] - b[0]); for (const [, f] of marks) f();
   // kıyı: mürekkep çizgisi
@@ -4605,7 +4629,8 @@ function drawWorld() {
   if (key !== ownedKey) { ownedKey = key; ownedOutline = smoothOutline(N, WD.reg, i => WD.reg[i] >= 0 && REGIONS[WD.reg[i]].id in r.owned); }
   g.strokeStyle = '#f2e9d4'; g.lineWidth = 6 / s; g.stroke(ownedOutline);   // krem kenar: sınır kıyıda da denizden ayrılsın
   g.strokeStyle = HUMAN_COLORS[0]; g.lineWidth = 3.2 / s; g.stroke(ownedOutline);
-  if (wSel && REGMAP[wSel]) { g.strokeStyle = '#2b2118'; g.lineWidth = 3.4 / s; g.stroke(WD.outlines[idx[wSel]]); }
+  // seçili bölge: koyu alt çizgi üstünde altın sarısı (siyah, bölge sınırlarıyla karışıyordu)
+  if (wSel && REGMAP[wSel]) { const o = WD.outlines[idx[wSel]]; g.strokeStyle = '#2b2118'; g.lineWidth = 6 / s; g.stroke(o); g.strokeStyle = '#f2c14e'; g.lineWidth = 3.2 / s; g.stroke(o); }
   g.restore();
   const ui = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ui')) || 1;
   g.lineJoin = 'round';
