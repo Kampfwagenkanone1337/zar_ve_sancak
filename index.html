@@ -744,7 +744,8 @@ const LANG = (() => { try { const v = localStorage.getItem(LANG_KEY); if (v === 
   return 'en'; })();
 const EN = LANG === 'en';
 const tx = (tr, en) => EN ? en : tr;
-function setLang(v) { try { localStorage.setItem(LANG_KEY, v); } catch (e) {} location.reload(); }
+// masaüstü sürümünde sayfa kendi kendini yenileyemez (gezinme engelli); yenilemeyi ana süreç yapar
+function setLang(v) { try { localStorage.setItem(LANG_KEY, v); } catch (e) {} if (window.desktop && window.desktop.reload) window.desktop.reload(); else location.reload(); }
 if (EN) {
   document.documentElement.lang = 'en'; document.title = 'Dice & Banner';
   document.querySelectorAll('[data-en]').forEach(el => { el.innerHTML = el.dataset.en; });
