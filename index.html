@@ -4199,6 +4199,17 @@ function buildWorld() {
     for (const R of REGIONS) { const cx = R.x * N, cy = WORLD_Y0 + R.y * WORLD_H;
       for (let y = Math.floor(cy - S0); y <= cy + S0; y++) for (let x = Math.floor(cx - S0); x <= cx + S0; x++)
         if (Math.hypot(x + .5 - cx, y + .5 - cy) <= S0 && terr[y * N + x] === T.DENIZ) terr[y * N + x] = T.CAYIR; }
+    // bir kare inceliğindeki kara şeritleri (iki yanı da su) suya döner: yumuşatılınca kayboluyor, sınır çizgisi havada kalıyordu
+    for (let it = 0; it < 3; it++) {
+      const kill = [];
+      for (let y = WORLD_Y0 + 1; y < WORLD_Y0 + WORLD_H - 1; y++) for (let x = 1; x < N - 1; x++) {
+        const i = y * N + x; if (terr[i] === T.DENIZ) continue;
+        const sea = d => terr[i + d] === T.DENIZ;
+        if (((sea(-1) && sea(1)) || (sea(-N) && sea(N))) && REGIONS.every(R => Math.hypot(x - R.x * N, y - WORLD_Y0 - R.y * WORLD_H) > S0 + 2)) kill.push(i);
+      }
+      if (!kill.length) break;
+      for (const i of kill) terr[i] = T.DENIZ;
+    }
     cleanSmall();
     // takımadalar: Takımada senaryolu kıyı bölgelerinin açığında bir ada kümesi (adalar o bölgenin toprağı sayılır).
     // Bölgeye en yakın açık deniz noktası (karaya en az ISLE_OFF kare) bulunur, çevresine birkaç küçük ada serpilir;
@@ -4263,6 +4274,7 @@ function buildWorld() {
     for (let y = WORLD_Y0; y < WORLD_Y0 + WORLD_H; y++) for (let x = 0; x < N; x++) {
       const i = y * N + x; if (terr[i] !== T.DENIZ) reg[i] = isleOf[i] >= 0 ? isleOf[i] : nearR[i];
     }
+    cleanRegions(N, reg);
     // komşuluk: en az 3 karelik ortak sınır (köşeden değmek sayılmaz)
     const shared = new Map(), border = new Path2D();
     const touch = (a, b) => { const k = Math.min(a, b) * 100 + Math.max(a, b); shared.set(k, (shared.get(k) || 0) + 1); };
@@ -4274,8 +4286,9 @@ function buildWorld() {
     const adj = Object.fromEntries(REGIONS.map(R => [R.id, []]));
     for (const [k, n] of shared) if (n >= 3) { const a = REGIONS[Math.floor(k / 100)].id, b = REGIONS[k % 100].id; adj[a].push(b); adj[b].push(a); }
     // bölge alanları ve dış çizgileri: kare kenarları yerine yumuşatılmış halkalar (boyama evenodd ile)
-    const outlines = REGIONS.map((_, k) => smoothOutline(N, reg, i => reg[i] === k));
-    const coast = smoothOutline(N, reg, i => land[i] === 1);
+    const CH = regionChains(N, reg);
+    const outlines = REGIONS.map((_, k) => CH.loops(l => l === k));
+    const coast = CH.loops(l => l >= 0);
     // su katmanı bir kez çizilir (her karede 9 kalın çizgi çizmek yavaştı): derin deniz + kıyıdan açığa koyulaşan sığlık
     const WS = 4, water = document.createElement('canvas'); water.width = N * WS; water.height = WORLD_H * WS;
     const wg = water.getContext('2d'); wg.fillStyle = '#1c4268'; wg.fillRect(0, 0, water.width, water.height);
@@ -4284,8 +4297,9 @@ function buildWorld() {
     // ülke adı için aday noktalar: her ülkenin kara kareleri (3 karede bir)
     const landCells = LANDS.map(() => []);
     for (let y = WORLD_Y0; y < WORLD_Y0 + WORLD_H; y += 3) for (let x = 0; x < N; x += 3) { const k = reg[y * N + x]; if (k >= 0) landCells[REGIONS[k].land].push(y * N + x); }
-    const art = WORLD_ART ? buildWorldArt(N, coast) : null;
-    WD = {N, img: terrImg, ppc: PPC, reg, adj, paths: outlines, border, outlines, coast, water, landCells, art};
+    const AW = WORLD_ART ? buildWorldArt(N, coast) : null;
+    WD = {N, img: terrImg, ppc: PPC, reg, adj, paths: outlines, border, outlines, coast, water, landCells, chains: CH,
+      art: AW && AW.art, artBase: AW && AW.base, artS: AW && AW.S, syms: AW ? AW.syms : [], towns: AW ? AW.towns : []};
   } finally { ({M, terr, height, villages, rivers, LAND, tseed, terrImg, PPC, riverBase} = keep); }
   return WD;
 }
@@ -4296,17 +4310,19 @@ function buildWorld() {
 let WORLD_ART = true;
 // Claude Design simgeleri (ZS_MAP): açılışta resme dönüştürülür; hepsi yüklenmeden harita çizilirse kodla çizilen simgeler kullanılır
 const MAPIMG = {};
-if (window.ZS_MAP) for (const n of ZS_MAP.names) { const im = new Image(); im.src = 'data:image/svg+xml,' + encodeURIComponent(ZS_MAP.svg(n)); MAPIMG[n] = im; }
+if (window.ZS_MAP) for (const n of ZS_MAP.names) { const im = new Image();
+  im.src = 'data:image/svg+xml,' + encodeURIComponent(ZS_MAP.svg(n).replace(/width="([\d.]+)" height="([\d.]+)"/, (m, w, h) => `width="${w * 8}" height="${h * 8}"`)); MAPIMG[n] = im; }
 const mapImgsReady = () => !!window.ZS_MAP && ZS_MAP.names.every(n => MAPIMG[n].complete && MAPIMG[n].naturalWidth);
 const ART = {ink: '#3b2f22', seaDeep: '#7fa1a4', grass: '#bfc48c', forest: '#7e9a5e', forestDk: '#55703f',
   hill: '#c2ad7c', mount: '#a8998a', mountDk: '#7d6f62', snow: '#f4f1e8', roof: '#b0583a', wall: '#d9cdb4'};
 function buildWorldArt(N, coast) {
-  const S = 6, H = WORLD_H, c = document.createElement('canvas'); c.width = N * S; c.height = H * S;
+  const S = 8, H = WORLD_H, c = document.createElement('canvas'); c.width = N * S; c.height = H * S;
   const g = c.getContext('2d'), R = rng(WORLD_SEED + 1234), Y0 = WORLD_Y0;
   const inW = (x, y) => x >= 0 && y >= Y0 && x < N && y < Y0 + H;
   const IMG = mapImgsReady();
   // simge: dayanak noktası alt orta (x, y), yüksekliği h kare
-  const sym = (name, x, y, h) => { const [w0, h0] = ZS_MAP.size[name], w = h * w0 / h0; g.drawImage(MAPIMG[name], x - w / 2, y - h, w, h); };
+  // simgeler veri olarak toplanır (dayanak alt orta, boy h kare); yerleşimler (towns) her zaman ekranda ayrıca çizilir
+  const syms = [], towns = [], sym = (name, x, y, h, list = syms, extra) => list.push({n: name, x, y, h, ...extra});
   const pick = (base, n) => base + (1 + Math.floor(R() * n));
   g.setTransform(S, 0, 0, S, 0, -Y0 * S); g.lineJoin = 'round'; g.lineCap = 'round';
   // deniz: açıkta koyu, kıyıya doğru açılan yumuşak sığlık
@@ -4401,15 +4417,10 @@ function buildWorldArt(N, coast) {
     marks.push([y + .5, () => {
       g.lineWidth = .18; g.strokeStyle = ART.ink;
       if (IMG) {
-        if (Rg.home) return sym('koy', x, y + 1.6, 5);
-        if (Rg.boss) {   // kale: bayrak direğinin tepesinden kırmızı bayrak
-          const hh = 7.2, [w0, h0] = ZS_MAP.size.kale, sc = hh / h0, [px, py] = ZS_MAP.pole.kale, fx = x - w0 * sc / 2 + px * sc, fy = y + 1.6 - hh + py * sc;
-          sym('kale', x, y + 1.6, hh);
-          g.fillStyle = '#b9412f'; g.beginPath(); g.moveTo(fx, fy); g.lineTo(fx + 2, fy + .5); g.lineTo(fx, fy + 1.1); g.closePath(); g.fill(); g.lineWidth = .12; g.stroke();
-          return;
-        }
+        if (Rg.home) return sym('koy', x, y + 1.6, 5, towns);
+        if (Rg.boss) return sym('kale', x, y + 1.6, 7.2, towns, {flag: true});
         let hsh = 0; for (const ch of Rg.id) hsh = (hsh * 31 + ch.charCodeAt(0)) >>> 0;
-        return sym('kasaba' + (1 + hsh % 3), x, y + 1.6, 4.6);
+        return sym('kasaba' + (1 + hsh % 3), x, y + 1.6, 4.6, towns);
       }
       if (Rg.boss || Rg.home) {
         g.fillStyle = ART.wall; g.fillRect(x - 2.2, y - 1.6, 4.4, 2.4); g.strokeRect(x - 2.2, y - 1.6, 4.4, 2.4);
@@ -4483,7 +4494,152 @@ function buildWorldArt(N, coast) {
     for (let y = 0; y < 256; y++) for (let x = 0; x < 256; x++) { const v = nn(x / 40, y / 40, 4) * 180 + (R() - .5) * 40, o = (y * 256 + x) * 4; pim.data[o] = 120 + v * .3; pim.data[o + 1] = 100 + v * .25; pim.data[o + 2] = 70 + v * .2; pim.data[o + 3] = 255; }
     pg.putImageData(pim, 0, 0);
     g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'soft-light'; g.globalAlpha = .5; g.fillStyle = g.createPattern(pc, 'repeat'); g.fillRect(0, 0, c.width, c.height); g.restore(); }
+  if (!IMG) return {art: c, base: null, syms: [], towns: [], S};
+  // uzaktan bakış için simgeler resme basılır; yakınlaşınca simgesiz taban + ekranda çizilen simgeler kullanılır
+  const full = document.createElement('canvas'); full.width = c.width; full.height = c.height;
+  const fg = full.getContext('2d'); fg.drawImage(c, 0, 0); fg.setTransform(S, 0, 0, S, 0, -Y0 * S); fg.imageSmoothingQuality = 'high';
+  for (const o of syms) { const [w0, h0] = ZS_MAP.size[o.n], w = o.h * w0 / h0; fg.drawImage(MAPIMG[o.n], o.x - w / 2, o.y - o.h, w, o.h); }
+  return {art: full, base: c, syms, towns, S};
+}
+// ---- bölge sınırları: ortak parçalar ----
+// Bölgeler kare kare dağıtılınca sınırda ince çıkıntılar ve başka bölgenin içinde kalmış kopuk parçalar oluşur:
+// çoğunluk süzgeciyle törpülenir, kopuk kara parçaları çevrelendiği bölgeye verilir (denizle ayrılmış adalar kalır).
+function cleanRegions(N, reg) {
+  const Y0 = WORLD_Y0, Y1 = WORLD_Y0 + WORLD_H, protect = new Uint8Array(N * N), center = REGIONS.map(R => Math.round(Y0 + R.y * WORLD_H) * N + Math.round(R.x * N));
+  for (const c of center) { const cx = c % N, cy = (c / N) | 0; for (let y = cy - 4; y <= cy + 4; y++) for (let x = cx - 4; x <= cx + 4; x++) protect[y * N + x] = 1; }
+  // küçük kara parçaları (60 kareden az; yerleşim ve takımada adası değil) suya döner: göl ortasındaki adacıklar
+  { const seen = new Uint8Array(N * N);
+    for (let i = 0; i < N * N; i++) if (reg[i] >= 0 && !seen[i]) {
+      const cells = [i], st = [i]; seen[i] = 1; let keep = false;
+      while (st.length) { const j = st.pop(), x = j % N; if (protect[j] || REGIONS[reg[j]].scen === 'takimada') keep = true;
+        for (const d of [-N, N, -1, 1]) { if ((d === -1 && x === 0) || (d === 1 && x === N - 1)) continue; const k = j + d; if (reg[k] >= 0 && !seen[k]) { seen[k] = 1; st.push(k); cells.push(k); } } }
+      if (!keep && cells.length < 60) for (const j of cells) { reg[j] = -1; terr[j] = T.DENIZ; }
+    } }
+  for (let it = 0; it < 2; it++) {
+    const nr = reg.slice();
+    for (let y = Y0 + 1; y < Y1 - 1; y++) for (let x = 1; x < N - 1; x++) {
+      const i = y * N + x; if (reg[i] < 0 || protect[i]) continue;
+      const cnt = {}; let best = -1, bn = 0;
+      for (const d of [-N - 1, -N, -N + 1, -1, 1, N - 1, N, N + 1]) { const l = reg[i + d]; if (l >= 0 && (cnt[l] = (cnt[l] || 0) + 1) > bn) { bn = cnt[l]; best = l; } }
+      if (bn >= 5 && best !== reg[i]) nr[i] = best;
+    }
+    reg.set(nr);
+  }
+  // kopuk parçalar: bölgenin ana gövdesinden (merkezini içeren parça) ayrı kalan parçalar, değdiği bölgelerin ana gövdelerinden
+  // en uzun sınırı paylaştığına geçer; hiçbir ana gövdeye değmiyorsa (adacık) suya döner (takımada adaları kalır)
+  for (let it = 0; it < 8; it++) {
+    const comp = new Int32Array(N * N).fill(-1), comps = [];
+    for (let i = 0; i < N * N; i++) if (reg[i] >= 0 && comp[i] < 0) {
+      const l = reg[i], id = comps.length, cells = [i], st = [i]; comp[i] = id;
+      while (st.length) { const j = st.pop(), x = j % N;
+        for (const d of [-N, N, -1, 1]) { if ((d === -1 && x === 0) || (d === 1 && x === N - 1)) continue; const k = j + d; if (reg[k] === l && comp[k] < 0) { comp[k] = id; st.push(k); cells.push(k); } } }
+      comps.push({l, cells});
+    }
+    const mainOf = REGIONS.map((_, l) => { const cs = comps.filter(c => c.l === l); return (cs.find(c => c.cells.includes(center[l])) || cs.reduce((a, b) => b.cells.length > a.cells.length ? b : a, cs[0]) || {}).cells; });
+    const isMain = new Uint8Array(N * N); mainOf.forEach(cs => { if (cs) for (const j of cs) isMain[j] = 1; });
+    let changed = false;
+    for (const c of comps) {
+      if (isMain[c.cells[0]]) continue;
+      const nb = {};
+      for (const j of c.cells) { const x = j % N; for (const d of [-N, N, -1, 1]) { if ((d === -1 && x === 0) || (d === 1 && x === N - 1)) continue; const k = j + d; if (isMain[k] && reg[k] !== c.l) nb[reg[k]] = (nb[reg[k]] || 0) + 1; } }
+      let to = -1, tn = 0; for (const m in nb) if (nb[m] > tn) { tn = nb[m]; to = +m; }
+      if (to >= 0) { for (const j of c.cells) reg[j] = to; changed = true; }
+      else if (REGIONS[c.l].scen !== 'takimada' && c.cells.length < 60
+        && !c.cells.some(j => { const x = j % N; return [-N, N, -1, 1].some(d => !((d === -1 && x === 0) || (d === 1 && x === N - 1)) && reg[j + d] >= 0 && reg[j + d] !== c.l); })) {
+        for (const j of c.cells) { reg[j] = -1; terr[j] = T.DENIZ; } changed = true;   // hiçbir karaya değmeyen adacık
+      }
+    }
+    if (!changed) break;
+  }
+}
+// Sınırlar ortak parçalar (zincirler) hâlinde bir kez yumuşatılır: iki bölgenin, bölgeyle denizin arasındaki her parça,
+// üç bölgenin ya da bölgeyle kıyının buluştuğu noktalar arasında uzanır ve uçları sabit tutularak yumuşatılır. Böylece komşu
+// bölgelerin ve kıyının çizgileri birebir çakışır (eskiden her bölge ayrı yumuşatıldığı için köşelerde boşluklar kalıyordu).
+// loops(pred): etiketi pred'i sağlayan karelerin dış çizgisi (kapalı halkalar, evenodd ile boyanır).
+function regionChains(N, reg) {
+  const Y0 = WORLD_Y0, Y1 = WORLD_Y0 + WORLD_H, VW = N + 1, NV = VW * (WORLD_H + 1);
+  const L = (x, y) => x < 0 || x >= N || y < Y0 || y >= Y1 ? -1 : reg[y * N + x];
+  const vxOf = v => v % VW, vyOf = v => Y0 + ((v / VW) | 0), vid = (x, y) => (y - Y0) * VW + x;
+  // kenar: köşe no × 2 + (0: sağa yatay, 1: aşağı dikey); iki yanındaki etiketler
+  const sides = e => { const v = e >> 1, x = vxOf(v), y = vyOf(v); return e & 1 ? [L(x - 1, y), L(x, y)] : [L(x, y - 1), L(x, y)]; };
+  const pair = e => { const [a, b] = sides(e); return a < b ? (a + 1) * 128 + b + 1 : (b + 1) * 128 + a + 1; };
+  const inc = v => { const x = vxOf(v), y = vyOf(v), out = [];
+    if (y > Y0) out.push([vid(x, y - 1) * 2 + 1, vid(x, y - 1)]);
+    if (y < Y1) out.push([v * 2 + 1, vid(x, y + 1)]);
+    if (x > 0) out.push([vid(x - 1, y) * 2, vid(x - 1, y)]);
+    if (x < N) out.push([v * 2, vid(x + 1, y)]);
+    return out.filter(([e]) => { const [a, b] = sides(e); return a !== b; }); };
+  const J = new Uint8Array(NV), deg = new Uint8Array(NV);
+  for (let v = 0; v < NV; v++) { const ie = inc(v); deg[v] = ie.length; J[v] = ie.length && (ie.length !== 2 || pair(ie[0][0]) !== pair(ie[1][0])) ? 1 : 0; }
+  const ech = new Int32Array(NV * 2).fill(-1), chains = [];
+  const smooth = (pts, closed) => {
+    for (let it = 0; it < 3; it++) {
+      const q = [], n = pts.length;
+      if (!closed) q.push(pts[0]);
+      for (let k = 0; k < (closed ? n : n - 1); k++) { const P = pts[k], Q = pts[(k + 1) % n]; q.push([P[0] * .75 + Q[0] * .25, P[1] * .75 + Q[1] * .25], [P[0] * .25 + Q[0] * .75, P[1] * .25 + Q[1] * .75]); }
+      if (!closed) q.push(pts[n - 1]);
+      pts = q;
+    }
+    return pts;
+  };
+  const walk = (v0, e0, v1) => {
+    const id = chains.length, vs = [v0, v1]; ech[e0] = id; let prev = e0, v = v1;
+    while (!J[v]) {
+      const nx = inc(v).find(([e]) => e !== prev); if (!nx || ech[nx[0]] >= 0) break;
+      ech[nx[0]] = id; vs.push(nx[1]); prev = nx[0]; v = nx[1];
+    }
+    const closed = !J[v0] && vs[vs.length - 1] === v0;
+    const P = v => [vxOf(v), vyOf(v)], mids = [];
+    for (let k = 0; k < vs.length - 1; k++) { const a = P(vs[k]), b = P(vs[k + 1]); mids.push([(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]); }
+    const [a, b] = sides(e0);
+    chains.push({a, b, v0, v1: vs[vs.length - 1], closed, pts: closed ? smooth(mids, true) : smooth([P(v0), ...mids, P(vs[vs.length - 1])], false)});
+  };
+  for (let v = 0; v < NV; v++) if (J[v]) for (const [e, w] of inc(v)) if (ech[e] < 0) walk(v, e, w);
+  for (let v = 0; v < NV; v++) if (deg[v]) for (const [e, w] of inc(v)) if (ech[e] < 0) walk(v, e, w);   // kavşaksız kapalı halkalar
+  const loops = pred => {
+    const p = new Path2D(), sel = [], ends = new Map(), used = new Uint8Array(chains.length);
+    chains.forEach((c, k) => { if (pred(c.a) === pred(c.b)) return; if (c.closed) { const q = c.pts; p.moveTo(q[0][0], q[0][1]); for (const t of q) p.lineTo(t[0], t[1]); p.closePath(); return; }
+      sel.push(k); for (const v of [c.v0, c.v1]) (ends.get(v) || ends.set(v, []).get(v)).push(k); });
+    const add = (c, fwd, first) => { const q = c.pts, n = q.length; for (let k = first ? 0 : 1; k < n; k++) { const t = q[fwd ? k : n - 1 - k]; if (first && k === 0) p.moveTo(t[0], t[1]); else p.lineTo(t[0], t[1]); } };
+    for (const k0 of sel) {
+      if (used[k0]) continue;
+      used[k0] = 1; const c0 = chains[k0], start = c0.v0; add(c0, true, true); let cur = c0.v1;
+      while (cur !== start) {
+        const k = (ends.get(cur) || []).find(j => !used[j]); if (k == null) break;
+        used[k] = 1; const c = chains[k]; if (c.v0 === cur) { add(c, true, false); cur = c.v1; } else { add(c, false, false); cur = c.v0; }
+      }
+      p.closePath();
+    }
+    return p;
+  };
+  return {chains, loops};
+}
+// ---- sefer haritası simgeleri: yakınlaşınca resimden değil, ekran çözünürlüğünde çizilir ----
+const symCache = new Map();
+function symBmp(n, hpx) {
+  const b = Math.max(8, Math.pow(2, Math.ceil(Math.log2(hpx) * 4) / 4)), key = n + '|' + b;   // boy kademeleri: 2^(1/4) kat
+  let c = symCache.get(key);
+  if (!c) {
+    const [w0, h0] = ZS_MAP.size[n]; c = document.createElement('canvas'); c.height = Math.ceil(b); c.width = Math.max(1, Math.ceil(b * w0 / h0));
+    const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(MAPIMG[n], 0, 0, c.width, c.height); symCache.set(key, c);
+  }
   return c;
+}
+// görünen simgeler (dayanak alt orta, boy h kare); px: ekranda bir karenin piksel boyu
+function drawWorldSyms(g, syms, towns, px) {
+  const s = wv.s, x0 = -wv.ox / s - 30, x1 = (wv.W - wv.ox) / s + 30, y0 = WORLD_Y0 - wv.oy / s - 4, y1 = WORLD_Y0 + (wv.H - wv.oy) / s + 30;
+  const one = o => {
+    if (o.x < x0 || o.x > x1 || o.y < y0 || o.y > y1) return;
+    const [w0, h0] = ZS_MAP.size[o.n], w = o.h * w0 / h0;
+    g.drawImage(symBmp(o.n, o.h * px), o.x - w / 2, o.y - o.h, w, o.h);
+    if (o.flag) {   // kale: bayrak direğinin tepesinden kırmızı bayrak
+      const sc = o.h / h0, [qx, qy] = ZS_MAP.pole[o.n], fx = o.x - w / 2 + qx * sc, fy = o.y - o.h + qy * sc;
+      g.fillStyle = '#b9412f'; g.strokeStyle = ART.ink; g.lineWidth = .12;
+      g.beginPath(); g.moveTo(fx, fy); g.lineTo(fx + 2, fy + .5); g.lineTo(fx, fy + 1.1); g.closePath(); g.fill(); g.stroke();
+    }
+  };
+  if (syms) for (const o of syms) one(o);
+  for (const o of towns) one(o);
 }
 // bir kare kümesinin yumuşak dış çizgisi (inSet(i): kare kümede mi; yalnızca kullanılan şerit). Kare merkezlerinden
 // "yürüyen kareler" ile kenar ortalarından geçen halkalar çıkarılır (merdiven yerine eğik çizgiler), sonra Chaikin
@@ -4603,7 +4759,11 @@ function drawWorld() {
   // su resimden alınmaz (kare kare görünürdü): derin deniz zemini + kıyıdan açığa koyulaşan yumuşak sığlık katmanları;
   // kara (resimde bir kare taşkın) yumuşak kıyı çizgisiyle kırpılıp üstüne çizilir
   g.lineJoin = 'round'; g.lineCap = 'round';
-  if (WD.art) g.drawImage(WD.art, 0, WORLD_Y0, N, WORLD_H);
+  if (WD.art) {
+    const live = !!WD.artBase && s * dpr > WD.artS * 1.2;   // yakında simgeler resimden değil, ekran çözünürlüğünde
+    g.drawImage(live ? WD.artBase : WD.art, 0, WORLD_Y0, N, WORLD_H);
+    if (WD.artBase) drawWorldSyms(g, live ? WD.syms : null, WD.towns, s * dpr);
+  }
   else {
     g.drawImage(WD.water, 0, WORLD_Y0, N, WORLD_H);
     g.save(); g.clip(WD.coast, 'evenodd'); img(); g.restore();
@@ -4626,7 +4786,7 @@ function drawWorld() {
   REGIONS.forEach((R, k) => { if (canAttack(r, R.id)) g.stroke(WD.outlines[k]); });
   g.setLineDash([]);
   const key = Object.keys(r.owned).sort().join();
-  if (key !== ownedKey) { ownedKey = key; ownedOutline = smoothOutline(N, WD.reg, i => WD.reg[i] >= 0 && REGIONS[WD.reg[i]].id in r.owned); }
+  if (key !== ownedKey) { ownedKey = key; ownedOutline = WD.chains.loops(l => l >= 0 && REGIONS[l].id in r.owned); }
   g.strokeStyle = '#f2e9d4'; g.lineWidth = 6 / s; g.stroke(ownedOutline);   // krem kenar: sınır kıyıda da denizden ayrılsın
   g.strokeStyle = HUMAN_COLORS[0]; g.lineWidth = 3.2 / s; g.stroke(ownedOutline);
   // seçili bölge: koyu alt çizgi üstünde altın sarısı (siyah, bölge sınırlarıyla karışıyordu)
