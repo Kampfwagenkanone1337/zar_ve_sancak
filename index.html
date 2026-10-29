@@ -1379,7 +1379,7 @@ function goalText() {
   }
   if (s.goal === 'hayatta') return tx(`Hedef: ${cfg.turns}. turun sonuna kadar ayakta kal`, `Goal: survive until the end of turn ${cfg.turns}`);
   if (s.goal === 'bas' && players[SC.target]) return tx(`Hedef: ${IC('avci', 16)} ${tag(players[SC.target])} sancağını düşür`, `Goal: ${IC('avci', 16)} bring down ${tag(players[SC.target])}'s banner`);
-  if (s.goal === 'boss' && players[SC.boss]) return tx(`Hedef: ${IC('durakPatron', 16)} ${tag(players[SC.boss])} sancağını düşür (kim düşürürse düşürsün)`, `Goal: ${IC('durakPatron', 16)} bring down ${tag(players[SC.boss])}'s banner (no matter who does it)`);
+  if (s.goal === 'boss' && players[SC.boss]) return tx(`Hedef: ${IC('durakPatron', 16)} ${tag(players[SC.boss])} sancağını düşür (başkası düşürürse patronluğu o devralır)`, `Goal: ${IC('durakPatron', 16)} bring down ${tag(players[SC.boss])}'s banner (if someone else does, they take the throne)`);
   if (cfg.win === 'fetih') return tx('Hedef: bütün rakipleri yık', 'Goal: destroy every opponent');
   return tx(`Hedef: karaların ${yuzde(cfg.win * 100)} (${Math.ceil(LAND * cfg.win)} puan; her köy ${villageValue()}${s.ova ? `, her çayır ${s.ova}` : ''} sayılır)` +
     (s.id === 'akin' ? ` ya da ${cfg.turns} tur sonunda en büyük ol` : ''),
@@ -1630,6 +1630,7 @@ function newGame(humanPicks) {
     p.flag = b; p.flagUsed = false;
   }
   if (sc0.goal === 'kale') { SC.obj = placeFort(pos, s); SC.holder = -1; SC.held = 0; }
+  trimRiverHeads();
   // Değirmenci Kral: nehrin sahipsiz kareleri onun
   if (SC.boss != null && players[SC.boss].bossKind === 'degirmen')
     for (let i = 0; i < own.length; i++) if (terr[i] === T.NEHIR && own[i] === -1) own[i] = SC.boss;
@@ -1910,6 +1911,22 @@ function extendEnds(rv, pts, P) {
   if (rv.edge1) pts.push(ext(pts[pts.length - 1], pts[pts.length - 2]));
   return pts;
 }
+// başkent bir akarsunun kaynağına oturduysa akarsu başkentin dışından doğar (köyün içinden başlayan akarsu kesik görünüyordu);
+// çok kısalan akarsu silinir, ona dökülenler de (karanın ortasında bitmesin)
+function trimRiverHeads() {
+  const restore = j => { if (terr[j] === T.NEHIR) terr[j] = riverBase && riverBase[j] || T.CAYIR; };
+  const near = i => { const x = i % M, y = (i / M) | 0; return villages.some(v => x >= v.x0 - 1 && x <= v.x1 + 1 && y >= v.y0 - 1 && y <= v.y1 + 1); };
+  for (const rv of rivers) {
+    if (rv.big) continue;
+    let k = 0; while (k < rv.length - 1 && near(rv[k])) k++;
+    if (k) rv.splice(0, k).forEach(restore);
+  }
+  for (let it = 0; it < 4; it++) rivers = rivers.filter(rv => {
+    const e = rv[rv.length - 1], ok = rv.big || (rv.length >= M / 8 && (terr[e] === T.DENIZ || rivers.some(o => o !== rv && o.includes(e))));
+    if (!ok) rv.forEach(restore);
+    return ok;
+  });
+}
 // minik göller karaya, minik adacıklar denize döner
 function cleanSmall() {
   const N = M * M, seen = new Uint8Array(N), st = [];
@@ -1932,6 +1949,7 @@ function cleanSmall() {
 // akarsular: tepe/dağdan doğar, denize doğru akar. Önce "taşırarak doldurma" ile her karenin denize giden
 // yönü bulunur (çukurlar dolmuş sayılır), böylece akarsu kıvrılıp yumak olmaz, mutlaka bir göle ya da denize dökülür
 // (harita kenarına akıp orada bitmez; hiç su yoksa akarsu da olmaz).
+let RIVER_EDGE = true;
 function makeRivers(R) {
   rivers = [];
   if (!riverBase || riverBase.length !== M * M) riverBase = new Uint8Array(M * M);
@@ -1943,6 +1961,8 @@ function makeRivers(R) {
   let hmn = Infinity, hmx = -Infinity; for (let i = 0; i < N; i++) { hmn = Math.min(hmn, height[i]); hmx = Math.max(hmx, height[i]); }
   const mN = noise2(tseed + 31), rh = new Float32Array(N);
   for (let i = 0; i < N; i++) rh[i] = height[i] + (mN((i % M) / M * 9, ((i / M) | 0) / M * 9, 3) - .5) * .05 * (hmx - hmn);
+  // harita kenarındaki şerit biraz yükseltilir: akarsu kenar boyunca akmasın (eski kayıtlarda ve sefer haritasında yok: aynı akarsular çıksın)
+  if (RIVER_EDGE) for (let i = 0; i < N; i++) { const x = i % M, y = (i / M) | 0, d = Math.min(x, y, M - 1 - x, M - 1 - y); if (d < 6) rh[i] += (6 - d) * .03 * (hmx - hmn); }
   for (let i = 0; i < N; i++) {
     const x = i % M, y = (i / M) | 0;
     if (terr[i] === T.DENIZ) { done[i] = 1; fill[i] = rh[i]; push(rh[i], i); }
@@ -2644,12 +2664,19 @@ function checkEnd() {
       : resultMsg(null, tx(`${tg.name} sancağını ${by ? by.name : 'başka biri'} düşürdü; hedef elinden kaçtı.`, `${by ? by.name : 'Someone else'} brought down ${tg.name}'s banner; your target slipped away.`));
     endGame(msg); return true;
   }
-  // sefer patronu: sancağı düşünce (kim düşürürse düşürsün) zafer
+  // sefer patronu: sancağını oyuncu düşürünce zafer. Bir rakip düşürürse taht devri: patronluğu o devralır
+  // (yıkılan patronun topraklarının yarısı zaten ona geçti), bölüm yeni patronla sürer; kenarda bekleyip patronu kırdırmak işe yaramaz
   const bs = sc.goal === 'boss' ? players[SC.boss] : null;
   if (bs && !bs.alive && aliveH.length) {
     const by = players[bs.fallenBy];
-    endGame(resultMsg(aliveH[0], tx(`${turn}. turda ${bs.name} yıkıldı${by && !by.human ? ` (sancağını ${by.name} düşürdü)` : ''}!`,
-      `On turn ${turn}, ${bs.name} fell${by && !by.human ? ` (${by.name} brought down the banner)` : ''}!`))); return true;
+    if (by && !by.human && by.alive) {
+      SC.boss = by.id; by.heir = true;
+      const m = tx(`<b>Taht devri!</b> ${tag(by)}, ${tag(bs)} sancağını düşürüp yerine geçti. Yeni patron o: bölümü kazanmak için onun sancağını düşür.`,
+        `<b>The throne changes hands!</b> ${tag(by)} brought down ${tagPoss(bs)} banner and took its place. They are the new boss: bring down their banner to win.`);
+      log(`${IC('durakPatron', 16)} ${m}`); toast(`${IC('durakPatron', 18)} ${m}`); redrawAll();
+      return false;
+    }
+    endGame(resultMsg(aliveH[0], tx(`${turn}. turda ${bs.name} sancağını düşürdün!`, `On turn ${turn} you brought down ${bs.name}'s banner!`))); return true;
   }
   const fallen = humans.find(p => p.fallenBy != null);
   if (!aliveH.length) msg = ['😢 ' + tx(multi ? 'Yenildiniz' : 'Yenildin', 'Defeat'), !multi && fallen
@@ -2947,7 +2974,7 @@ function saveGame() {
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify({v: 2, cfg, M, UNIT, MAX_SIDE, cur, firstP, turn, snap, lastViewer,
       own: Array.from(own, v => String.fromCharCode(98 + v)).join(''),
-      tseed, terr: terrStr(), villages, SC,
+      tseed, terr: terrStr(), villages, SC, rv2: 1,
       players, gs, log: $('log').innerHTML, date: Date.now()}));
     $('saveNote').innerHTML = `${IC('kayit', 14)} ${tx(`Otomatik kaydedildi (Tur ${turn})`, `Autosaved (turn ${turn})`)}`;
   } catch (e) { $('saveNote').innerHTML = IC('uyari', 14) + tx(' Kayıt yapılamadı', ' Could not save'); }
@@ -2962,9 +2989,9 @@ function continueGame() {
   own = new Int8Array(M * M);
   for (let i = 0; i < own.length; i++) own[i] = s.own.charCodeAt(i) - 98;
   if (s.terr) {   // arazi: tohumdan yeniden üretilir (yükseklik, akarsular), sonra kayıttaki hâli yazılır
-    genTerrain(s.tseed, scenOf().terrain || {});
+    RIVER_EDGE = !!s.rv2; genTerrain(s.tseed, scenOf().terrain || {}); RIVER_EDGE = true;
     for (let i = 0; i < terr.length; i++) terr[i] = s.terr.charCodeAt(i) - 48;
-    villages = s.villages || [];
+    villages = s.villages || []; trimRiverHeads();
     LAND = 0; for (let i = 0; i < terr.length; i++) if (terr[i] !== T.DENIZ) LAND++;
   } else flatTerrain();
   buildTerrainImage();
@@ -3097,9 +3124,19 @@ function drawScene() {
   // harita: panellerle aynı dil — koyu kahve kenar ve sert gölge
   g.fillStyle = '#2b2118'; g.fillRect(ox + 6, oy + 6, mw + 2, mw + 2);
   g.fillRect(ox - 2, oy - 2, mw + 4, mw + 4);
-  if (terrImg) { g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high'; g.drawImage(terrImg, ox, oy, mw, mw); }
   const cx0 = Math.max(0, Math.floor(-ox / cs)), cy0 = Math.max(0, Math.floor(-oy / cs));
   const cx1 = Math.min(M, Math.ceil((W - ox) / cs)), cy1 = Math.min(M, Math.ceil((H - oy) / cs));
+  // parşömen arazi: arazi değişince (yeni harita) bir kez çizilir; simgeler yüklenmemişse biraz sonra yeniden denenir
+  if (BATTLE_ART && terrImg && (!battleArt || battleArt.src !== terrImg)) {
+    battleArt = buildBattleArt();
+    if (!battleArt) setTimeout(() => { sceneDirty = true; requestDraw(); }, 250);
+  }
+  const A = battleArt && battleArt.src === terrImg ? battleArt : null, px = cs * DPR(), liveSym = A && px > A.S * 1.2;
+  const symsIn = list => { g.save(); g.beginPath(); g.rect(ox, oy, mw, mw); g.clip(); g.translate(ox, oy); g.scale(cs, cs);
+    drawSymList(g, list, px, cx0 - 3, cx1 + 3, cy0 - 1, cy1 + 5); g.restore(); };
+  g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+  if (A) { g.drawImage(liveSym ? A.base : A.full, ox, oy, mw, mw); if (liveSym) symsIn(A.syms); }   // yakında simgeler ekran çözünürlüğünde
+  else if (terrImg) g.drawImage(terrImg, ox, oy, mw, mw);
   if (cx1 <= cx0 || cy1 <= cy0) return;
 
   // ülkeleri satır satır grupla (aynı sahip + aynı görünürlük)
@@ -3117,7 +3154,8 @@ function drawScene() {
   }
   // ülkeler: araziyi örtmeyen yarı saydam boya
   players.forEach((p, k) => { g.globalAlpha = .34; g.fillStyle = p.color; g.fill(paths[k]); g.globalAlpha = 1; });
-  if (rivers.length) drawRivers(g);
+  if (A) { g.drawImage(A.riv, ox, oy, mw, mw); symsIn(A.towns); }   // akarsular ve yerleşimler ülke boyasının üstünde
+  else if (rivers.length) drawRivers(g);
   // kareli defter çizgileri (boyanın üstünde, kâğıttan geliyormuş gibi)
   const major = snap === 1 ? 5 : snap;
   const X0 = ox + cx0 * cs, X1 = ox + cx1 * cs, Y0 = oy + cy0 * cs, Y1 = oy + cy1 * cs;
@@ -3126,7 +3164,7 @@ function drawScene() {
     const off = wPx % 2 ? px1 / 2 : 0;
     return v => Math.round((v) * dpr) / dpr + off;
   };
-  if (cs >= 4) {
+  if (cs >= 4 && !A) {   // parşömende ince ızgara yalnızca fare çevresinde ve seçimin içinde (drawGridLens)
     const at = line(0, 1);
     g.strokeStyle = `rgba(30,25,15,${Math.min(.22, .06 + cs * .012)})`; g.lineWidth = px1; g.beginPath();
     for (let x = cx0; x <= cx1; x++) if (x % major) { const X = at(ox + x * cs); g.moveTo(X, Y0); g.lineTo(X, Y1); }
@@ -3135,7 +3173,7 @@ function drawScene() {
   }
   if (cs * major >= 6) {
     const wPx = cs * dpr >= 10 ? 2 : 1, at = line(0, wPx);
-    g.strokeStyle = 'rgba(30,25,15,.32)'; g.lineWidth = wPx * px1; g.beginPath();
+    g.strokeStyle = A ? 'rgba(30,25,15,.12)' : 'rgba(30,25,15,.32)'; g.lineWidth = wPx * px1; g.beginPath();
     for (let x = Math.ceil(cx0 / major) * major; x <= cx1; x += major) { const X = at(ox + x * cs); g.moveTo(X, Y0); g.lineTo(X, Y1); }
     for (let y = Math.ceil(cy0 / major) * major; y <= cy1; y += major) { const Y = at(oy + y * cs); g.moveTo(X0, Y); g.lineTo(X1, Y); }
     g.stroke();
@@ -3267,6 +3305,7 @@ function draw() {
   if (sceneDirty || key !== sceneKey) { drawScene(); sceneDirty = false; sceneKey = key; }
   ctx.clearRect(0, 0, view.W, view.H);
   ctx.drawImage(scene, 0, 0, view.W, view.H);
+  if (battleArt && battleArt.src === terrImg) { if (!drag && !pan) drawGridLens(ctx); drawGridIn(ctx, sel); }
   if (penFill) drawPenFill(key);
   if (tearAnim) drawTear();
   if (anim && rectVisible(anim.r)) {
@@ -3364,7 +3403,7 @@ function drawTear() {
 }
 
 // ============ PANEL ============
-const powerIcons = p => (p.bossKind ? IC('durakPatron') : '') + p.powers.map(id => PW[id].icon).join('');
+const powerIcons = p => (p.bossKind || p.id === SC.boss ? IC('durakPatron') : '') + p.powers.map(id => PW[id].icon).join('');
 function renderPanel() {
   if (!players.length) return;
   const p = players[cur], multi = cfg.humans > 1;
@@ -3517,6 +3556,7 @@ canvas.addEventListener('pointerdown', e => {
 canvas.addEventListener('pointermove', e => {
   if (!M) return;
   if (pointers.has(e.pointerId)) pointers.set(e.pointerId, local(e));
+  if (e.pointerType !== 'touch') { gridPt = local(e); if (battleArt) requestDraw(); }
   if (pinch && pointers.size === 2) {
     const [a, b] = [...pointers.values()];
     const d = Math.hypot(a.x - b.x, a.y - b.y), mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
@@ -3544,7 +3584,7 @@ function endPointer(e) {
 }
 canvas.addEventListener('pointerup', endPointer);
 canvas.addEventListener('pointercancel', endPointer);
-canvas.addEventListener('pointerleave', () => { if (hover) { hover = null; requestDraw(); } });
+canvas.addEventListener('pointerleave', () => { gridPt = null; if (hover) hover = null; requestDraw(); });
 canvas.addEventListener('wheel', e => {
   e.preventDefault();
   const p = local(e);
@@ -4194,7 +4234,7 @@ function buildWorld() {
   const keep = {M, terr, height, villages, rivers, LAND, tseed, terrImg, PPC, riverBase};
   try {
     const N = M = WORLD_N, S = TUNE.sancakSize;
-    genTerrain(WORLD_SEED, {sea: .02});
+    RIVER_EDGE = false; genTerrain(WORLD_SEED, {sea: .02}); RIVER_EDGE = true;
     const cn = noise2(WORLD_SEED + 77), fn = noise2(WORLD_SEED + 177), gn = noise2(WORLD_SEED + 277);
     const wxn = noise2(WORLD_SEED + 377), wyn = noise2(WORLD_SEED + 477);
     const uv = (x, y) => [(x + .5) / N, (y + .5 - WORLD_Y0) / WORLD_H];
@@ -4701,15 +4741,233 @@ function drawWorldSyms(g, syms, towns, px) {
   if (syms) for (const o of syms) one(o);
   for (const o of towns) one(o);
 }
+// ---- savaş haritası akarsuları: denizle tek su ----
+// Akarsular ayrı şerit olarak çizilmez: kara alanından oyulur ve deniz kıyısıyla akarsu kıyıları TEK bir kıyı çizgisi olarak
+// hesaplanır (riverCoast). Böylece akarsu denizle aynı boyayı alır, kıyıları sahil mürekkebinin devamıdır ve ağızda deniz
+// kıyısıyla yumuşak bir kavisle birleşir (ayrı çizilen iki kıyı ağızda basamak, çentik ve renk farkı bırakıyordu).
+// riverLines: her akarsu için sık noktalar (D, kare koordinatı) ve her noktadaki genişlik (W, kare)
+function riverLines() {
+  const dist = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]), out = [];
+  for (const rv of rivers) {
+    let pts = riverPoints(rv, 1, 0, 0); if (pts.length < 2) continue;
+    if (rv.edge0 || rv.edge1) pts = extendEnds(rv, pts, 1);   // harita kenarından gelen/giden nehir
+    const mouthEnd = terr[rv[rv.length - 1]] === T.DENIZ, mouthStart = !!rv.mouth0;
+    const ext = (a, b) => { const d = dist(a, b) || 1; return [b[0] + (b[0] - a[0]) / d * 1.5, b[1] + (b[1] - a[1]) / d * 1.5]; };
+    if (mouthEnd) pts.push(ext(pts[pts.length - 2], pts[pts.length - 1]));   // denizin içine kadar uzanır: ağız açık kalsın
+    if (mouthStart) pts.unshift(ext(pts[1], pts[0]));
+    const m = pts.length, D = [pts[0]];
+    for (let k = 1; k < m - 1; k++) {   // riverPath ile aynı eğri: köşeler ara noktalarda yumuşatılır
+      const P0 = D[D.length - 1], Cp = pts[k], P1 = [(pts[k][0] + pts[k + 1][0]) / 2, (pts[k][1] + pts[k + 1][1]) / 2];
+      for (let t = 1; t <= 6; t++) { const u = t / 6, v = 1 - u; D.push([v * v * P0[0] + 2 * v * u * Cp[0] + u * u * P1[0], v * v * P0[1] + 2 * v * u * Cp[1] + u * u * P1[1]]); }
+    }
+    D.push(pts[m - 1]);
+    const len = [0]; for (let k = 1; k < D.length; k++) len.push(len[k - 1] + dist(D[k - 1], D[k]));
+    const tot = len[len.length - 1] || 1;
+    // genişlik: kaynakta incecik (orada mürekkep çizgisi gibi görünür), ağza doğru kalın
+    out.push({D, W: len.map(l => rv.big ? 2.72 : .16 + .56 * Math.pow(l / tot, 1.2))});
+  }
+  return out;
+}
+// kara + akarsular → tek kıyı çizgisi (Path2D, kare koordinatı). Kara alanı kıyı çizgisinden 1/K karelik ızgaraya yumuşak
+// olarak örneklenir, akarsuya uzaklık eklenir; ikisi yumuşak "min" ile birleşip eş-değer çizgisi çıkarılır.
+function riverCoast(N, coast, lines) {
+  const K = 8, P = 3, G = (N + 2 * P) * K, bl = .3;   // örnek (i, j) → kare (−P + (i + .5) / K, ...)
+  const cv = document.createElement('canvas'); cv.width = cv.height = G; const cg = cv.getContext('2d', {willReadFrequently: true});
+  cg.filter = `blur(${bl * K}px)`; cg.setTransform(K, 0, 0, K, P * K, P * K); cg.fillStyle = '#fff'; cg.fill(coast, 'evenodd');
+  const A = cg.getImageData(0, 0, G, G).data, F = new Float32Array(G * G);
+  // kıyıya yaklaşık işaretli uzaklık (karada +); kıyıdan uzakta büyük sayılır: akarsu yalnızca kıyıya yakın yerde denizle kaynaşır
+  for (let i = 0; i < G * G; i++) { const v = A[i * 4 + 3] / 255; F[i] = v > .97 ? 9 : v < .03 ? -9 : (v - .5) * bl * 2.5; }
+  const X = i => -P + (i + .5) / K;
+  const R = new Float32Array(G * G).fill(99);
+  for (const {D, W} of lines) for (let k = 0; k + 1 < D.length; k++) {
+    const [ax, ay] = D[k], [bx, by] = D[k + 1], dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy || 1e-9, hm = Math.max(W[k], W[k + 1]) / 2 + 1;
+    const i0 = Math.max(0, Math.floor((Math.min(ax, bx) - hm + P) * K)), i1 = Math.min(G - 1, Math.ceil((Math.max(ax, bx) + hm + P) * K));
+    const j0 = Math.max(0, Math.floor((Math.min(ay, by) - hm + P) * K)), j1 = Math.min(G - 1, Math.ceil((Math.max(ay, by) + hm + P) * K));
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
+      const px = X(i), py = X(j), t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / L2));
+      const v = Math.hypot(px - ax - dx * t, py - ay - dy * t) - (W[k] * (1 - t) + W[k + 1] * t) / 2, o = j * G + i;
+      if (v < R[o]) R[o] = v;
+    }
+  }
+  // yumuşak min: akarsu kıyısı deniz kıyısına kavisle bağlanır (ağızda doğal bir genişleme)
+  const kk = .45;
+  for (let o = 0; o < G * G; o++) { const a = F[o], b = R[o], h = Math.max(kk - Math.abs(a - b), 0) / kk; F[o] = Math.min(a, b) - h * h * kk * .25; }
+  // eş-değer çizgisi (F = 0): yürüyen kareler, kenar üstünde doğrusal ara değer; ızgaranın dışı deniz sayılır
+  const f = (i, j) => i < 0 || j < 0 || i >= G || j >= G ? -1 : F[j * G + i];
+  const pt = new Map(), nb = new Map();
+  const ek = (i, j, v) => ((j + 1) * (G + 2) + (i + 1)) * 2 + v;   // kenar: (i,j)'den sağa (v=0) ya da aşağı (v=1)
+  const pos = (i, j, v) => { const a = f(i, j), b = v ? f(i, j + 1) : f(i + 1, j), t = a / (a - b);
+    return v ? [X(i), X(j + t)] : [X(i + t), X(j)]; };
+  const link = (e1, p1, e2, p2) => { pt.set(e1, p1); pt.set(e2, p2); (nb.get(e1) || nb.set(e1, []).get(e1)).push(e2); (nb.get(e2) || nb.set(e2, []).get(e2)).push(e1); };
+  for (let j = -1; j < G; j++) for (let i = -1; i < G; i++) {
+    const a = f(i, j) > 0, b = f(i + 1, j) > 0, c = f(i + 1, j + 1) > 0, d = f(i, j + 1) > 0;
+    if (a === b && b === c && c === d) continue;
+    const T = [ek(i, j, 0), () => pos(i, j, 0)], Rt = [ek(i + 1, j, 1), () => pos(i + 1, j, 1)], B = [ek(i, j + 1, 0), () => pos(i, j + 1, 0)], L = [ek(i, j, 1), () => pos(i, j, 1)];
+    const seg = (u, w) => link(u[0], u[1](), w[0], w[1]());
+    if (a === c && b === d && a !== b) {   // eyer: ortadaki değere göre
+      const mid = (f(i, j) + f(i + 1, j) + f(i + 1, j + 1) + f(i, j + 1)) / 4 > 0;
+      if (mid === a) { seg(T, Rt); seg(B, L); } else { seg(T, L); seg(Rt, B); } continue;
+    }
+    const e = []; if (a !== b) e.push(T); if (b !== c) e.push(Rt); if (c !== d) e.push(B); if (d !== a) e.push(L);
+    seg(e[0], e[1]);
+  }
+  const path = new Path2D(), seen = new Set();
+  for (const start of nb.keys()) {
+    if (seen.has(start)) continue;
+    let prev = -1, cur = start, first = true;
+    do { seen.add(cur); const q = pt.get(cur); if (first) { path.moveTo(q[0], q[1]); first = false; } else path.lineTo(q[0], q[1]);
+      const n = nb.get(cur), nx = n[0] !== prev ? n[0] : n[1]; prev = cur; cur = nx; }
+    while (cur !== undefined && cur !== start && !seen.has(cur));
+    path.closePath();
+  }
+  return path;
+}
+// kâğıt dokusu: bütün resmin üstüne hafif lekeler
+function paperTexture(g, c, seed) {
+  const pc = document.createElement('canvas'); pc.width = pc.height = 256; const pg = pc.getContext('2d'), pim = pg.createImageData(256, 256), nn = noise2(seed), R = rng(seed);
+  for (let y = 0; y < 256; y++) for (let x = 0; x < 256; x++) { const v = nn(x / 40, y / 40, 4) * 180 + (R() - .5) * 40, o = (y * 256 + x) * 4; pim.data[o] = 120 + v * .3; pim.data[o + 1] = 100 + v * .25; pim.data[o + 2] = 70 + v * .2; pim.data[o + 3] = 255; }
+  pg.putImageData(pim, 0, 0);
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'soft-light'; g.globalAlpha = .5; g.fillStyle = g.createPattern(pc, 'repeat'); g.fillRect(0, 0, c.width, c.height); g.restore();
+}
+// simge listesi çizimi (g kare koordinatında; px: ekranda bir karenin piksel boyu; görünmeyenler atlanır)
+function drawSymList(g, list, px, x0, x1, y0, y1) {
+  for (const o of list) {
+    if (o.x < x0 || o.x > x1 || o.y < y0 || o.y > y1) continue;
+    const [w0, h0] = ZS_MAP.size[o.n], w = o.h * w0 / h0;
+    g.drawImage(symBmp(o.n, o.h * px), o.x - w / 2, o.y - o.h, w, o.h);
+  }
+}
+
+// ---- savaş haritası: parşömen tarzı arazi (sefer haritasıyla aynı dil) ----
+// Arazi kare kare değil, yumuşak lekeler ve simgelerle çizilir; kesin arazi saldırı ayrıntısında sayıyla yazar.
+// BATTLE_ART false: eski kareli görünüm.
+let BATTLE_ART = true, battleArt = null;
+function buildBattleArt() {
+  if (!BATTLE_ART || !mapImgsReady() || !terr) return null;
+  const N = M, S = Math.max(8, Math.min(16, Math.floor(2400 / M))), c = document.createElement('canvas'); c.width = c.height = N * S;
+  const g = c.getContext('2d'), R = rng(tseed + 4242);
+  const coast = smoothOutline(N, null, i => terr[i] !== T.DENIZ, 0, N, 3);
+  // kara: akarsular oyulmuş hâli (deniz kıyısı ve akarsu kıyıları tek çizgi); bundan sonra her şey bu çizgiyle çizilir
+  const lines = riverLines(), land = lines.length ? riverCoast(N, coast, lines) : coast;
+  g.setTransform(S, 0, 0, S, 0, 0); g.lineJoin = 'round'; g.lineCap = 'round';
+  // deniz (akarsular da): açıkta koyu, kıyıya doğru sığlık; kıyıdan açığa iç içe dalga çizgileri
+  g.fillStyle = ART.seaDeep; g.fillRect(0, 0, N, N);
+  // sığlık rengi mavimsi ve hafif: akarsular (tamamı sığlık) yol gibi soluk değil, su gibi görünsün
+  for (let k = 0; k < 8; k++) { g.strokeStyle = `rgba(170,205,212,${k < 7 ? .09 : .12})`; g.lineWidth = 7 * Math.pow(.72, k); g.stroke(land); }
+  { const L = document.createElement('canvas'); L.width = c.width; L.height = c.height; const l = L.getContext('2d');
+    l.setTransform(S, 0, 0, S, 0, 0); l.lineJoin = 'round';
+    for (const [d, a] of [[.8, .5], [1.6, .34], [2.6, .22]]) {
+      l.globalCompositeOperation = 'source-over'; l.strokeStyle = `rgba(59,47,34,${a})`; l.lineWidth = 2 * d + .16; l.stroke(land);
+      l.globalCompositeOperation = 'destination-out'; l.lineWidth = 2 * d - .16; l.strokeStyle = '#000'; l.stroke(land);
+    }
+    g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.drawImage(L, 0, 0); g.restore(); }
+  // köy kareleri çevresindeki arazi sayılır (lekede kare açıklık kalmasın)
+  const ter = terr.slice();
+  for (const v of villages) {
+    const cnt = {};
+    for (let y = v.y0 - 1; y <= v.y1 + 1; y++) for (let x = v.x0 - 1; x <= v.x1 + 1; x++) {
+      if (x < 0 || y < 0 || x >= N || y >= N || (x >= v.x0 && x <= v.x1 && y >= v.y0 && y <= v.y1)) continue;
+      const t = terr[y * N + x]; if (t !== T.DENIZ && t !== T.KOY) cnt[t] = (cnt[t] || 0) + 1;
+    }
+    let best = T.CAYIR, bn = 0; for (const t in cnt) if (cnt[t] > bn) { bn = cnt[t]; best = +t; }
+    for (let y = v.y0; y <= v.y1; y++) for (let x = v.x0; x <= v.x1; x++) ter[y * N + x] = best;
+  }
+  // kara: çayır zemin, yükseklikten kabartma, suluboya arazi lekeleri
+  g.save(); g.clip(land, 'evenodd');
+  g.fillStyle = ART.grass; g.fillRect(0, 0, N, N);
+  { let mn = Infinity, mx = -Infinity; for (let i = 0; i < height.length; i++) { mn = Math.min(mn, height[i]); mx = Math.max(mx, height[i]); }
+    const hc = document.createElement('canvas'); hc.width = hc.height = N; const hg = hc.getContext('2d'), im = hg.createImageData(N, N);
+    const e = (x, y) => { x = Math.max(0, Math.min(N - 1, x)); y = Math.max(0, Math.min(N - 1, y)); return Math.pow((height[y * N + x] - mn) / (mx - mn || 1), 2); };
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const sh = Math.max(-1, Math.min(1, ((e(x + 1, y) - e(x - 1, y)) + (e(x, y + 1) - e(x, y - 1))) * 9));
+      const o = (y * N + x) * 4, v = 128 - sh * 90; im.data[o] = im.data[o + 1] = im.data[o + 2] = v; im.data[o + 3] = 255;
+    }
+    hg.putImageData(im, 0, 0);
+    g.save(); g.globalCompositeOperation = 'soft-light'; g.globalAlpha = .9; g.imageSmoothingEnabled = true; g.drawImage(hc, 0, 0, N, N); g.restore(); }
+  const blob = (type, fill, edge, a) => {
+    const p = smoothOutline(N, null, i => ter[i] === type, 0, N, 3);
+    g.save(); g.globalAlpha = a; g.filter = `blur(${Math.max(1, S * .2)}px)`; g.fillStyle = fill; g.fill(p, 'evenodd'); g.restore();
+    g.save(); g.globalAlpha = .35; g.strokeStyle = edge; g.lineWidth = .14; g.stroke(p); g.restore();
+  };
+  blob(T.TEPE, ART.hill, '#8c7a52', .55); blob(T.ORMAN, ART.forest, ART.forestDk, .7); blob(T.DAG, ART.mount, ART.mountDk, .65);
+  g.restore();
+  // kıyı mürekkebi: deniz ve akarsu kıyıları aynı çizgi
+  g.strokeStyle = ART.ink; g.lineWidth = .14; g.globalAlpha = .8; g.stroke(land); g.globalAlpha = 1;
+  // simgeler (veri olarak; uzaktan resme basılır, yakında ekranda çizilir)
+  const near = new Uint8Array(N * N);
+  for (const v of villages) for (let y = v.y0 - 1; y <= v.y1 + 1; y++) for (let x = v.x0 - 1; x <= v.x1 + 1; x++) if (x >= 0 && y >= 0 && x < N && y < N) near[y * N + x] = 1;
+  const syms = [], towns = [], pick = (base, n) => base + (1 + Math.floor(R() * n));
+  const scatter = (type, step, fn) => {
+    for (let y = 0; y < N; y += step) for (let x = 0; x < N; x += step) {
+      const jx = x + R() * step, jy = y + R() * step, ix = Math.floor(jx), iy = Math.floor(jy), i = iy * N + ix;
+      if (ix < 1 || iy < 1 || ix >= N - 1 || iy >= N - 1 || ter[i] !== type || near[i]) continue;
+      if (ter[i - 1] !== type || ter[i + 1] !== type || ter[i - N] !== type || ter[i + N] !== type) continue;
+      syms.push(fn(jx, jy, i));
+    }
+  };
+  scatter(T.ORMAN, 1.05, (x, y) => ({n: R() < .25 ? pick('cam', 3) : pick('agac', 4), x, y: y + .35, h: 1.3}));
+  scatter(T.DAG, 1.6, (x, y) => ({n: (y / N < .3 && R() < .5) ? pick('karliDag', 3) : pick('dag', 4), x, y: y + .3, h: 1.55 + R() * .5}));
+  scatter(T.TEPE, 1.8, (x, y) => ({n: pick('tepe', 3), x, y: y + .2, h: .85 + R() * .2}));
+  syms.sort((a, b) => a.y - b.y);
+  // köyler: kasaba simgesi, başkentlerde kale (sancak ayrıca çizilir)
+  for (const v of villages) {
+    const hsh = v.x0 * 31 + v.y0 * 7, sz = v.x1 - v.x0 + 1, kale = v.cap >= 0 || v.fort, h = sz * (kale ? .88 : .78);
+    towns.push({n: kale ? 'kale' : 'kasaba' + (1 + hsh % 3), x: v.x0 + sz / 2, y: v.y1 + 1 - sz * .06, h});   // köyün karesinin içinde kalır (alt kenarı karenin dibinde)
+  }
+  paperTexture(g, c, tseed + 4321);
+  // kara karelerinin içinde kalan su (akarsular) ve kıyı mürekkebi ayrı katmana da kopyalanır: sahnede ülke boyasının üstüne
+  // çizilir, sahiplenilmiş akarsu da su renginde kalır
+  const riv = document.createElement('canvas'); riv.width = c.width; riv.height = c.height;
+  { const rg = riv.getContext('2d'); rg.setTransform(S, 0, 0, S, 0, 0); rg.lineJoin = 'round';
+    rg.fillStyle = rg.strokeStyle = '#000'; rg.fillRect(0, 0, N, N);
+    rg.globalCompositeOperation = 'destination-out'; rg.fill(land, 'evenodd');
+    rg.globalCompositeOperation = 'source-over'; rg.lineWidth = .2; rg.stroke(land);
+    rg.globalCompositeOperation = 'destination-in'; rg.fill(coast, 'evenodd');
+    rg.globalCompositeOperation = 'source-in'; rg.setTransform(1, 0, 0, 1, 0, 0); rg.drawImage(c, 0, 0); }
+  const full = document.createElement('canvas'); full.width = c.width; full.height = c.height;
+  const fg = full.getContext('2d'); fg.drawImage(c, 0, 0); fg.setTransform(S, 0, 0, S, 0, 0); fg.imageSmoothingQuality = 'high';
+  for (const o of syms) { const [w0, h0] = ZS_MAP.size[o.n], w = o.h * w0 / h0; fg.drawImage(MAPIMG[o.n], o.x - w / 2, o.y - o.h, w, o.h); }
+  return {base: c, full, riv, syms, towns, S, src: terrImg};
+}
+// ızgara merceği: farenin çevresinde ızgara belirginleşir (savaş haritası parşömen tarzındayken)
+let gridPt = null;
+function drawGridLens(g) {
+  const {cs, ox, oy} = view; if (!gridPt || cs < 3) return;
+  const Rl = Math.max(90, cs * 7), cx = gridPt.x, cy = gridPt.y;
+  const x0 = Math.max(0, Math.floor((cx - Rl - ox) / cs)), x1 = Math.min(M, Math.ceil((cx + Rl - ox) / cs));
+  const y0 = Math.max(0, Math.floor((cy - Rl - oy) / cs)), y1 = Math.min(M, Math.ceil((cy + Rl - oy) / cs));
+  if (x1 <= x0 || y1 <= y0) return;
+  const major = snap === 1 ? 5 : snap, dpr = DPR(), at = v => Math.round(v * dpr) / dpr + .5 / dpr;
+  const fade = (a0, a1) => { const gr = g.createRadialGradient(cx, cy, 0, cx, cy, Rl);
+    gr.addColorStop(0, `rgba(30,25,15,${a0})`); gr.addColorStop(.6, `rgba(30,25,15,${a1})`); gr.addColorStop(1, 'rgba(30,25,15,0)'); return gr; };
+  g.save(); g.strokeStyle = fade(.38, .2); g.lineWidth = 1 / dpr; g.beginPath();
+  for (let x = x0; x <= x1; x++) if (x % major) { const X = at(ox + x * cs); g.moveTo(X, oy + y0 * cs); g.lineTo(X, oy + y1 * cs); }
+  for (let y = y0; y <= y1; y++) if (y % major) { const Y = at(oy + y * cs); g.moveTo(ox + x0 * cs, Y); g.lineTo(ox + x1 * cs, Y); }
+  g.stroke();
+  g.strokeStyle = fade(.55, .3); g.lineWidth = (cs * dpr >= 10 ? 2 : 1) / dpr; g.beginPath();
+  for (let x = Math.ceil(x0 / major) * major; x <= x1; x += major) { const X = at(ox + x * cs); g.moveTo(X, oy + y0 * cs); g.lineTo(X, oy + y1 * cs); }
+  for (let y = Math.ceil(y0 / major) * major; y <= y1; y += major) { const Y = at(oy + y * cs); g.moveTo(ox + x0 * cs, Y); g.lineTo(ox + x1 * cs, Y); }
+  g.stroke(); g.restore();
+}
+// seçili alanın içinde ızgara
+function drawGridIn(g, r) {
+  const {cs, ox, oy} = view; if (!r || cs < 3) return;
+  const dpr = DPR(), at = v => Math.round(v * dpr) / dpr + .5 / dpr;
+  g.save(); g.strokeStyle = 'rgba(30,25,15,.32)'; g.lineWidth = 1 / dpr; g.beginPath();
+  for (let x = r.x0 + 1; x <= r.x1; x++) { const X = at(ox + x * cs); g.moveTo(X, oy + r.y0 * cs); g.lineTo(X, oy + (r.y1 + 1) * cs); }
+  for (let y = r.y0 + 1; y <= r.y1; y++) { const Y = at(oy + y * cs); g.moveTo(ox + r.x0 * cs, Y); g.lineTo(ox + (r.x1 + 1) * cs, Y); }
+  g.stroke(); g.restore();
+}
 // bir kare kümesinin yumuşak dış çizgisi (inSet(i): kare kümede mi; yalnızca kullanılan şerit). Kare merkezlerinden
 // "yürüyen kareler" ile kenar ortalarından geçen halkalar çıkarılır (merdiven yerine eğik çizgiler), sonra Chaikin
 // yöntemiyle iki kez yumuşatılır. Kapalı halkalardan oluşan Path2D döner (kare koordinatlarında; delikler evenodd ile).
-function smoothOutline(N, reg, inSet) {
-  const y0 = WORLD_Y0, y1 = WORLD_Y0 + WORLD_H;
-  const at = (x, y) => x >= 0 && x < N && y >= y0 && y < y1 && inSet(y * N + x) ? 1 : 0;
-  const nb = new Map(), K = (x2, y2) => x2 * 4096 + y2;   // kenar ortaları 2 katı tam sayı koordinatta
+// y0/y1: şerit; ext > 0: harita kenarındaki kareler kenarın ext kare dışına kadar sürer (çizgi resmin dışında kapanır)
+function smoothOutline(N, reg, inSet, y0 = WORLD_Y0, y1 = WORLD_Y0 + WORLD_H, ext = 0) {
+  const at = (x, y) => x >= -ext && x < N + ext && y >= y0 - ext && y < y1 + ext &&
+    inSet(Math.max(y0, Math.min(y1 - 1, y)) * N + Math.max(0, Math.min(N - 1, x))) ? 1 : 0;
+  const nb = new Map(), K = (x2, y2) => (x2 + 64) * 4096 + y2 + 64;   // kenar ortaları 2 katı tam sayı koordinatta (eksiye taşabilir)
   const link = (a, b) => { const ka = K(a[0], a[1]), kb = K(b[0], b[1]); (nb.get(ka) || nb.set(ka, []).get(ka)).push(kb); (nb.get(kb) || nb.set(kb, []).get(kb)).push(ka); };
-  for (let y = y0 - 1; y < y1; y++) for (let x = -1; x < N; x++) {
+  for (let y = y0 - 1 - ext; y < y1 + ext; y++) for (let x = -1 - ext; x < N + ext; x++) {
     const a = at(x, y), b = at(x + 1, y), c = at(x + 1, y + 1), d = at(x, y + 1);
     if (a + b + c + d === 0 || a + b + c + d === 4) continue;
     const T = [2 * x + 2, 2 * y + 1], Rt = [2 * x + 3, 2 * y + 2], B = [2 * x + 2, 2 * y + 3], L = [2 * x + 1, 2 * y + 2];
@@ -4721,7 +4979,7 @@ function smoothOutline(N, reg, inSet) {
   for (const start of nb.keys()) {
     if (seen.has(start)) continue;
     let pts = [], prev = -1, cur = start;
-    do { seen.add(cur); pts.push([Math.floor(cur / 4096) / 2, (cur % 4096) / 2]); const n = nb.get(cur), nx = n[0] !== prev ? n[0] : n[1]; prev = cur; cur = nx; }
+    do { seen.add(cur); pts.push([Math.floor(cur / 4096) / 2 - 32, (cur % 4096) / 2 - 32]); const n = nb.get(cur), nx = n[0] !== prev ? n[0] : n[1]; prev = cur; cur = nx; }
     while (cur !== start && !seen.has(cur));
     for (let it = 0; it < 2; it++) {   // Chaikin: her kenarı ¼–¾ noktalarıyla değiştir
       const q = [];
@@ -5354,7 +5612,9 @@ function tipHtml(spec) {
   const body = ids.length ? ids.map(id => `<div class="tp"><span class="ic">${IC(id, 26)}</span><div>
       <b>${PW[id].name}<span class="cat">${PW[id].cat}</span></b><div class="d">${PW[id].desc}</div>${cdTxt(id)}</div></div>`).join('')
     : `<div class="none">${tx('Bu ülkenin gücü yok.', 'This realm has no powers.')}</div>`;
-  const boss = kind === 'p' && p.bossKind ? `<div class="tp"><span class="ic">${IC('durakPatron', 26)}</span><div><b>${tx('Patron', 'Boss')}</b><div class="d">${BOSSES[p.bossKind].desc}</div></div></div>` : '';
+  const boss = kind === 'p' && (p.bossKind || p.heir) ? `<div class="tp"><span class="ic">${IC('durakPatron', 26)}</span><div><b>${tx('Patron', 'Boss')}</b><div class="d">${p.heir && p.id === SC.boss
+      ? tx('Taht devri: eski patronun sancağını düşürüp yerine geçti. Bölümü kazanmak için bu ülkenin sancağını düşür.', "Took the throne by bringing down the old boss's banner. Bring down this realm's banner to win.")
+      : p.bossKind ? BOSSES[p.bossKind].desc : ''}</div></div></div>` : '';
   return `<div class="th">${head}</div>${boss}${body}`;
 }
 function showTip(el) {
