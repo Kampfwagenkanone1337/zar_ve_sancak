@@ -3139,21 +3139,42 @@ function drawScene() {
   else if (terrImg) g.drawImage(terrImg, ox, oy, mw, mw);
   if (cx1 <= cx0 || cy1 <= cy0) return;
 
+  // parşömende kıyıdaki deniz kareleri (kıyı çizgisinin taştığı kara parçası) en çok komşusu olan sahibin sayılır (eo: etkin
+  // sahip). Boya, sınırlar ve kıyı sınırı eo ile çizilip kıyı çizgisinde kırpılır: her kıyı parçası tek bir ülkenin olur, bir
+  // gölün ya da koyun kıyısında iki ülkenin çizgisi üst üste binmez
+  let eo = own;
+  if (A) {
+    eo = own.slice();
+    for (let i = 0; i < M * M; i++) {
+      if (terr[i] !== T.DENIZ) continue;
+      const x = i % M, y = (i / M) | 0, cnt = new Map();
+      for (const [dx, dy, w] of [[1, 0, 2], [-1, 0, 2], [0, 1, 2], [0, -1, 2], [1, 1, 1], [1, -1, 1], [-1, 1, 1], [-1, -1, 1]]) {
+        const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= M || ny >= M) continue;
+        const j = ny * M + nx; if (terr[j] !== T.DENIZ) cnt.set(own[j], (cnt.get(own[j]) || 0) + (own[j] < 0 ? w * .6 : w));   // sahipsiz kara daha az sayılır: ülke çizgisi kıyıda kopmasın
+      }
+      let best = -1, bw = 0; for (const [o, w] of cnt) if (w > bw) { bw = w; best = o; }
+      eo[i] = best;
+    }
+  }
   // ülkeleri satır satır grupla (aynı sahip + aynı görünürlük)
   const paths = players.map(() => new Path2D()), fogPath = new Path2D();
   for (let y = cy0; y < cy1; y++) {
     let x = cx0;
     while (x < cx1) {
-      const i = y * M + x, hid = vis && !vis[i], o = own[i];
+      const i = y * M + x, hid = vis && !vis[i], o = eo[i];
       let x2 = x + 1;
-      while (x2 < cx1) { const j = y * M + x2; if (own[j] !== o || (vis && !vis[j]) !== hid) break; x2++; }
+      while (x2 < cx1) { const j = y * M + x2; if (eo[j] !== o || (vis && !vis[j]) !== hid) break; x2++; }
       const rx = ox + x * cs, ry = oy + y * cs, rw = (x2 - x) * cs + 0.5, rh = cs + 0.5;
       if (hid) fogPath.rect(rx, ry, rw, rh); else if (o >= 0) paths[o].rect(rx, ry, rw, rh);
       x = x2;
     }
   }
+  // parşömende boya ve sınırlar kıyı çizgisinde biter (kareler denize taşmaz): kara alanıyla kırpılır
+  const landClip = () => { g.translate(ox, oy); g.scale(cs, cs); g.clip(A.shore, 'evenodd'); g.scale(1 / cs, 1 / cs); g.translate(-ox, -oy); };
   // ülkeler: araziyi örtmeyen yarı saydam boya
+  g.save(); if (A) landClip();
   players.forEach((p, k) => { g.globalAlpha = .34; g.fillStyle = p.color; g.fill(paths[k]); g.globalAlpha = 1; });
+  g.restore();
   if (A) { g.drawImage(A.riv, ox, oy, mw, mw); symsIn(A.towns); }   // akarsular ve yerleşimler ülke boyasının üstünde
   else if (rivers.length) drawRivers(g);
   // kareli defter çizgileri (boyanın üstünde, kâğıttan geliyormuş gibi)
@@ -3181,21 +3202,20 @@ function drawScene() {
   // savaş sisi: kurşun kalemle karalanmış
   if (vis) { g.fillStyle = pattern(g, fogTile); g.fill(fogPath); }
   // sınırlar: her ülke kendi kalem rengiyle, sınırın kendi tarafına çizer
-  const lw = Math.max(1.6, Math.min(3.5, cs / 4.5)), d = lw / 2 + 0.3;
-  const bpaths = players.map(() => new Path2D());
-  const diff = (i, j, o) => own[j] !== o || (vis && !vis[j]);
-  for (let y = cy0; y < cy1; y++) for (let x = cx0; x < cx1; x++) {
-    const i = y * M + x, o = own[i];
-    if (o < 0 || (vis && !vis[i])) continue;
-    const L = ox + x * cs, T = oy + y * cs, R = L + cs, B = T + cs, bp = bpaths[o];
-    if (x === 0 || diff(i, i - 1, o)) { bp.moveTo(L + d, T); bp.lineTo(L + d, B); }
-    if (x === M - 1 || diff(i, i + 1, o)) { bp.moveTo(R - d, T); bp.lineTo(R - d, B); }
-    if (y === 0 || diff(i, i - M, o)) { bp.moveTo(L, T + d); bp.lineTo(R, T + d); }
-    if (y === M - 1 || diff(i, i + M, o)) { bp.moveTo(L, B - d); bp.lineTo(R, B - d); }
-  }
-  g.lineCap = 'round';
-  // sınır: koyu dış hat + ülke renginde kalın çizgi
-  players.forEach((p, k) => { g.strokeStyle = 'rgba(20,15,10,.55)'; g.lineWidth = lw + 2; g.stroke(bpaths[k]); g.strokeStyle = p.color; g.lineWidth = lw; g.stroke(bpaths[k]); });
+  const lw = Math.max(1.6, Math.min(3.5, cs / 4.5));
+  // sınır: ülkenin alanının (kareler ∩ kara) içinde, kenarı boyunca şerit. Kare kenarları ve kıyı çizgisi aynı kalemle, alanın
+  // içine kırpılarak çizilir: köşelerde ve kıyıda tek parça görünür. Şerit: kenarda ince koyu, ülke rengi, içte ince koyu
+  const outl = regionOutlines(eo);
+  const sw = (path, w, cellUnits) => { if (!cellUnits) { g.lineWidth = w; g.stroke(path); return; }
+    g.save(); g.translate(ox, oy); g.scale(cs, cs); g.lineWidth = w / cs; g.stroke(path); g.restore(); };
+  players.forEach((p, k) => {
+    if (!outl.n[k]) return;
+    g.save(); if (A) landClip(); g.clip(outl.paths[k], 'nonzero'); g.lineJoin = 'miter';
+    for (const [col, w] of [['rgba(20,15,10,.55)', 2 * (lw + 1.6)], [p.color, 2 * (lw + .6)], ['rgba(20,15,10,.55)', 1.2]]) {
+      g.strokeStyle = col; sw(outl.paths[k], w); if (A) sw(A.shore, w, true);
+    }
+    g.restore();
+  });
   for (const p of players) if (p.alive && p.flag) drawFlag(g, p);
   if (SC.obj) drawFort(g);
   const tg = players[SC.target];
@@ -3205,6 +3225,35 @@ function drawScene() {
     for (const k of [.95, .7]) { g.beginPath(); g.arc(x, y, sz * k, 0, Math.PI * 2); g.stroke(); }
     g.restore();
   }
+}
+// ülkelerin alanı: kare kenarlarından oluşan dış çizgileri kapalı halkalar hâlinde (iç taraf sağda: dış halkalar saat yönünde,
+// delikler ters yönde; nonzero ile doldurulur/kırpılır). Ekran koordinatında.
+function regionOutlines(eo) {
+  const {cs, ox, oy} = view, V = M + 1, paths = players.map(() => new Path2D()), n = players.map(() => 0);
+  const owner = (x, y) => x < 0 || y < 0 || x >= M || y >= M ? -2 : eo[y * M + x];
+  const out = new Map(), used = new Set();
+  const add = (o, ax, ay, bx, by) => { const k = o * V * V + ay * V + ax; (out.get(k) || out.set(k, []).get(k)).push({o, bx, by, ux: Math.sign(bx - ax), uy: Math.sign(by - ay)}); };
+  for (let y = 0; y < M; y++) for (let x = 0; x < M; x++) {
+    const o = eo[y * M + x]; if (o < 0) continue;
+    if (owner(x, y - 1) !== o) add(o, x, y, x + 1, y);
+    if (owner(x + 1, y) !== o) add(o, x + 1, y, x + 1, y + 1);
+    if (owner(x, y + 1) !== o) add(o, x + 1, y + 1, x, y + 1);
+    if (owner(x - 1, y) !== o) add(o, x, y + 1, x, y);
+  }
+  for (const [k0, list] of out) for (const e0 of list) {
+    if (used.has(e0)) continue;
+    const p = paths[e0.o], a = k0 % (V * V);
+    p.moveTo(ox + (a % V) * cs, oy + ((a / V) | 0) * cs); n[e0.o]++;
+    let e = e0;
+    while (e) {
+      used.add(e); p.lineTo(ox + e.bx * cs, oy + e.by * cs);
+      const nx = (out.get(e.o * V * V + e.by * V + e.bx) || []).filter(f => !used.has(f));
+      // kıstırılmış köşede sağa dönen kenar seçilir (halka kendi karesinin çevresinde kalır)
+      e = nx.find(f => f.ux === -e.uy && f.uy === e.ux) || nx.find(f => f.ux === e.ux && f.uy === e.uy) || nx[0];
+    }
+    p.closePath();
+  }
+  return {paths, n};
 }
 // Kaleyi Tut: kalenin çevresine altın çerçeve; tutan ülke varsa onun renginde, köşede kaç tur tuttuğu; üstünde kale simgesi
 let fortImg = null;
@@ -4209,7 +4258,11 @@ const regIc = R => R.home ? 'baskent' : R.boss ? 'durakPatron' : SCEN_IC[R.scen]
 function newRun(realm) { PROG.realm = realm; PROG.run = {v: 2, owned: {vadi: 0}, fails: {}, done: false}; saveProg(); }
 const ownedN = r => Object.keys(r.owned).length - 1;   // fethedilen (başlangıç bölgesi hariç)
 const runStars = r => Object.values(r.owned).reduce((a, b) => a + b, 0);
-const canAttack = (r, id) => !(id in r.owned) && buildWorld().adj[id].some(n => n in r.owned);
+// ülke kapıları: yeni bir ülkeye geçmek için seferde toplam yıldız eşiği (bölge başına ortalama 2 yıldız). İçinde zaten
+// bölgen olan ülke açık sayılır (eski seferler kilitlenmesin)
+const LAND_GATE = [0, 18, 38, 58, 78];
+const landOpen = (r, li) => runStars(r) >= LAND_GATE[li] || REGIONS.some(R => R.land === li && R.id in r.owned);
+const canAttack = (r, id) => !(id in r.owned) && landOpen(r, REGMAP[id].land) && buildWorld().adj[id].some(n => n in r.owned);
 
 // ---- dünya haritası: sabit tohumla üretilir (her açılışta aynı) ----
 // Kara, bölge merkezlerinin çevresinde birleşen kütlelerden oluşur; harita önce gürültüyle bükülür (yuvarlak kütleler
@@ -4927,7 +4980,9 @@ function buildBattleArt() {
   const full = document.createElement('canvas'); full.width = c.width; full.height = c.height;
   const fg = full.getContext('2d'); fg.drawImage(c, 0, 0); fg.setTransform(S, 0, 0, S, 0, 0); fg.imageSmoothingQuality = 'high';
   for (const o of syms) { const [w0, h0] = ZS_MAP.size[o.n], w = o.h * w0 / h0; fg.drawImage(MAPIMG[o.n], o.x - w / 2, o.y - o.h, w, o.h); }
-  return {base: c, full, riv, syms, towns, S, src: terrImg};
+  // shore: akarsusuz kıyı çizgisi (ülke boyası ve sınırlar bununla kırpılır: akarsular sınırı bölmez)
+  const shore = lines.length ? riverCoast(N, coast, []) : land;
+  return {base: c, full, riv, syms, towns, S, land, shore, src: terrImg};
 }
 // ızgara merceği: farenin çevresinde ızgara belirginleşir (savaş haritası parşömen tarzındayken)
 let gridPt = null;
@@ -5062,6 +5117,9 @@ function wFocusRealm() {
 }
 let wDrawQueued = false;
 const wDraw = () => { if (!wDrawQueued) { wDrawQueued = true; requestAnimationFrame(() => { wDrawQueued = false; drawWorld(); }); } };
+// ülke renkleri (sefer haritasında ülkenin kenarındaki suluboya şerit) ve önbellek
+const LAND_HUE = ['#6f8f3a', '#2f8a90', '#c0892a', '#56709e', '#9a3a4c'];
+let landPaths = null, landBorder = null;
 function drawWorld() {
   const cv = $('worldMap'), r = PROG.run;
   if (!cv || !WD || !r || $('world').classList.contains('hidden')) return;
@@ -5098,7 +5156,26 @@ function drawWorld() {
     if (R.id === wHover && (own || can)) { g.globalAlpha = .2; g.fillStyle = '#fffaf0'; g.fill(WD.paths[k], 'evenodd'); }
   });
   g.globalAlpha = 1; g.lineCap = 'round'; g.lineJoin = 'round';
+  // ülkeler: kenarın iç tarafında ülkenin renginde suluboya şerit; kapısı kapalı ülke sisli
+  if (!landPaths) {
+    landPaths = LANDS.map((L, li) => WD.chains.loops(l => l >= 0 && REGIONS[l].land === li));
+    landBorder = new Path2D();
+    for (const c of WD.chains.chains) if (c.a >= 0 && c.b >= 0 && REGIONS[c.a].land !== REGIONS[c.b].land) {
+      landBorder.moveTo(c.pts[0][0], c.pts[0][1]); for (const q of c.pts) landBorder.lineTo(q[0], q[1]); if (c.closed) landBorder.closePath();
+    }
+  }
+  LANDS.forEach((L, li) => {
+    const p = landPaths[li];
+    g.save(); g.clip(p, 'evenodd');
+    if (!landOpen(r, li)) { g.globalAlpha = .4; g.fillStyle = '#d6c9aa'; g.fill(p, 'evenodd'); }
+    g.globalAlpha = .38; g.strokeStyle = LAND_HUE[li]; g.lineWidth = 18 / s; g.stroke(p);
+    g.restore();
+  });
+  g.globalAlpha = 1;
   g.strokeStyle = 'rgba(43,33,24,.42)'; g.lineWidth = 1.1 / s; for (const o of WD.outlines) g.stroke(o);   // bölge sınırları
+  // ülke sınırları: kalın kesik-noktalı mürekkep (bölge sınırlarından açıkça ayrılsın)
+  g.strokeStyle = '#f2e9d4'; g.lineWidth = 5.4 / s; g.stroke(landBorder);
+  g.strokeStyle = '#3b2f22'; g.lineWidth = 3 / s; g.setLineDash([9 / s, 3.5 / s, 1.5 / s, 3.5 / s]); g.stroke(landBorder); g.setLineDash([]);
   // saldırılabilir bölgeler kırmızı kesikli; krallığın sınırı kendi renginde; seçili bölge kalın mürekkeple
   g.strokeStyle = '#b9412f'; g.lineWidth = 2.6 / s; g.setLineDash([6 / s, 4 / s]);
   REGIONS.forEach((R, k) => { if (canAttack(r, R.id)) g.stroke(WD.outlines[k]); });
@@ -5140,9 +5217,17 @@ function drawWorld() {
     g.globalAlpha = Math.min(1, Math.max(0, 1 - (zoomK - 1.4) * 1.25));
     LANDS.forEach((L, li) => {
       const hw = g.measureText(pos[li].t).width / 2 + 6;   // yazı pencereden taşmasın
+      const lx = wv.ox + pos[li].x, ly = wv.oy + pos[li].y;   // ülkenin yazı yeri ekranın dışındaysa yazılmaz (kenara sıkıştırılınca başka ülkenin adıyla çakışıyordu)
+      if (lx < -hw * .4 || lx > W + hw * .4 || ly < -lf || ly > H + lf) return;
       const fr = WD.art ? 9 * s : 0;   // parşömen çerçevesinin içinde kalsın
       const x = Math.max(hw, wv.ox + fr + hw, Math.min(W - hw, wv.ox + N * s - fr - hw, wv.ox + pos[li].x)), y = wv.oy + pos[li].y;
       g.lineWidth = 5; g.strokeStyle = 'rgba(43,33,24,.85)'; g.strokeText(pos[li].t, x, y); g.fillStyle = '#f2e9d4'; g.fillText(pos[li].t, x, y);
+      if (!landOpen(r, li)) {   // kapalı ülke: adın altında kilit ve gereken yıldız
+        const t2 = tx(`${LAND_GATE[li]} yıldız gerekli`, `${LAND_GATE[li]} stars needed`), f2 = Math.round(lf * .78), ic = Math.round(f2 * 1.25);
+        g.save(); g.font = `700 ${f2}px Alegreya, Georgia, serif`; const w2 = g.measureText(t2).width, y2 = y + lf * 1.15;
+        const lk = icImg('kilit', ic); if (lk.complete) g.drawImage(lk, x - (w2 + ic + 4) / 2, y2 - ic / 2, ic, ic);
+        g.lineWidth = 4; g.strokeStyle = 'rgba(43,33,24,.85)'; g.strokeText(t2, x + (ic + 4) / 2, y2); g.fillStyle = '#f2c14e'; g.fillText(t2, x + (ic + 4) / 2, y2); g.restore();
+      }
     });
     g.globalAlpha = 1;
   }
@@ -5151,7 +5236,7 @@ function drawWorld() {
 // kutularıyla en az çakışan ve ülkenin ortasına en yakın nokta. Yakınlaştırma değişmedikçe yeniden hesaplanmaz.
 let landLabelKey = '', landLabelPos = null;
 function landLabels(g, s, ui, fs, isz, lf) {
-  const key = `${s.toFixed(4)},${ui}`;
+  const lock = LANDS.map((L, li) => !!PROG.run && !landOpen(PROG.run, li)), key = `${s.toFixed(4)},${ui},${lock.join()}`;
   if (key === landLabelKey) return landLabelPos;
   const N = WD.N, boxes = [];
   g.font = `700 ${fs}px Alegreya, Georgia, serif`;
@@ -5162,7 +5247,7 @@ function landLabels(g, s, ui, fs, isz, lf) {
   g.font = `700 ${lf}px Alegreya, Georgia, serif`;
   landLabelPos = LANDS.map((L, li) => {
     const t = L.name.toLocaleUpperCase(tx('tr-TR', 'en-GB')).split('').join(String.fromCharCode(8202));
-    const hw = g.measureText(t).width / 2 + 4, hh = lf * .6;
+    const hw = g.measureText(t).width / 2 + 4, hh = lf * .6, hd = lock[li] ? lf * 1.8 : hh;   // hd: alt kenar (kapalı ülkede 'yıldız gerekli' satırı)
     const rs = REGIONS.filter(R => R.land === li);
     const cx = rs.reduce((a, R) => a + R.x, 0) / rs.length * N * s, cy = rs.reduce((a, R) => a + R.y, 0) / rs.length * WORLD_H * s;
     let best = null, bs = Infinity;
@@ -5170,7 +5255,7 @@ function landLabels(g, s, ui, fs, isz, lf) {
       const x = (i % N + .5) * s, y = (Math.floor(i / N) - WORLD_Y0 + .5) * s;
       let ov = 0;
       for (const b of boxes) {
-        const ox = Math.min(x + hw, b[2]) - Math.max(x - hw, b[0]), oy = Math.min(y + hh, b[3]) - Math.max(y - hh, b[1]);
+        const ox = Math.min(x + hw, b[2]) - Math.max(x - hw, b[0]), oy = Math.min(y + hd, b[3]) - Math.max(y - hh, b[1]);
         if (ox > 0 && oy > 0) ov += ox * oy;
       }
       let out = 0;   // yazının boyunca 9 noktadan ülkenin dışında (deniz ya da başka ülke) kalanlar
@@ -5296,6 +5381,7 @@ function renderRegPanel() {
     `You have lost here ${r.fails[R.id] === 1 ? 'once' : r.fails[R.id] + ' times'}. Every attempt generates a new, different battle map.`)}</p>`;
   h += `<div class="btns">` + (can ? `<button id="regGo">${IC('durakSavas', 20)} ${tx('Saldır', 'Attack')}</button>`
     : own ? `<button class="sec" id="regGo">${tx('↻ Tekrar oyna', '↻ Play again')}</button>`
+    : !landOpen(r, R.land) ? `<button disabled>${IC('kilit', 18)} ${tx(`${L.name} için ${LAND_GATE[R.land]} yıldız gerekli (sende ${runStars(r)})`, `${L.name} needs ${LAND_GATE[R.land]} stars (you have ${runStars(r)})`)}</button>`
     : `<button disabled>${IC('kilit', 18)} ${tx('Önce komşu bir bölgeyi al', 'Take a neighbouring region first')}</button>`) + '</div>';
   $('regPanel').innerHTML = h;
   if ($('regGo')) $('regGo').onclick = () => { SFX.play('click'); startRegion(R.id); };
