@@ -4779,8 +4779,9 @@ function symBmp(n, hpx) {
   return c;
 }
 // görünen simgeler (dayanak alt orta, boy h kare); px: ekranda bir karenin piksel boyu
-function drawWorldSyms(g, syms, towns, px) {
-  const s = wv.s, x0 = -wv.ox / s - 30, x1 = (wv.W - wv.ox) / s + 30, y0 = WORLD_Y0 - wv.oy / s - 4, y1 = WORLD_Y0 + (wv.H - wv.oy) / s + 30;
+// s, rect: çizilen alan (haritanın sol üst köşesine göre ekran pikseli); dışındaki simgeler atlanır
+function drawWorldSyms(g, syms, towns, px, s, rect) {
+  const x0 = rect[0] / s - 3, x1 = rect[2] / s + 3, y0 = WORLD_Y0 + rect[1] / s - 1, y1 = WORLD_Y0 + rect[3] / s + 3;
   const one = o => {
     if (o.x < x0 || o.x > x1 || o.y < y0 || o.y > y1) return;
     const [w0, h0] = ZS_MAP.size[o.n], w = o.h * w0 / h0;
@@ -5060,7 +5061,7 @@ function cellOutline(N, reg, inSet) {
 const icCache = {};
 function icImg(name, size) {
   const k = name + ':' + size;
-  if (!icCache[k]) { const im = new Image(); im.onload = () => drawWorld(); im.src = ZS_ICONS.dataUri(name, ZS_ICONS.palettes.tas, size * 2); icCache[k] = im; }
+  if (!icCache[k]) { const im = new Image(); im.onload = () => { wCache = wBase = null; wDraw(); }; im.src = ZS_ICONS.dataUri(name, ZS_ICONS.palettes.tas, size * 2); icCache[k] = im; }
   return icCache[k];
 }
 // görünüm: s = ekranda bir karenin boyu (px), ox/oy = şeridin sol üst köşesinin ekrandaki yeri
@@ -5120,6 +5121,10 @@ const wDraw = () => { if (!wDrawQueued) { wDrawQueued = true; requestAnimationFr
 // ülke renkleri (sefer haritasında ülkenin kenarındaki suluboya şerit) ve önbellek
 const LAND_HUE = ['#6f8f3a', '#2f8a90', '#c0892a', '#56709e', '#9a3a4c'];
 let landPaths = null, landBorder = null;
+// Önbellek: zemin, bölge boyaları, sınırlar ve bölge adları ayrı bir tuvale bir kez çizilir; kaydırırken ve fare bölgeden
+// bölgeye geçerken yalnızca o resim kopyalanır (her karede baştan çizmek kasıyordu). Önbellek görünen alandan biraz geniştir,
+// dışına çıkılınca yeniden çizilir. Tekerlekle yakınlaştırırken eldeki resim ölçeklenir, el durunca o yakınlıkta net çizilir.
+let wCache = null, wBase = null, wZoomT = 0, wSettle = 0;
 function drawWorld() {
   const cv = $('worldMap'), r = PROG.run;
   if (!cv || !WD || !r || $('world').classList.contains('hidden')) return;
@@ -5127,18 +5132,68 @@ function drawWorld() {
   const dpr = devicePixelRatio || 1, W = wv.W, H = wv.H;
   if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
   const g = cv.getContext('2d'), N = WD.N, s = wv.s, idx = Object.fromEntries(REGIONS.map((R, k) => [R.id, k]));
+  const ui = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ui')) || 1;
   g.setTransform(dpr, 0, 0, dpr, 0, 0);
-  g.fillStyle = WD.art ? '#4a3b2a' : '#1c4268'; g.fillRect(0, 0, W, H);   // parşömen haritanın dışı: koyu masa   // açık deniz (arazi resmindeki derin deniz rengi)
+  g.fillStyle = WD.art ? '#4a3b2a' : '#1c4268'; g.fillRect(0, 0, W, H);   // parşömen haritanın dışı: koyu masa (eski görünümde açık deniz)
+  g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+  const key = [Object.entries(r.owned).sort().join(), LANDS.map((L, li) => landOpen(r, li)).join(), ui].join('|');
+  // gereken alan: ekran ∩ harita (kenardaki yazılar için pay bırakılır); haritanın sol üst köşesine göre ekran pikseli
+  const pad = 90, mw = N * s, mh = WORLD_H * s;
+  const need = [Math.max(-wv.ox, -pad), Math.max(-wv.oy, -pad), Math.min(W - wv.ox, mw + pad), Math.min(H - wv.oy, mh + pad)];
+  const ok = c => c && c.key === key && c.wd === WD && c.dpr === dpr;
+  const covers = c => { const k = s / c.s; return need[0] >= c.x0 * k - 1 && need[1] >= c.y0 * k - 1 && need[2] <= c.x1 * k + 1 && need[3] <= c.y1 * k + 1; };
+  const blit = c => {
+    const k = s / c.s, at = v => Math.round(v * dpr) / dpr;
+    if (k === 1) g.drawImage(c.cv, at(wv.ox + c.x0), at(wv.oy + c.y0), c.cv.width / dpr, c.cv.height / dpr);
+    else g.drawImage(c.cv, wv.ox + c.x0 * k, wv.oy + c.y0 * k, c.cv.width / dpr * k, c.cv.height / dpr * k);
+  };
+  const fresh = ok(wCache) && wCache.s === s && covers(wCache);
+  if (!fresh && ok(wCache) && performance.now() - wZoomT < 250) {
+    // yakınlaştırma sürüyor: kenarda boşluk kalırsa altta bütün haritanın resmi
+    if (!covers(wCache)) { const f = wFit(); if (!ok(wBase)) wBase = wRender(f, [-pad, -pad, N * f + pad, WORLD_H * f + pad], key, dpr, ui); blit(wBase); }
+    blit(wCache);
+    clearTimeout(wSettle); wSettle = setTimeout(wDraw, 260);
+  } else {
+    if (!fresh) {
+      const mx = W * .3, my = H * .3;
+      wCache = wRender(s, [Math.max(-pad, need[0] - mx), Math.max(-pad, need[1] - my), Math.min(mw + pad, need[2] + mx), Math.min(mh + pad, need[3] + my)], key, dpr, ui);
+      if (s <= wFit() * 1.01) wBase = wCache;
+    }
+    blit(wCache);
+  }
+  // her karede: fare altındaki bölge ve seçili bölge
+  g.save(); g.translate(wv.ox, wv.oy); g.scale(s, s); g.translate(0, -WORLD_Y0); g.lineJoin = 'round'; g.lineCap = 'round';
+  if (wHover && REGMAP[wHover]) { g.globalAlpha = .2; g.fillStyle = '#fffaf0'; g.fill(WD.paths[idx[wHover]], 'evenodd'); g.globalAlpha = 1; }
+  // seçili bölge: koyu alt çizgi üstünde altın sarısı (siyah, bölge sınırlarıyla karışıyordu)
+  if (wSel && REGMAP[wSel]) { const o = WD.outlines[idx[wSel]]; g.strokeStyle = '#2b2118'; g.lineWidth = 6 / s; g.stroke(o); g.strokeStyle = '#f2c14e'; g.lineWidth = 3.2 / s; g.stroke(o); }
+  g.restore();
+  g.lineJoin = 'round';
+  const fs = Math.round(13 * ui), isz = Math.round(fs * 1.4);
+  drawLandNames(g, s, ui, fs, isz);
+}
+// önbellek tuvali: rect alanı (haritanın sol üst köşesine göre ekran pikseli) s yakınlığında
+function wRender(s, rect, key, dpr, ui) {
+  const c = document.createElement('canvas');
+  c.width = Math.max(1, Math.ceil((rect[2] - rect[0]) * dpr)); c.height = Math.max(1, Math.ceil((rect[3] - rect[1]) * dpr));
+  const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, -rect[0] * dpr, -rect[1] * dpr);
+  drawWorldStatic(g, s, rect, dpr, ui);
+  return {cv: c, s, x0: rect[0], y0: rect[1], x1: rect[2], y1: rect[3], key, wd: WD, dpr};
+}
+function drawWorldStatic(g, s, rect, dpr, ui) {
+  const r = PROG.run, N = WD.N;
   g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
   const img = () => g.drawImage(WD.img, 0, WORLD_Y0 * WD.ppc, N * WD.ppc, WORLD_H * WD.ppc, 0, WORLD_Y0, N, WORLD_H);
-  g.save(); g.translate(wv.ox, wv.oy); g.scale(s, s); g.translate(0, -WORLD_Y0);
+  g.save(); g.scale(s, s); g.translate(0, -WORLD_Y0);
   // su resimden alınmaz (kare kare görünürdü): derin deniz zemini + kıyıdan açığa koyulaşan yumuşak sığlık katmanları;
   // kara (resimde bir kare taşkın) yumuşak kıyı çizgisiyle kırpılıp üstüne çizilir
   g.lineJoin = 'round'; g.lineCap = 'round';
   if (WD.art) {
     const live = !!WD.artBase && s * dpr > WD.artS * 1.2;   // yakında simgeler resimden değil, ekran çözünürlüğünde
-    g.drawImage(live ? WD.artBase : WD.art, 0, WORLD_Y0, N, WORLD_H);
-    if (WD.artBase) drawWorldSyms(g, live ? WD.syms : null, WD.towns, s * dpr);
+    const im = live ? WD.artBase : WD.art, qx = im.width / N, qy = im.height / WORLD_H;
+    // resmin yalnızca bu alana düşen parçası ölçeklenir
+    const cx0 = Math.max(0, Math.floor(rect[0] / s)), cx1 = Math.min(N, Math.ceil(rect[2] / s)), cy0 = Math.max(0, Math.floor(rect[1] / s)), cy1 = Math.min(WORLD_H, Math.ceil(rect[3] / s));
+    if (cx1 > cx0 && cy1 > cy0) g.drawImage(im, cx0 * qx, cy0 * qy, (cx1 - cx0) * qx, (cy1 - cy0) * qy, cx0, WORLD_Y0 + cy0, cx1 - cx0, cy1 - cy0);
+    if (WD.artBase) drawWorldSyms(g, live ? WD.syms : null, WD.towns, s * dpr, s, rect);
   }
   else {
     g.drawImage(WD.water, 0, WORLD_Y0, N, WORLD_H);
@@ -5153,7 +5208,6 @@ function drawWorld() {
       g.globalAlpha = .55; g.fillStyle = ownHatch(g, s); g.fill(WD.paths[k], 'evenodd');
     }
     else if (!can) { g.globalAlpha = WD.art ? .26 : .34; g.fillStyle = WD.art ? '#efe6cf' : '#2b2118'; g.fill(WD.paths[k], 'evenodd'); }   // parşömende: soluk sis
-    if (R.id === wHover && (own || can)) { g.globalAlpha = .2; g.fillStyle = '#fffaf0'; g.fill(WD.paths[k], 'evenodd'); }
   });
   g.globalAlpha = 1; g.lineCap = 'round'; g.lineJoin = 'round';
   // ülkeler: kenarın iç tarafında ülkenin renginde suluboya şerit; kapısı kapalı ülke sisli
@@ -5176,7 +5230,7 @@ function drawWorld() {
   // ülke sınırları: kalın kesik-noktalı mürekkep (bölge sınırlarından açıkça ayrılsın)
   g.strokeStyle = '#f2e9d4'; g.lineWidth = 5.4 / s; g.stroke(landBorder);
   g.strokeStyle = '#3b2f22'; g.lineWidth = 3 / s; g.setLineDash([9 / s, 3.5 / s, 1.5 / s, 3.5 / s]); g.stroke(landBorder); g.setLineDash([]);
-  // saldırılabilir bölgeler kırmızı kesikli; krallığın sınırı kendi renginde; seçili bölge kalın mürekkeple
+  // saldırılabilir bölgeler kırmızı kesikli; krallığın sınırı kendi renginde (seçili bölge her karede üstte çizilir)
   g.strokeStyle = '#b9412f'; g.lineWidth = 2.6 / s; g.setLineDash([6 / s, 4 / s]);
   REGIONS.forEach((R, k) => { if (canAttack(r, R.id)) g.stroke(WD.outlines[k]); });
   g.setLineDash([]);
@@ -5184,18 +5238,15 @@ function drawWorld() {
   if (key !== ownedKey) { ownedKey = key; ownedOutline = WD.chains.loops(l => l >= 0 && REGIONS[l].id in r.owned); }
   g.strokeStyle = '#f2e9d4'; g.lineWidth = 6 / s; g.stroke(ownedOutline);   // krem kenar: sınır kıyıda da denizden ayrılsın
   g.strokeStyle = HUMAN_COLORS[0]; g.lineWidth = 3.2 / s; g.stroke(ownedOutline);
-  // seçili bölge: koyu alt çizgi üstünde altın sarısı (siyah, bölge sınırlarıyla karışıyordu)
-  if (wSel && REGMAP[wSel]) { const o = WD.outlines[idx[wSel]]; g.strokeStyle = '#2b2118'; g.lineWidth = 6 / s; g.stroke(o); g.strokeStyle = '#f2c14e'; g.lineWidth = 3.2 / s; g.stroke(o); }
   g.restore();
-  const ui = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ui')) || 1;
   g.lineJoin = 'round';
   // bölge adları, simgeler, yıldızlar (yazı boyu ekranda sabit)
   const fs = Math.round(13 * ui), isz = Math.round(fs * 1.4);
   g.textAlign = 'center'; g.textBaseline = 'top';
   for (const R of REGIONS) {
     const own = R.id in r.owned, can = !own && canAttack(r, R.id);
-    const x = wv.ox + R.x * N * s, y = wv.oy + R.y * WORLD_H * s + Math.max(6, 2.8 * s);
-    if (x < -80 || x > W + 80 || y < -40 || y > H + 40) continue;
+    const x = R.x * N * s, y = R.y * WORLD_H * s + Math.max(6, 2.8 * s);
+    if (x < rect[0] - 80 || x > rect[2] + 80 || y < rect[1] - 40 || y > rect[3] + 40) continue;
     g.font = `700 ${fs}px Alegreya, Georgia, serif`;
     g.lineWidth = 4; g.strokeStyle = 'rgba(242,233,212,.92)'; g.strokeText(R.name, x, y);
     g.fillStyle = own || can ? '#2b2118' : '#5a4a38'; g.fillText(R.name, x, y);
@@ -5209,8 +5260,12 @@ function drawWorld() {
       if (im.complete) g.drawImage(im, x - isz / 2, y2, isz, isz);
     }
   }
-  // ülke adları: uzaktan bakınca büyük, aralıklı harflerle; bölge yazılarının üstünde ve onlarla çakışmayan bir boşlukta
-  const zoomK = s / wFit();
+}
+// ülke adları: uzaktan bakınca büyük, aralıklı harflerle; bölge yazılarının üstünde ve onlarla çakışmayan bir boşlukta
+// (her karede: ekranın kenarına göre yerleşir)
+function drawLandNames(g, s, ui, fs, isz) {
+  const r = PROG.run, N = WD.N, W = wv.W, H = wv.H, zoomK = s / wFit();
+  g.textAlign = 'center';
   if (zoomK < 2.2) {
     const lf = Math.round(17 * ui), pos = landLabels(g, s, ui, fs, isz, lf);
     g.font = `700 ${lf}px Alegreya, Georgia, serif`; g.textBaseline = 'middle';
@@ -5300,7 +5355,7 @@ $('worldMap').addEventListener('pointerleave', () => { if (!wDrag) { wHover = nu
 $('worldMap').addEventListener('wheel', e => {
   e.preventDefault();
   const b = $('worldMap').getBoundingClientRect(), px = e.clientX - b.left, py = e.clientY - b.top, s0 = wv.s;
-  wv.s *= Math.exp(-e.deltaY * .0015); wClamp();
+  wv.s *= Math.exp(-e.deltaY * .0015); wClamp(); wZoomT = performance.now();
   const k = wv.s / s0; wv.ox = px - (px - wv.ox) * k; wv.oy = py - (py - wv.oy) * k; wClamp(); wDraw();
 }, {passive: false});
 const wZoomBy = f => { const s0 = wv.s; wv.s *= f; wClamp(); const k = wv.s / s0; wv.ox = wv.W / 2 - (wv.W / 2 - wv.ox) * k; wv.oy = wv.H / 2 - (wv.H / 2 - wv.oy) * k; wClamp(); wDraw(); };
@@ -5476,17 +5531,20 @@ $('achOpen').onclick = () => {
 $('achBack').onclick = showMenu;
 
 // ---- ana menü ----
-// menünün (ve oyunun) arkasındaki harita: her açılışta rastgele; ilk çizimden önce üretilir, oyun durumuna dokunmaz
+// menünün (ve oyunun) arkasındaki harita: her açılışta rastgele, savaş haritasıyla aynı parşömen tarzında (simgeler ve
+// kasabalar resme basılı); harita simgelerinin resimleri yüklenince üretilir, oyun durumuna dokunmaz
 function makeMenuMap() {
-  const keep = {M, terr, height, villages, rivers, LAND, tseed, terrImg, PPC};
+  if (!mapImgsReady()) { setTimeout(makeMenuMap, 50); return; }
+  const keep = {M, terr, height, villages, rivers, LAND, tseed, terrImg, PPC, riverBase};
   try {
-    M = 72; genTerrain((Math.random() * 2 ** 31) | 0); placeVillages([], 0, rng(tseed + 5)); buildTerrainImage();
-    const g = terrImg.getContext('2d');
-    drawRivers(g, PPC, 0, 0);           // menü resminde akarsular da görünsün
+    M = 100; riverBase = null; genTerrain((Math.random() * 2 ** 31) | 0); placeVillages([], 0, rng(tseed + 5));
+    const A = buildBattleArt(), c = A.full, g = c.getContext('2d');
+    g.setTransform(A.S, 0, 0, A.S, 0, 0); g.imageSmoothingQuality = 'high';
+    for (const o of A.towns) { const [w0, h0] = ZS_MAP.size[o.n], w = o.h * w0 / h0; g.drawImage(MAPIMG[o.n], o.x - w / 2, o.y - o.h, w, o.h); }
     // resme (JPEG) çevirmeden doğrudan arka plan katmanına konur: kodlama beklemesi yok
-    terrImg.id = 'bgMap'; const old = $('bgMap'); if (old) old.remove(); document.body.prepend(terrImg);
+    c.id = 'bgMap'; const old = $('bgMap'); if (old) old.remove(); document.body.prepend(c);
   } catch (e) {}
-  ({M, terr, height, villages, rivers, LAND, tseed, terrImg, PPC} = keep);
+  ({M, terr, height, villages, rivers, LAND, tseed, terrImg, PPC, riverBase} = keep);
 }
 makeMenuMap();
 document.querySelectorAll('#menu i[data-ic]').forEach(el => { el.innerHTML = ZS_ICONS.svg(el.dataset.ic, ZS_ICONS.palettes.tas, el.closest('.sec') ? 24 : 28); });
@@ -5634,7 +5692,9 @@ addEventListener('wheel', e => { if (e.ctrlKey) e.preventDefault(); }, {passive:
 addEventListener('contextmenu', e => { if (!e.target.closest('input, textarea')) e.preventDefault(); });   // sağ tık menüsü yok
 addEventListener('dragstart', e => e.preventDefault());
 // ---- oyun içi menü (Esc): oyun durur, NPC'ler bekler ----
-const inGame = () => players.length > 0 && !halted && $('menu').classList.contains('hidden');
+// biten oyundan sefer haritasına (ya da başka bir sayfaya) dönülünce oyun "durmuş" sayılmaz; o yüzden sayfaların kapalı olduğu da bakılır
+// (yoksa sefer haritasında Esc son oyunun haritasını geri getiriyordu)
+const inGame = () => players.length > 0 && !halted && ['menu', 'camp', 'world', 'xfer', 'achv', 'setup', 'picks'].every(id => $(id).classList.contains('hidden'));
 function openPause() {
   hideTip();
   hideAll(); paused = true;
