@@ -3735,7 +3735,7 @@ const REGIONS = [
   {id: 'demirSinir', name: 'Demir Sınır', land: 3, x: .65, y: .27, boss: true},
   {id: 'ayazli', name: 'Ayazlı Köy', land: 3, x: .2, y: .1, scen: 'hayatta',
    intro: 'Kuzeyin ayazında köyler ilk yabancıya hep birlikte saldırır. Ayakta kalman yeter.'},
-  {id: 'buzGolu', name: 'Buz Gölü', land: 3, x: .34, y: .07, scen: 'akin',
+  {id: 'buzGolu', name: 'Buz Gölü', land: 3, x: .34, y: .07, scen: 'akin', npcPowers: false,   // kısa yarışta rakip güçleri kura gibiydi (oyuncu yerine YZ: %15 → %35)
    intro: 'Göl donmuşken karşı kıyıya yürümek kolay. Buz çözülmeden çabuk davranmalısın.'},
   {id: 'kartal', name: 'Kartal Yuvası', land: 3, x: .47, y: .07, scen: 'dag',
    intro: 'Kayalıkların tepesine kurulmuş bir kale. Kartallar bile güçlükle ulaşır.'},
@@ -5238,7 +5238,7 @@ function setupRegion(id) {
   const scen = B ? 'boss_' + L.boss : R.scen, sg = siegeOf(R), free = 1 - sg.n / sg.of;
   const up = d => d === 'kolay' ? 'normal' : 'zor';
   Object.assign(cfg, {humans: 1, coop: false, fog: false, speed: 2, scen, chapter: id,
-    map: B ? B.map : L.map, diff: B ? (sg.n * 2 < sg.of ? up(B.diff) : B.diff) : L.diff, npc: B ? B.npc : L.npc, npcPowers: L.npcPowers,
+    map: B ? B.map : L.map, diff: B ? (sg.n * 2 < sg.of ? up(B.diff) : B.diff) : L.diff, npc: B ? B.npc : L.npc, npcPowers: R.npcPowers ?? L.npcPowers,   // bölge ülkenin ayarını değiştirebilir
     bossRing: B ? B.ring + free * SIEGE_RING : 0,
     enemies: shuffled(L.enemies), campLabel: `${L.name} · ${R.name}`});
   cfg.start = cfg.map >= 100 ? 25 : 20;
