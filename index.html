@@ -1262,8 +1262,8 @@ const POWERS = [
    en: ['Logistics Genius', 'No logistics penalty (+1) when attacking from land cut off from your main territory, and attackers get no discount (−1) against your cut-off land.']},
   {id: 'denizci',  cat: 'Saldırı', icon: '', name: 'Denizci',        desc: 'Akarsu geçişi ve denizaşırı saldırı cezası olmaz; deniz ya da akarsu içeren saldırılarda hedef zar 2 düşer.',
    en: ['Seafarer', 'No penalty for river crossings or overseas attacks; attacks that include sea or river get −2 to the target number.']},
-  {id: 'keci',     cat: 'Saldırı', icon: '', name: 'Dağ Keçisi',     desc: 'Tepedeki düşmana saldırı cezası olmaz; senin tepelerine saldıranların hedef zarı 1 artar.',
-   en: ['Mountain Goat', 'No penalty for attacking enemies on hills; attacks on your hills get +1 to their target number.']},
+  {id: 'keci',     cat: 'Saldırı', icon: '', name: 'Dağ Keçisi',     desc: 'Tepe ve dağ kareleri saldırı boyutunda daha az sayılır (tepe çayır gibi, dağ 3 yerine 2); tepedeki düşmana saldırı cezası olmaz; senin tepelerine saldıranların hedef zarı 1 artar.',
+   en: ['Mountain Goat', 'Hill and mountain squares count less toward attack size (hills like grassland, mountains 2 instead of 3); no penalty for attacking enemies on hills; attacks on your hills get +1 to their target number.']},
   {id: 'orman',    cat: 'Savunma', icon: '', name: 'Orman Gerillası', desc: 'Ormanlık topraklarına (en az 3 orman karesi) saldıranların hedef zarı 2 artar.',
    en: ['Forest Guerrillas', 'Attacks on your forest land (at least 3 forest squares) get +2 to their target number.']},
   {id: 'inat',     cat: 'Zar',     icon: '', name: 'İnat',           desc: 'Her başarısız saldırı sonrakinin hedef zarını 1 düşürür (en çok 3); başarınca sıfırlanır.',
@@ -1291,6 +1291,7 @@ const TUNE = {
   ikinciCd: 5, ciftCd: 5, yildirimCd: 8, buyuk: 0.08, istMin: 6, istMax: 16,
   terrainUnit: 1.3,
   keci: 1, orman: 2, ormanMin: 3, inatMax: 3,   // Dağ Keçisi: tepelerine saldırıya + · Orman Gerillası: ormanına saldırıya + (en az bu kadar orman karesi) · İnat: en çok −
+  keciTepe: 1, keciDag: 2,   // Dağ Keçisi için boyut maliyeti: tepe, dağ karesi (normalde 1,5 ve 3); sim (1 güçlü + 3 güçsüz, 300 oyun): klasik %31→%44, Dağ Geçidi %44→%60 (güçsüz %25, Fatih %36–39)
   denizciKiyi: 2, yagmaDc: 1,   // Denizci: deniz ya da akarsu içeren saldırıda − · Yağmacı: köy karesi içeren saldırıda −
   // simülasyon (300–400'er oyun, 1 güçlü + 3 güçsüz yapay zekâ, 100×100 Normal; güçsüz %26–31, Fatih %39–41, Kale %40, Milisler %39, Yıldırım %37):
   // Denizci %44 (yalnızca cezasız: %30, −1 ile %31–37), Dağ Keçisi %35–38, İnat %33–35 (en çok −4 olsa da %33), Orman Gerillası %36–40,
@@ -1738,7 +1739,7 @@ function analyze(r, pid, noFlags = false) {
   const isMain = k => !mainLand || mainLand.length !== M * M || mainLand[k] === 1;
   const tc = new Array(TERRAIN.length).fill(0), takenIdx = [];
   let seaIn = false, objN = 0, objFree = false, bossRiver = false, seaN = 0, ownN = 0;
-  const hillBy = {}, forestBy = {};   // alandaki düşman tepe / orman kareleri (Dağ Keçisi, Orman Gerillası)
+  const goat = has(p, 'keci'), hillBy = {}, forestBy = {};   // alandaki düşman tepe / orman kareleri (Dağ Keçisi, Orman Gerillası)
   let koyN = 0;   // alınacak köy kareleri (Yağmacı)
   const by = {}, fogCheck = vis && p.human, flags = noFlags ? [] : flagsIn(r, pid), ob = SC.obj;
   for (let y = r.y0; y <= r.y1; y++) for (let x = r.x0; x <= r.x1; x++) {
@@ -1751,7 +1752,7 @@ function analyze(r, pid, noFlags = false) {
     if (t === T.DENIZ) { seaIn = true; seaN++; continue; }     // deniz alınamaz
     taken++; tc[t]++; takenIdx.push(i);
     if (ob && x >= ob.x0 && x <= ob.x1 && y >= ob.y0 && y <= ob.y1) { objN++; if (o < 0) objFree = true; }
-    const c = TERRAIN[t].cost; cost += c; if (o < 0) costN += c;
+    const c = goat && t === T.TEPE ? TUNE.keciTepe : goat && t === T.DAG ? TUNE.keciDag : TERRAIN[t].cost; cost += c; if (o < 0) costN += c;
     if (t === T.NEHIR) { riverN++; if (o >= 0 && o === SC.boss && players[o].bossKind === 'degirmen') bossRiver = true; }
     if (t === T.TEPE && o >= 0) { hillE = true; hillBy[o] = 1; }
     if (t === T.ORMAN && o >= 0) forestBy[o] = (forestBy[o] || 0) + 1;
@@ -1777,7 +1778,7 @@ function analyze(r, pid, noFlags = false) {
   // lojistik: alan yalnızca ana topraktan kopuk bir parçaya değiyor
   if (TUNE.lojistik && touches && !touchMain && !has(p, 'lojistik')) mods.push([tx('lojistik: kopuk toprak', 'logistics: cut-off land'), TUNE.lojistik, 'lojistik']);
   if (objN) mods.push(objFree ? [tx('kale garnizonu', 'fort garrison'), KALE_GARRISON, 'kale'] : [tx('kale surları', 'fort walls'), KALE_DC, 'kale']);
-  if (hillE && !has(p, 'keci')) mods.push([tx('tepedeki düşman', 'enemy on a hill'), scenOf().tepe || TUNE.tepe, 'mTepe']);
+  if (hillE && !goat) mods.push([tx('tepedeki düşman', 'enemy on a hill'), scenOf().tepe || TUNE.tepe, 'mTepe']);
   if (Object.keys(hillBy).some(k => has(players[k], 'keci'))) mods.push([PW.keci.name, TUNE.keci, 'keci']);
   if (Object.entries(forestBy).some(([k, n]) => n >= TUNE.ormanMin && has(players[k], 'orman'))) mods.push([PW.orman.name, TUNE.orman, 'orman']);
   // güç farkı: büyük ülke küçük ülkeye saldırırken avantajlı
