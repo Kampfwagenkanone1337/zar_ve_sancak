@@ -1734,7 +1734,7 @@ function snapRect(a, b) {
 }
 function analyze(r, pid, noFlags = false) {
   const p = players[pid], sailor = has(p, 'denizci');   // Denizci: akarsu ve deniz cezası yok, deniz/akarsu içeren saldırıda −1
-  let taken = 0, enemy = 0, hidden = 0, touches = false, shielded = 0, cost = 0, costN = 0, riverN = 0, hillE = false, touchMain = false;
+  let taken = 0, enemy = 0, hidden = 0, touches = false, shielded = 0, cost = 0, costN = 0, cost0 = 0, costN0 = 0, riverN = 0, hillE = false, touchMain = false;
   const mainBy = {};   // alanda ana toprağından kare bulunan ülkeler
   const isMain = k => !mainLand || mainLand.length !== M * M || mainLand[k] === 1;
   const tc = new Array(TERRAIN.length).fill(0), takenIdx = [];
@@ -1752,7 +1752,9 @@ function analyze(r, pid, noFlags = false) {
     if (t === T.DENIZ) { seaIn = true; seaN++; continue; }     // deniz alınamaz
     taken++; tc[t]++; takenIdx.push(i);
     if (ob && x >= ob.x0 && x <= ob.x1 && y >= ob.y0 && y <= ob.y1) { objN++; if (o < 0) objFree = true; }
-    const c = goat && t === T.TEPE ? TUNE.keciTepe : goat && t === T.DAG ? TUNE.keciDag : TERRAIN[t].cost; cost += c; if (o < 0) costN += c;
+    // cost0/costN0: Dağ Keçisi indirimi olmadan (indirim dökümde ayrı satır olarak görünsün)
+    const c0 = TERRAIN[t].cost, c = goat && t === T.TEPE ? TUNE.keciTepe : goat && t === T.DAG ? TUNE.keciDag : c0;
+    cost += c; cost0 += c0; if (o < 0) { costN += c; costN0 += c0; }
     if (t === T.NEHIR) { riverN++; if (o >= 0 && o === SC.boss && players[o].bossKind === 'degirmen') bossRiver = true; }
     if (t === T.TEPE && o >= 0) { hillE = true; hillBy[o] = 1; }
     if (t === T.ORMAN && o >= 0) forestBy[o] = (forestBy[o] || 0) + 1;
@@ -1766,8 +1768,8 @@ function analyze(r, pid, noFlags = false) {
   }
   const mods = [];
   // boyut: her kare arazisine göre sayılır (çayır 1, orman/tepe 1,5, akarsu/köy 2, dağ 3)
-  const sizeBase = has(p, 'akinci') ? costN * TUNE.akinci + (cost - costN) : cost;
-  mods.push([tx('boyut', 'size'), Math.ceil(sizeBase / (12 * UNIT * (has(p, 'genis') ? TUNE.genisCost : 1)))]);
+  const sizeOf = (c, cn) => Math.ceil((has(p, 'akinci') ? cn * TUNE.akinci + (c - cn) : c) / (12 * UNIT * (has(p, 'genis') ? TUNE.genisCost : 1)));
+  mods.push([tx('boyut', 'size'), sizeOf(cost0, costN0)]);
   const enemyMod = Math.ceil(enemy / (50 * UNIT));
   if (enemyMod) mods.push([tx('düşman toprağı', 'enemy land'), enemyMod]);
   // akarsu geçişi: akarsu alanın içinden gerçekten geçiyorsa (kaynağın ya da ucun bir iki karesi sayılmaz)
@@ -1778,7 +1780,11 @@ function analyze(r, pid, noFlags = false) {
   // lojistik: alan yalnızca ana topraktan kopuk bir parçaya değiyor
   if (TUNE.lojistik && touches && !touchMain && !has(p, 'lojistik')) mods.push([tx('lojistik: kopuk toprak', 'logistics: cut-off land'), TUNE.lojistik, 'lojistik']);
   if (objN) mods.push(objFree ? [tx('kale garnizonu', 'fort garrison'), KALE_GARRISON, 'kale'] : [tx('kale surları', 'fort walls'), KALE_DC, 'kale']);
-  if (hillE && !goat) mods.push([tx('tepedeki düşman', 'enemy on a hill'), scenOf().tepe || TUNE.tepe, 'mTepe']);
+  const tepeMod = hillE ? scenOf().tepe || TUNE.tepe : 0;
+  if (tepeMod) mods.push([tx('tepedeki düşman', 'enemy on a hill'), tepeMod, 'mTepe']);
+  // Dağ Keçisi: tepe/dağ karelerinin boyut indirimi + tepe cezası tek satırda geri alınır
+  const goatSave = goat ? sizeOf(cost0, costN0) - sizeOf(cost, costN) + tepeMod : 0;
+  if (goatSave > 0) mods.push([PW.keci.name, -goatSave, 'keci']);
   if (Object.keys(hillBy).some(k => has(players[k], 'keci'))) mods.push([PW.keci.name, TUNE.keci, 'keci']);
   if (Object.entries(forestBy).some(([k, n]) => n >= TUNE.ormanMin && has(players[k], 'orman'))) mods.push([PW.orman.name, TUNE.orman, 'orman']);
   // güç farkı: büyük ülke küçük ülkeye saldırırken avantajlı
@@ -2109,7 +2115,8 @@ function markVillage(b, cap) {
 }
 // köyler: ova ve nehir kenarı tercih edilir, birbirinden ve başlangıçlardan uzak
 function placeVillages(starts, s, R) {
-  const S = TUNE.sancakSize, want = Math.max(3, Math.round(LAND / 650)), cand = [];
+  // köyün değerli olduğu senaryoda (Kıtlık) 1,5 kat köy ve aralarında daha kısa mesafe; yoksa küçük haritada 1-2 köy kalıyordu
+  const S = TUNE.sancakSize, rich = (scenOf().village || 1) > 1, want = Math.max(3, Math.round(LAND / 650 * (rich ? 1.5 : 1))), gap = rich ? 10 : 15, pad = rich ? 2 : 6, cand = [];
   for (let y0 = 0; y0 + S <= M; y0 += S) for (let x0 = 0; x0 + S <= M; x0 += S) {
     let ok = true, meadow = 0, river = false;
     for (let y = y0 - 2; y < y0 + S + 2; y++) for (let x = x0 - 2; x < x0 + S + 2; x++) {
@@ -2119,12 +2126,12 @@ function placeVillages(starts, s, R) {
       if (inside) { if (t === T.DENIZ || t === T.DAG || t === T.KOY) ok = false; if (t === T.CAYIR) meadow++; }
     }
     if (!ok) continue;
-    if (starts.some(([px, py]) => x0 > px - S - 6 && x0 < px + s + 6 && y0 > py - S - 6 && y0 < py + s + 6)) continue;
+    if (starts.some(([px, py]) => x0 > px - S - pad && x0 < px + s + pad && y0 > py - S - pad && y0 < py + s + pad)) continue;
     cand.push({x0, y0, w: 1 + meadow / (S * S) + (river ? 2 : 0)});
   }
   const picked = [];
   for (let t = 0; t < want && cand.length; t++) {
-    const ok = cand.filter(c => picked.every(q => Math.max(Math.abs(q.x0 - c.x0), Math.abs(q.y0 - c.y0)) >= 15));
+    const ok = cand.filter(c => picked.every(q => Math.max(Math.abs(q.x0 - c.x0), Math.abs(q.y0 - c.y0)) >= gap));
     if (!ok.length) break;
     let r = R() * ok.reduce((a, c) => a + c.w, 0), c = ok[0];
     for (const o of ok) { r -= o.w; if (r <= 0) { c = o; break; } }
