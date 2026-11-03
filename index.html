@@ -253,6 +253,20 @@
     #mapWrap { flex:none; height:65vh; }
     #panel { width:100%; overflow:visible; }
   }
+  /* alçak ama geniş ekran (1280×720, 1366×768, 1600×900, itch penceresi): panel iki sütun, hiçbir şey kaydırmaya kalmasın
+     (tek sütunda Zar At ekranın altında kalıyordu); harita zaten yükseklik yüzünden kare, yandaki boşluğu panel kullanır */
+  /* 1080'den alçakta --ui hep 1 (piksel = arayüz pikseli); tek sütun ~1040 yükseklik istiyor. 3/2'den dar ekranda harita fazla küçülürdü */
+  @media (max-height: 1040px) and (min-width: 1150px) and (min-aspect-ratio: 3/2) {
+    #panel { width:620px; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-rows:auto auto minmax(0,1fr) auto; column-gap:14px; row-gap:12px; overflow:hidden; }
+    #panel > .box:nth-child(1) { grid-column:1; grid-row:1; }
+    #panel > .box:nth-child(2) { grid-column:1; grid-row:2; align-self:start; }
+    #panel > .logBox { grid-column:1; grid-row:3; min-height:0; }
+    #panel > .box:nth-child(3) { grid-column:2; grid-row:1 / span 2; align-self:start; }
+    #panel > .box:nth-child(4) { grid-column:2; grid-row:3; align-self:start; }
+    #panel > #notes { grid-column:1 / -1; grid-row:4; margin-top:-4px; }
+    #panel .snapRow { white-space:nowrap; gap:6px; } #panel .snapRow .seg { flex-wrap:nowrap; gap:6px; } #panel .snapRow .seg button { padding:3px 8px; }
+    #toasts { left:calc((100vw - 640px) / 2); }   /* bildirim haritanın ortasında: tur bilgisini örtmesin */
+  }
   /* ANA MENÜ (Claude Design 2a): açık parşömen panel, koyu kahve kenar, sert gölge; arkada oyunun haritası */
   #menu { background:radial-gradient(ellipse at center, rgba(239,229,204,.35) 0%, rgba(120,92,52,.55) 100%); }
   :is(#menu, #pause) .menuCard { width:min(440px, 100%) !important; padding:38px 34px 34px; text-align:center; color:#2b2118; font-family:'Alegreya', serif;
@@ -3512,16 +3526,18 @@ function renderPanel() {
     p.human ? (multi ? p.name + tx(' oynuyor', ' to play') : tx('Senin sıran!', 'Your turn!')) : p.name + tx(' oynuyor…', ' is playing…')}</span>${p.extraNow ? ' ' + IC('yildirim', 16) : ''}
     <small>${scenOf().id !== 'klasik' ? `${IC('senaryo', 14)} ${scenOf().name} · ` : ''}${goalText()} · ${tx('Harita', 'Map')} ${M}×${M}</small>`;
   const total = LAND;
+  // aşağı yuvarla: %39,96 "%40,0" görünüp hedefe varılmış sanılıyordu (hedef 1776 puan, oyuncuda 1774)
+  const pc = v => (Math.floor(v / total * 1000 + 1e-9) / 10).toFixed(1);
   let html = [...players].sort((a, b) => b.score - a.score).map(q => `
     <div class="row ${q.id === cur ? 'cur' : ''} ${q.alive ? '' : 'dead'}">
       <span class="sw" style="background:${q.color}"></span><span class="nm">${q.id === cur ? '▶ ' : ''}${q.name}${q.id === SC.target ? ' ' + IC('avci', 16) : ''}${SC.allies && SC.allies.includes(q.id) ? ' ' + IC('muttefik', 16) : ''}</span>
       <span class="pi" data-tip="p:${q.id}">${powerIcons(q)}</span>
-      <span>${q.vill ? `${IC('koy', 16)}${q.vill} ` : ''}${tx('%' + (q.score / total * 100).toFixed(1), (q.score / total * 100).toFixed(1) + '%')}</span></div>
+      <span>${q.vill ? `${IC('koy', 16)}${q.vill} ` : ''}${tx('%' + pc(q.score), pc(q.score) + '%')}</span></div>
     <div class="bar"><div style="width:${Math.min(100, q.score / total / (cfg.win === 'fetih' ? 1 : cfg.win) * 100)}%;background:${q.color}"></div></div>`).join('');
   if (cfg.coop && multi) {
     const team = players.filter(q => q.human).reduce((s, q) => s + q.score, 0);
-    html += `<div class="team">${IC('coop', 16)} ` + tx(`Takım toplamı: <b>%${(team / total * 100).toFixed(1)}</b>${cfg.win === 'fetih' ? '' : ` / %${cfg.win * 100}`}`,
-      `Team total: <b>${(team / total * 100).toFixed(1)}%</b>${cfg.win === 'fetih' ? '' : ` / ${cfg.win * 100}%`}`) + '</div>';
+    html += `<div class="team">${IC('coop', 16)} ` + tx(`Takım toplamı: <b>%${pc(team)}</b>${cfg.win === 'fetih' ? '' : ` / %${cfg.win * 100}`}`,
+      `Team total: <b>${pc(team)}%</b>${cfg.win === 'fetih' ? '' : ` / ${cfg.win * 100}%`}`) + '</div>';
   }
   $('scores').innerHTML = html;
   refreshTip();
@@ -5213,14 +5229,26 @@ function drawWorld() {
     }
     blit(wCache);
   }
+  const fs = Math.round(13 * ui), isz = Math.round(fs * 1.4);
   // her karede: fare altındaki bölge ve seçili bölge
-  g.save(); g.translate(wv.ox, wv.oy); g.scale(s, s); g.translate(0, -WORLD_Y0); g.lineJoin = 'round'; g.lineCap = 'round';
+  g.save();
+  if (wSel && REGMAP[wSel]) {
+    // seçim çizgisi bölge adlarının ve yıldızların altından geçsin: yazı kutuları kırpılır (önbellekteki yazıların üstüne biniyordu)
+    g.beginPath(); g.rect(0, 0, W, H); g.font = `700 ${fs}px Alegreya, Georgia, serif`;
+    for (const R of REGIONS) {
+      const x = wv.ox + R.x * N * s, y = wv.oy + R.y * WORLD_H * s + Math.max(6, 2.8 * s);
+      if (x < -80 || x > W + 80 || y < -40 || y > H + 40) continue;
+      const hw = Math.max(g.measureText(R.name).width, isz * 2.4) / 2 + 3;
+      g.rect(x - hw, y - 2, hw * 2, fs + 4 + isz + 2);
+    }
+    g.clip('evenodd');
+  }
+  g.translate(wv.ox, wv.oy); g.scale(s, s); g.translate(0, -WORLD_Y0); g.lineJoin = 'round'; g.lineCap = 'round';
   if (wHover && REGMAP[wHover]) { g.globalAlpha = .2; g.fillStyle = '#fffaf0'; g.fill(WD.paths[idx[wHover]], 'evenodd'); g.globalAlpha = 1; }
   // seçili bölge: koyu alt çizgi üstünde altın sarısı (siyah, bölge sınırlarıyla karışıyordu)
   if (wSel && REGMAP[wSel]) { const o = WD.outlines[idx[wSel]]; g.strokeStyle = '#2b2118'; g.lineWidth = 6 / s; g.stroke(o); g.strokeStyle = '#f2c14e'; g.lineWidth = 3.2 / s; g.stroke(o); }
   g.restore();
   g.lineJoin = 'round';
-  const fs = Math.round(13 * ui), isz = Math.round(fs * 1.4);
   drawLandNames(g, s, ui, fs, isz);
 }
 // önbellek tuvali: rect alanı (haritanın sol üst köşesine göre ekran pikseli) s yakınlığında
